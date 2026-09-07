@@ -11,7 +11,7 @@ _Chapter 7 gave us six encodings. This chapter shows how we got the sixth — by
 - **Prerequisites:** Chapter 7 (you know the six encodings, the two frameworks, and the CAR theorem).
 
 > **Scope note:** This chapter covers the tree-based (path-based) route to
-> custom encodings. Chapter 7's audited star-only result concerns a different
+> custom encodings. Chapter 7's finite star-census report concerns a different
 > tree-to-index-set constructor; it does not restrict the separately defined
 > path-based mapping here. Neither route makes an untested custom mapping valid
 > without CAR checks.
@@ -20,7 +20,12 @@ _Chapter 7 gave us six encodings. This chapter shows how we got the sixth — by
 
 ## The Goal
 
-In Chapter 7, we listed six encodings and noted that FockMap ships *two* ternary-tree encodings: a balanced construction associated with Jiang et al. (2020) and a breadth-first construction inspired by Vlasov (arXiv:1904.09912). Both have logarithmic worst-case weight, but they assign qubits to tree nodes differently.
+In Chapter 7, we listed six encodings and noted that FockMap ships *two*
+ternary-tree helpers: a midpoint-split construction and a breadth-first
+construction inspired by Vlasov. Both have logarithmic worst-case weight,
+but their finite-size path lengths differ. Neither a name nor a picture
+establishes the map. We need the actual paths, their Pauli strings, and
+the rule that turns those strings into fermionic operators.
 
 How did the Vlasov-inspired tree get into FockMap? Someone defined a supported
 max-three-child shape, plugged it into the path-based framework, and verified
@@ -32,6 +37,23 @@ an arbitrary rooted tree is accepted or valid.
 ---
 
 ## Step 1: Define the Tree Shape
+
+A **tree** is a connected graph without cycles. Selecting one node as the
+**root** gives every other node one parent: its neighbour on the unique
+route back to the root. Its other neighbours are its **children**.
+The depth of a node is the number of edges from the root to it; the root
+has depth zero. A **leaf node** has no children.
+
+In this construction, each of the $n$ numbered nodes supplies one qubit.
+The node index also labels one fermionic mode, but that mode's operators
+will generally act on several qubits. "Mode 3" does not mean "store its
+occupation in qubit 3".
+
+Each node has three *outgoing slots*, labelled X, Y and Z. A slot either
+continues to a child or ends immediately in a **terminal leg**. A terminal
+leg is not another qubit and is not the same object as a leaf node. A leaf
+node has three terminal legs; a node with one child has two. We draw the
+node tree first, then fill its unused slots with legs.
 
 FockMap's `vlasovTree` helper builds a **breadth-first ternary tree** inspired
 by Vlasov's qubit-tree construction. Node 0 is the root; the children of node
@@ -64,30 +86,172 @@ graph TD
 
 Node 0 has children 1, 2, 3. Node 1 has children 4, 5, 6. Node 2 has children 7, 8. Node 3 is a leaf — its would-be children (10, 11, 12) all fall outside $n = 9$.
 
-Compare this with the balanced ternary tree, which uses a recursive midpoint partition: for 9 modes, it puts modes 0–2 in the left subtree, modes 3–5 in the middle, and modes 6–8 on the right. The tree has the same branching factor but a completely different assignment of mode indices to tree positions.
+For nine nodes, the midpoint helper instead chooses root 4 and partitions
+the remaining indices into `[0;1]`, `[2;3]`, and `[5;6;7;8]`.
+The root must be accounted for separately: it cannot also belong to a
+subtree. This is not a split into three equal thirds.
 
 ### The code
 
-In FockMap, a tree is built from `TreeNode` records:
+This complete F# example builds the nine-node breadth-first tree through
+the public record types. Save it as a separate scratch script and run it
+with `dotnet fsi`; it does not need a checkout of the library source.
 
 ```fsharp
+#r "nuget: FockMap, 0.9.0"
+open Encodings
+open Encodings.TreeEncoding
+
+let n = 9
 let rec buildNode j parent =
     let childIndices =
         [3*j+1; 3*j+2; 3*j+3] |> List.filter (fun c -> c < n)
     let children =
         childIndices |> List.map (fun c -> buildNode c (Some j))
-    mkNode j children parent
+    { Index = j; Children = children; Parent = parent }
 
-let tree = mkTree (buildNode 0 None) n
+let root = buildNode 0 None
+let rec nodePairs node =
+    (node.Index, node) :: (node.Children |> List.collect nodePairs)
+
+let tree =
+    { Root = root; Nodes = nodePairs root |> Map.ofList; Size = n }
+let terms = encodeWithTernaryTree tree Raise 0u (uint32 n)
+printfn "%A" terms
 ```
 
-Three lines of logic — the rest is plumbing. The key is the child formula: `3*j+1`, `3*j+2`, `3*j+3`. Everything else follows from this.
+`let rec` allows a function to call itself. The recursion ends when no child
+index is below `n`; the resulting `children` list is empty. `Some j` records
+a known parent, whereas `None` marks the root. The braces construct a
+record with named fields. `nodePairs` visits the records to build the
+index-to-node map required by `EncodingTree`.
+
+The helper names `mkNode` and `mkTree` in the pinned library source are
+private, so they are not a public construction API. For ordinary use,
+`vlasovTree 9` already builds this shape. The longer example exposes what
+must be consistent: unique indices $0,\ldots,n-1$, the same nodes in the
+root traversal and map, matching parent links, and a matching `Size`.
+The path encoder rejects more than three children; that guard is not
+a substitute for constructing a coherent record.
 
 ---
 
 ## Step 2: Plug It Into the Framework
 
-The path-based framework takes an `EncodingTree` and produces Pauli strings. Internally, it traces the path from the root to each leaf, collecting Pauli labels (X, Y, Z) on each edge. The tree shape determines the paths; the paths determine the Pauli strings; the Pauli strings determine the encoding.
+Before calling another helper, we need to know what it constructs.
+A **Majorana operator** is a Hermitian combination of a creator and an
+annihilator:
+
+$$\gamma_{2j}=a_j+a_j^\dagger,\qquad
+\gamma_{2j+1}=i(a_j^\dagger-a_j).$$
+
+The normalisation here gives
+$\{\gamma_r,\gamma_s\}=2\delta_{rs}I$, so every Majorana squares to
+identity. These are algebraic combinations, not additional fermionic
+modes or extra qubits. Solving the two defining equations gives
+
+$$a_j^\dagger=\frac{\gamma_{2j}-i\gamma_{2j+1}}{2},
+\qquad
+a_j=\frac{\gamma_{2j}+i\gamma_{2j+1}}{2}.$$
+
+The minus sign belongs to creation. In particular, for one qubit these
+reduce to $(X-iY)/2=|1\rangle\langle0|$ and its adjoint.
+
+### Count the paths before pairing them
+
+There are $3n$ outgoing slots. A connected tree on $n$ nodes uses $n-1$
+of them for edges to children, leaving
+
+$$3n-(n-1)=2n+1$$
+
+terminal legs. Each root-to-leg route defines a Pauli string: at every
+visited node, use the label of the outgoing slot taken there; put identity
+on every unvisited node. The last label, at the leg's own node, counts too.
+A leg at node depth $d$ therefore has string weight $d+1$.
+
+Any two distinct leg paths coincide until they choose different outgoing
+slots at one node. Their Pauli factors anticommute at that node. Beyond
+it they either terminate or enter disjoint subtrees, so there are no
+additional anticommuting overlaps. The two complete strings anticommute.
+Every individual string is Hermitian and squares to identity.
+
+Thus $2n+1$ pairwise anticommuting strings have appeared on $n$ qubits.
+We need only $2n$ Majoranas for $n$ modes. The extra path will be left
+unpaired; it is not a missing mode.
+
+### The pairing rule
+
+For mode $j$, start at node $j$ and take its X slot. If it reaches a child,
+follow Z slots until reaching a terminal leg. The *full path from the root*
+to that leg gives $\gamma_{2j}$. Repeat from node $j$'s Y slot to obtain
+$\gamma_{2j+1}$. The common root-to-$j$ prefix is included in both strings.
+
+Every leg except the all-Z path from the root has a last non-Z choice
+somewhere on its route. That choice is X or Y at a unique node $j$, followed
+only by Z choices. It therefore belongs to exactly one of these pairs.
+This accounts for all $2n$ used legs and identifies the one unused leg.
+There is no arbitrary "pair nearby leaves" step.
+
+```mermaid
+flowchart LR
+    SHAPE["n numbered qubit nodes<br/>ordered children"] --> SLOTS["X/Y/Z outgoing slots<br/>2n+1 terminal legs"]
+    SLOTS --> PATHS["root-to-leg Pauli strings<br/>first divergence anticommutes"]
+    PATHS --> PAIRS["mode j: X then Z; Y then Z<br/>2n used legs"]
+    PAIRS --> LADDER["a†j = (γ2j − iγ2j+1)/2"]
+```
+
+The slot labels in the pinned implementation follow the order of the
+`Children` list: first child X, second Y, third Z. Missing children leave
+terminal legs in the remaining slots. Reordering a child list therefore
+changes the mapping even when the unlabelled graph is unchanged.
+
+### Two nodes, all five paths
+
+Take root 0 with one child, node 1. The X slot of node 0 goes to node 1;
+its Y and Z slots terminate. Node 1 has no children:
+
+```mermaid
+graph TD
+    Q0["qubit 0 / root"] -->|X| Q1["qubit 1"]
+    Q0 -->|Y| L0Y["leg: YI"]
+    Q0 -->|Z| L0Z["leg: ZI (unused)"]
+    Q1 -->|X| L1X["leg: XX"]
+    Q1 -->|Y| L1Y["leg: XY"]
+    Q1 -->|Z| L1Z["leg: XZ"]
+```
+
+There are two nodes, one node-to-node edge and five legs.
+The pairing rule yields:
+
+| Mode | X-then-Z terminal | Y-then-Z terminal | Even Majorana | Odd Majorana |
+|:---:|:---|:---|:---:|:---:|
+| 0 | node 1, Z leg | node 0, Y leg | $XZ$ | $YI$ |
+| 1 | node 1, X leg | node 1, Y leg | $XX$ | $XY$ |
+
+Consequently
+
+$$a_0^\dagger=\tfrac12(XZ-iYI),\qquad
+a_1^\dagger=\tfrac12(XX-iXY).$$
+
+For example, acting on $|00\rangle$, $XZ$ produces $|10\rangle$ and
+$YI$ produces $i|10\rangle$. Their creation combination gives
+$|10\rangle$, not zero. For mode 1 the two terms give $|11\rangle$:
+creating one fermion need not flip only one stored bit.
+Using $\hat n_j=(I+i\gamma_{2j}\gamma_{2j+1})/2$ gives
+
+$$\hat n_0=\frac{II-ZZ}{2},\qquad
+\hat n_1=\frac{II-IZ}{2}.$$
+
+Both annihilators kill $|00\rangle$, so it is the encoded vacuum.
+The state $|11\rangle$ indeed has occupations $(0,1)$ under these number
+operators. The two-particle state in the ordered-creator convention is
+$a_0^\dagger a_1^\dagger|00\rangle=-|01\rangle$.
+The minus sign illustrates why a basis map may carry phases as well as
+permuting labels.
+
+### The wrapper now has a meaning
+
+FockMap wraps the shape and pairing in this source-level excerpt:
 
 FockMap wraps this in a one-line convenience function:
 
@@ -97,7 +261,9 @@ let vlasovTreeTerms (op : LadderOperatorUnit) (j : uint32) (n : uint32) =
     encodeWithTernaryTree tree op j n
 ```
 
-That's the complete encoding — define the tree, call the generic encoder. The `encodeWithTernaryTree` function handles edge labelling, path traversal, Majorana construction, and phase tracking. You provide only the shape.
+`encodeWithTernaryTree` performs the link labelling, path traversal,
+pairing and the two coefficients we have just derived. The wrapper is
+short because that work is elsewhere, not because that work is optional.
 
 ---
 
@@ -131,7 +297,7 @@ graph TD
     style V7 fill:#fde68a,stroke:#d97706
 ```
 
-**Balanced ternary tree** ($n = 8$, midpoint-split, root = mode 4):
+**Midpoint-split ternary tree** ($n = 8$, root = node/mode 4):
 
 ```mermaid
 graph TD
@@ -152,7 +318,9 @@ graph TD
     style B7 fill:#fde68a,stroke:#d97706
 ```
 
-Different roots, different parent–child relationships, different path lengths for some modes. Yet both produce valid encodings with the same asymptotic weight.
+Different roots, different parent–child relationships, different path
+lengths. Neither diagram shows the terminal legs; add the unused X/Y/Z
+slots before counting Majoranas or assigning weights.
 
 ### What do the Pauli strings look like?
 
@@ -177,34 +345,71 @@ A valid encoding must satisfy the canonical anti-commutation relations:
 
 $$\{a_i^\dagger, a_j\} = \delta_{ij} \cdot I, \qquad \{a_i^\dagger, a_j^\dagger\} = 0, \qquad \{a_i, a_j\} = 0$$
 
-FockMap's test infrastructure checks these symbolically — multiplying encoded Pauli strings and verifying the algebra. If the CAR check passes, the encoding is algebraically valid: the encoded Hamiltonian is guaranteed to have the correct spectrum.
+For the two-node example, we can complete the check without an unspecified
+test helper. Denote the four strings above by $G_0,\ldots,G_3$.
+Their six off-diagonal pairs anticommute:
 
-```fsharp
-// For each pair (i, j), verify anti-commutation
-for i in 0u .. n-1u do
-    for j in 0u .. n-1u do
-        let ai_dag = vlasovTreeTerms Raise i n
-        let aj     = vlasovTreeTerms Lower j n
-        // Compute {a†_i, a_j} and check = delta_ij * I
+| Pair | Position with the odd anticommuting overlap |
+|:---:|:---:|
+| $XZ,YI$ | 0 |
+| $XZ,XX$ | 1 |
+| $XZ,XY$ | 1 |
+| $YI,XX$ | 0 |
+| $YI,XY$ | 0 |
+| $XX,XY$ | 1 |
+
+Also $G_r^2=I$ for each $r$. Write $E_j=G_{2j}$ and $O_j=G_{2j+1}$.
+Then every creator/annihilator anticommutator is
+
+$$\{a_i^\dagger,a_j\}
+=\tfrac14\bigl(\{E_i,E_j\}+i\{E_i,O_j\}
+-i\{O_i,E_j\}+\{O_i,O_j\}\bigr)
+=\delta_{ij}I.$$
+
+The two same-type cases are
+
+$$\{a_i^\dagger,a_j^\dagger\}
+=\tfrac14\bigl(\{E_i,E_j\}-i\{E_i,O_j\}
+-i\{O_i,E_j\}-\{O_i,O_j\}\bigr)=0,$$
+
+$$\{a_i,a_j\}
+=\tfrac14\bigl(\{E_i,E_j\}+i\{E_i,O_j\}
++i\{O_i,E_j\}-\{O_i,O_j\}\bigr)=0.$$
+
+For $i=j$, the $2I$ diagonal Majorana contributions cancel in the
+same-type cases and add in the mixed case. For $i\ne j$, all four
+contributions vanish. Hermiticity of each $G_r$ establishes the required
+adjoint relation too. This proves the full two-mode CAR, not merely
+nilpotence of one creator.
+
+The executable check is `dotnet fsi code/ch08-car-census.fsx`. Its
+finite test cases check adjoints and all three families of CAR. The
+algorithm being tested can be stated independently of a Pauli-sum API:
+
+```text
+For each chosen n and each encoder:
+    build every creator C[j] and annihilator A[j]
+    require C[j] = adjoint(A[j])
+    for every ordered pair (i,j):
+        require C[i]A[j] + A[j]C[i] = delta(i,j) I
+        require C[i]C[j] + C[j]C[i] = 0
+        require A[i]A[j] + A[j]A[i] = 0
 ```
 
-FockMap's property tests apply these checks across the built-in encodings and
-representative supported sizes; the exact tested range belongs to the pinned
-release report.
+This is pseudocode, not an F# listing with the crucial assertion left out.
+For symbolic Pauli arithmetic, simplify and compare every coefficient.
+For a dense numerical test, compare the whole residual matrix to a stated
+tolerance. Finite tests establish implementation evidence at those sizes;
+the path-divergence argument supplies the mathematical reason for the
+construction on a correctly formed supported tree.
 
-### Level 2: Compare eigenvalues
+### Level 2: Check the constructed Hamiltonian
 
-Build the H₂ Hamiltonian with the new encoding and compare eigenvalues against a known-good encoding:
-
-```fsharp
-let vlHam =
-    computeHamiltonianWith
-        vlasovTreeTerms rawPhysicistFactory 4u
-let jwHam =
-    computeHamiltonianWith
-        jordanWignerTerms rawPhysicistFactory 4u
-// Compare both matrices, labelled basis states, and spectra to tolerance
-```
+Use the common builder and raw factory from Chapter 7. Construct the basis
+map from the encoded vacuum and ordered creators, so both matrices are
+compared in the *same physical basis*. Chapter 9 develops the matrix and
+state checks. Merely taking the difference between the two raw qubit
+matrices would test the wrong proposition.
 
 The CAR check tests the ladder algebra. A direct matrix and labelled-state
 comparison tests tree construction, path traversal, Majorana assembly,
@@ -215,7 +420,8 @@ agreement alone can hide a basis permutation.
 
 ## The Weight Comparison
 
-Now that we trust the encoding, let's see how it compares:
+For each mode at $n=8$, take the maximum weight of the two creation
+summands returned by the pinned helpers:
 
 | Mode | JW | BK | Balanced Ternary | Vlasov |
 |:---:|:---:|:---:|:---:|:---:|
@@ -228,13 +434,38 @@ Now that we trust the encoding, let's see how it compares:
 | 6 | 7 | 4 | 3 | 3 |
 | 7 | 8 | 4 | 3 | 3 |
 
-For $n = 8$, both ternary trees have maximum weight 3–4, while JW reaches 8 and BK reaches 4. The ternary trees are consistently better for the high-index modes where JW's Z-chains are longest.
+For $n=8$, both displayed ternary maxima are three.
+JW reaches eight and BK reaches four. The mode index determines a *pair
+of terminal paths*, so node depth alone is not its ladder weight:
+the X-then-Z or Y-then-Z rule can descend below the mode's own node.
 
-The two ternary trees have *slightly* different per-mode weights because different shapes put modes at different depths. Both are $\Theta(\log n)$; ternary branching improves the depth constant relative to a binary tree, while the exact finite-size bound depends on the construction and indexing.
+The two ternary trees have *slightly* different per-mode weights because different shapes put modes at different depths. Both are $\Theta(\log n)$; the exact finite-size bound depends on the
+construction and indexing.
+
+### What the ideal ternary height says
+
+At most $3^h$ terminal paths can fit when every root-to-leg path has
+weight at most $h$. To accommodate $2n+1$ paths we therefore need
+$3^h\geq 2n+1$. A height-balanced full ternary construction achieves
+$h=\lceil\log_3(2n+1)\rceil$ by expanding shallow legs into nodes until
+there are $n$ nodes. Each expansion replaces one leg with three and adds
+two to the leg count.
+
+That is the combinatorial height target; Jiang et al. give the broader
+optimal-weight analysis for Majorana mappings. It is not a theorem that
+the midpoint helper attains that height. For example, its $n=32$ tree
+contains the successive nodes $16,24,28,30,31$ on one descending route.
+The terminal strings on that route have weight five. The breadth-first
+shape fits 32 nodes within four visited-node levels because
+$1+3+9+27=40$; an ideal four-weight construction is available.
+For 64 nodes the corresponding ideal level capacity is
+$1+3+9+27+81=121$, giving five rather than the midpoint helper's measured
+six. Nothing is wrong with CAR in the deeper tree. It simply uses longer
+paths than necessary for that objective.
 
 ---
 
-## The Recipe for Any Tree
+## The Recipe for a Supported Tree
 
 You've now seen the complete process. Here it is as a recipe:
 
@@ -242,7 +473,8 @@ You've now seen the complete process. Here it is as a recipe:
    labelled rooted tree with at most three children per node. A four-child star
    is outside the API contract. Validate CAR for every custom candidate.
 
-2. **Implement the tree.** Use `mkNode` and `mkTree` to build the `EncodingTree`. The only creative part is the child-assignment rule.
+2. **Implement the tree.** Use a public shape helper or consistent
+   `TreeNode`/`EncodingTree` records. Child order determines X/Y/Z slots.
 
 3. **Call `encodeWithTernaryTree`.** The framework handles edge labelling, path traversal, and Majorana construction.
 
@@ -270,18 +502,36 @@ by itself establish correspondence with a published construction.
 
 ## Exercises
 
-1. **A lopsided ternary tree.** Build a ternary tree for $n = 9$ where each node has exactly one child — node 0's only child is node 1, node 1's only child is node 2, and so on. What is the worst-case Pauli weight? How does it compare to JW? (You've just rediscovered why JW has $O(n)$ scaling — it *is* a depth-$n$ chain tree.)
+1. **Five paths, two modes.** For the two-node tree, multiply
+   $\gamma_0\gamma_1$ and $\gamma_2\gamma_3$ explicitly. Recover the two
+   number operators and verify their eigenvalues on all four stored bit
+   labels. Which label represents both modes occupied?
 
-2. **Asymmetric tree.** Build a ternary tree where the left subtree has depth 2 and the right subtree has depth 4. How does the per-mode weight distribution differ from a balanced tree? Is the worst case better or worse?
+2. **A missing imaginary unit.** Replace
+   $a_0^\dagger=(XZ-iYI)/2$ with $B=(XZ-YI)/2$.
+   Calculate $B^2$. Which CAR check detects the error? Does
+   $\{B,B^\dagger\}=I$ by itself reject it?
 
-3. **Vlasov vs balanced at scale.** Compare the Vlasov and balanced ternary trees at $n = 27$ (a perfect power of 3). Do the per-mode weights differ? What about $n = 30$ (not a perfect power)?
+3. **A lopsided tree.** Use the chain of nine nodes
+   $0\to1\to\cdots\to8$, with every child on its parent's X slot.
+   Count the terminal legs and find the maximum path weight. Explain why
+   this has JW's linear worst-case weight without claiming its displayed
+   Pauli strings are identical to canonical JW.
 
-4. **Try the lab.** Run the [Vlasov tree lab](https://github.com/johnazariah/molecules-to-circuits/blob/main/labs/10-vlasov-tree.fsx) to see the tree shapes and per-mode weight comparisons in action.
+4. **One shape, two notions of leaf.** Draw the breadth-first tree for
+   $n=4$, with root 0 and children 1, 2, 3. Count leaf nodes, terminal
+   legs and used Majoranas. List the two Majoranas assigned to mode 0.
+   Check the counts against $2n+1$ and the ideal height formula.
 
 ## Further Reading
 
 - Vlasov, A. Yu. "Clifford algebras, Spin groups and qubit trees." *Quanta* 11, 97–114 (2022). DOI: 10.12743/quanta.v11i1.199; arXiv:1904.09912.
 - Jiang, Z., Kalev, A., Mruczkiewicz, W., and Neven, H. "Optimal fermion-to-qubit mapping via ternary trees with applications to reduced quantum states learning." *Quantum* 4, 276 (2020). DOI: 10.22331/q-2020-06-04-276.
+- Miller, A., Zimborás, Z., Knecht, S., Maniscalco, S., and
+  García-Pérez, G. "Bonsai Algorithm: Grow Your Own Fermion-to-Qubit
+  Mappings." *PRX Quantum* 4, 030314 (2023).
+  DOI: 10.1103/PRXQuantum.4.030314; arXiv:2212.09731.
+  The terminal-leg pairing and localisation framework.
 
 ---
 

@@ -1,12 +1,14 @@
 # Chapter 9: Checking Our Answer
 
-_We have fifteen Pauli strings and fifteen coefficients. How do we know they're right? Chapter 8 showed how to verify an encoding algebraically — checking that the CAR hold at the Pauli string level. This chapter adds the second, independent check: compute the eigenvalues and compare with a known reference._
+_We have fifteen Pauli strings and fifteen coefficients. How do we know they're right? Chapter 8 checked the ladder algebra. Here we check what we built from it: the matrix, the states it acts on, and the energies in the intended physical sector._
 
 ## In This Chapter
 
 - **What you'll learn:** How to verify an encoded Hamiltonian against a direct
   matrix, particle-number sectors, labelled states, and spectral invariants.
-- **Why this matters:** Algebraic validation (Chapter 8) guarantees the encoding is correct in isolation. But the full pipeline — integrals, coefficient assembly, like-term combination — has many other places where bugs can hide. Eigenvalue comparison catches them all. If you skip this step, you will eventually publish a wrong number.
+- **Why this matters:** A correct ladder algebra can still be fed the wrong
+  integrals or labelled in the wrong order. Independent checks must cross
+  those boundaries; a matching ground energy alone does not.
 - **Prerequisites:** Chapters 1–8 (you have the 15-term Hamiltonian from all six encodings and understand both algebraic and numerical verification).
 
 ---
@@ -17,7 +19,10 @@ Here is a sobering fact about fermion-to-qubit encoding: **most bugs produce pla
 
 A wrong-convention Hamiltonian (Chapter 2, Error #1) can have real coefficients and plausible Pauli symmetries. A missing cross-spin block (Chapter 3, Mistake #1) can lose configuration-coupling terms while still looking like a valid Hamiltonian. A reversed operator ordering (Chapter 6, Mistake #2) flips signs but leaves much of the structure intact.
 
-None of these errors will crash your code. All of them will give wrong eigenvalues. The only way to catch them is to compute those eigenvalues and compare with a known reference.
+None of these errors needs to crash your code. Many change eigenvalues;
+some preserve the entire spectrum. A basis permutation, for example,
+can move the Hartree–Fock state to a different row without moving a single
+eigenvalue. We need checks that say which of those properties they test.
 
 For H₂ in STO-3G, we have an independent direct reference. Cross-encoding
 agreement is a useful consistency check, but all implementations can agree on
@@ -33,11 +38,17 @@ Each single-qubit Pauli operator has a $2 \times 2$ matrix:
 
 $$I = \begin{pmatrix}1&0\\0&1\end{pmatrix}, \quad X = \begin{pmatrix}0&1\\1&0\end{pmatrix}, \quad Y = \begin{pmatrix}0&-i\\i&0\end{pmatrix}, \quad Z = \begin{pmatrix}1&0\\0&-1\end{pmatrix}$$
 
-A 4-qubit Pauli string like $IIZZ$ is the tensor product $I \otimes I \otimes Z \otimes Z$ — a $16 \times 16$ matrix. The full Hamiltonian matrix is the weighted sum:
+A displayed 4-qubit string $IIZZ$ means $I_0I_1Z_2Z_3$.
+In our integer-row convention its dense matrix is
+$Z\otimes Z\otimes I\otimes I$, a $16\times16$ matrix.
+The rightmost tensor factor acts on the least significant bit, qubit 0.
+The full matrix is therefore
 
-$$H = \sum_{\alpha=1}^{15} c_\alpha \cdot (\text{tensor product of } \sigma_{\alpha,0} \otimes \sigma_{\alpha,1} \otimes \sigma_{\alpha,2} \otimes \sigma_{\alpha,3})$$
+$$H = \sum_{\alpha=1}^{15} c_\alpha
+\left(\sigma_{\alpha,3}\otimes\sigma_{\alpha,2}
+\otimes\sigma_{\alpha,1}\otimes\sigma_{\alpha,0}\right).$$
 
-For 4 qubits, this is a $16 \times 16$ Hermitian matrix. Diagonalizing it gives 16 eigenvalues.
+For 4 qubits, this is a $16 \times 16$ Hermitian matrix. Diagonalising it gives 16 eigenvalues.
 
 Dense matrix rows use the occupation integer $b=\sum_jn_j2^j$. Because
 FockMap displays signatures as $P_0P_1P_2P_3$, the matrix builder reverses
@@ -48,19 +59,86 @@ $\lvert1100\rangle$ therefore has occupation integer and matrix row 3
 state; spectrum equality alone cannot detect a basis permutation.
 
 For JW, the reconstructed Pauli matrix equals the direct occupation-basis
-matrix element-wise to $2.8\times10^{-16}$ in the repaired source test. The
+matrix element-wise to numerical round-off in the canonical reference. The
 two-electron ground state's HF determinant amplitude squared is
 $0.9873339$. Other encodings may use a different qubit basis: require the
 explicit basis transform before comparing their matrix elements with JW, even
 when spectra agree.
 
-> **Why 16 and not 6?** The 4-qubit Hilbert space has $2^4 = 16$ basis states, but H₂ has only 2 electrons — so only 6 of those states ($\binom{4}{2} = 6$) have the right particle number. The remaining 10 eigenvalues belong to the 0-electron, 1-electron, 3-electron, and 4-electron sectors. They are physically meaningful (they represent the spectrum with different electron counts) but they are not the ground state we are looking for.
+### A matrix entry with a label attached
+
+Consider the displayed HF state $|1100\rangle$, row 3.
+The number operator for mode 0 is $(IIII-ZIII)/2$; in dense form it is
+$I\otimes I\otimes I\otimes(I-Z)/2$ and returns eigenvalue one
+on row 3. The operator for mode 2 is $(IIII-IIZI)/2$ and returns zero.
+Reversing the Pauli factors incorrectly exchanges these conclusions.
+
+The off-diagonal entry gives a second test. The displayed double excitation
+is $|0011\rangle$, row 12. On $|1100\rangle$,
+`XXYY` and `YYXX` each produce $-|0011\rangle$,
+whereas `XYYX` and `YXXY` each produce $+|0011\rangle$.
+Their coefficients are respectively $-g,+g,+g,-g$, with
+$g=0.04530261550379918$ Ha. Hence
+
+$$H_{12,3}=H_{3,12}=4g=0.18121046201519672\ {\rm Ha}.$$
+
+The HF diagonal is $H_{3,3}=-1.831863646477506$ Ha.
+These checks name states and matrix entries; they do not merely recognise
+a familiar minimum eigenvalue.
+
+### Build the independent matrix without Pauli strings
+
+An independent occupation-space constructor can apply the original
+fermionic monomials directly to every integer-labelled basis state.
+For a ladder on mode $j$, read occupation bit $n_j$ and count occupied
+bits below it. A creator on an already occupied mode gives zero; an
+annihilator on an empty mode gives zero. Otherwise toggle bit $j$ and
+multiply by $(-1)^{\sum_{\ell<j}n_\ell}$.
+
+For each term, apply operators from right to left. In
+$a_p^\dagger a_q^\dagger a_s a_r$, apply $a_r$ first, then $a_s$,
+then $a_q^\dagger$, then $a_p^\dagger$. Recompute the lower-bit count
+after each action: it belongs to the current intermediate determinant.
+Add the resulting signed coefficient to the destination-row,
+source-column entry. Use the raw physicist coefficient with the
+one-half prefactor once.
+
+This route shares the declared physical input but not the Pauli
+multiplication and collection machinery. A separate PySCF calculation
+checks the chemistry and sector energies. Independence is relative to
+a failure mode: two implementations calling the same faulty integral
+adapter are not independent tests of that adapter.
+
+For another encoding, form the $U$ from Chapter 7 and compare
+$U^\dagger H_{\rm enc}U$ with this occupation matrix. Check
+$U^\dagger U=I$ first. A comparison of $H_{\rm enc}$ directly with
+$H_{\rm JW}$ is appropriate only when their declared bases coincide.
+
+> **Why 16 and not 6?** The 4-qubit Hilbert space has $2^4=16$ basis
+> states, but only $\binom42=6$ have two electrons. Other eigenvalues
+> describe other electron counts in this same fixed orbital model.
+> They are not interchangeable with a neutral-molecule result.
+
+### Project before attaching a particle-number label
+
+In occupation order, the two-electron row indices are
+$[3,5,6,9,10,12]$, displaying respectively
+`1100`, `1010`, `0110`, `1001`, `0101`, `0011`.
+The projector $\Pi_2$ is the diagonal matrix with ones on exactly those
+rows. Since $[H,\hat N]=0$, the matrix block on these rows is invariant.
+Diagonalise that $6\times6$ block to obtain the $N=2$ spectrum.
+
+Do not diagonalise the full matrix and infer particle number from an
+eigenvalue's position in a sorted list. Degenerate eigenvectors can be
+arbitrary mixtures within the degenerate eigenspace. A sector block
+declares the quantum number before solving; expectation values and
+residuals can then check it.
 
 ---
 
 ## The Eigenspectrum of H₂
 
-Diagonalizing the 15-term JW Hamiltonian gives eigenvalues grouped by particle-number sector:
+Diagonalising the particle-number blocks of the 15-term JW Hamiltonian gives:
 
 | Sector ($N_e$) | States | Eigenvalues $E_\text{el}$ (Ha) |
 |:---:|:---:|:---|
@@ -100,18 +178,84 @@ Of course, STO-3G is a minimal basis — the absolute energy is still far from t
 
 ---
 
+## What Numerical Agreement Actually Means
+
+For a small Hermitian matrix, compute and sort its eigenvalues, retaining
+all multiplicities. If $\lambda_k$ and $\lambda_k^{\rm ref}$ are the two
+sorted lists, an explicit absolute acceptance condition is
+
+$$\max_k|\lambda_k-\lambda_k^{\rm ref}|\leq\epsilon_E.$$
+
+For this small H₂ reference, $\epsilon_E=10^{-10}$ Ha is a useful
+comparison tolerance. It is a numerical software tolerance, not a claim
+of chemical accuracy relative to nature. The printed ten-decimal tables
+are for reading; use full-precision fixture values for the test.
+
+Before diagonalising, require the correct dimensions, finite entries and
+Hermiticity. For example, an entrywise check
+$\max_{jk}|H_{jk}-\overline{H_{kj}}|\leq10^{-12}$ Ha rejects a broken
+adjoint. After solving, inspect eigenpair residuals
+$\|Hv_k-\lambda_kv_k\|_2$ and orthonormality of the eigenvectors if the
+solver returns them. A routine that exhausted its iteration budget has
+not produced a successful reference simply because it returned an array.
+
+The matrix must remain complex. $Y$ has purely imaginary off-diagonal
+entries and eigenvalues $-1,+1$. Replacing it by its real part produces
+the zero matrix with eigenvalues $0,0$. The canonical H₂ JW matrix happens
+to be real; that special case does not license a real-part projection in
+a general Pauli eigensolver.
+
+### Why spectral moments are not an eigenvalue tolerance
+
+The **trace** of a square matrix is the sum of its diagonal entries.
+The $k$th spectral moment is $\operatorname{tr}(H^k)=\sum_j\lambda_j^k$.
+These quantities are convenient diagnostics: the first moment checks the
+sum of eigenvalues, while $\operatorname{tr}(H^2)$ checks their squared
+sum. For a Pauli expansion on $n$ qubits,
+
+$$2^{-n}\operatorname{tr}(H)=c_I,\qquad
+2^{-n}\operatorname{tr}(H^2)=\sum_P c_P^2$$
+
+for real coefficients of Hermitian Pauli strings. The second equality
+uses Pauli orthogonality, not pairwise commutation of the Hamiltonian terms.
+
+Exact moments through the matrix dimension determine the characteristic
+polynomial in exact arithmetic. Approximate moment agreement does not
+bound eigenvalue errors by the same tolerance. Take
+
+$$A=\operatorname{diag}(1,1),\qquad
+B=\operatorname{diag}(1-\delta,1+\delta),\qquad \delta=10^{-7}.$$
+
+The mean $k$th moment of $B$ is
+
+$$\frac{(1-\delta)^k+(1+\delta)^k}{2}
+=1+\binom{k}{2}\delta^2+O(\delta^4).$$
+
+Even for $k=16$, the change is only about $1.2\times10^{-12}$,
+comfortably below $10^{-10}$. Yet both eigenvalues moved by $10^{-7}$,
+a thousand times the proposed eigenvalue tolerance. Splitting a
+degeneracy hides at first order from these moments.
+
+This is a weakness in an acceptance test, not a new failure of quantum
+mechanics or of CAR. Keep moment checks as diagnostics and test the
+eigenvalues themselves when an eigenvalue tolerance is claimed.
+
 ## Cross-Encoding Verification
 
 After each implementation matches the independent fermionic matrix and state
 order, compare all six spectra as an additional consistency check.
 
-```fsharp
-for (name, encoder) in encoders do
-    let ham =
-        computeHamiltonianWith
-            encoder h2RawPhysicistFactory 4u
-    // ... build 16×16 matrix, diagonalize ...
-    printfn "%-25s  E₀ = %.10f Ha" name groundStateEnergy
+The verification procedure is pseudocode; the complete executable checks
+live in the companions rather than in an ellipsis inside a code listing:
+
+```text
+For each encoder:
+    build H from the same raw physicist tensor
+    check all ladder adjoints and CAR
+    construct the encoded occupation basis U
+    compare U† H U with the independent fermionic matrix
+    compare labelled number operators and HF energy
+    compare sorted spectra in every particle-number sector
 ```
 
 | Encoding | $E_0^\text{el}$ (Ha) | $\lvert\Delta E\rvert$ from JW |
@@ -119,7 +263,10 @@ for (name, encoder) in encoders do
 | Direct fermionic matrix | $-1.8523881736$ | reference |
 | Jordan–Wigner Pauli matrix | $-1.8523881736$ | $< 10^{-12}$ |
 
-The direct fermionic and independently derived JW Pauli matrices agree to numerical precision. The pinned FockMap build must reproduce this full spectrum under all six encodings before the six-row package table is restored; agreement among encodings alone cannot validate a shared bad input.
+The direct fermionic and independently derived JW Pauli matrices agree to
+numerical precision. These two reference rows identify what is being
+compared. Each package encoding has the same acceptance target, but
+cross-encoding agreement alone cannot validate a shared bad input.
 
 This is not a coincidence. It is a mathematical guarantee: every valid encoding preserves the canonical anti-commutation relations, and therefore preserves the operator algebra, and therefore preserves every eigenvalue. FockMap's test suite verifies the anti-commutation relations symbolically (no eigenvalues needed), but the eigenvalue comparison provides an independent numerical cross-check.
 
@@ -131,15 +278,37 @@ When building and verifying an encoded Hamiltonian, check these in order:
 
 | # | Check | How | What failure means |
 |:---:|:---|:---|:---|
-| 1 | Term count | Count Pauli strings | Missing/extra integrals |
-| 2 | Identity coefficient | Read $IIII$ coefficient | Wrong $V_{nn}$ or integral sum |
-| 3 | Diagonal symmetry | All Z-only terms come in pairs ($IIIZ/IIZI$, etc.) | Broken spin symmetry |
-| 4 | Coupling terms present | Look for the expected XX/YY strings | Missing cross-spin integrals |
-| 5 | Cross-encoding agreement | Build with 2+ encodings, compare spectra | Encoding bug |
-| 6 | Known reference | Compare $E_0$ against published value | Convention error |
-| 7 | State-resolved order | Check number operators, HF integer/row, and a labelled eigenvector | Basis permutation hidden by equal spectra |
+| 1 | Input identity | Geometry, basis, raw convention, provenance and full entries | Wrong physical problem or input |
+| 2 | Ladder algebra | All three CAR families and adjoints | Invalid encoded ladder representation |
+| 3 | Full Pauli coefficients | Compare every simplified JW coefficient, not just 15 terms | Assembly or convention discrepancy |
+| 4 | Matrix/order | Reversed dense factors; compare under the explicit basis map | Wrong operator or basis map |
+| 5 | Labelled states | Number operators, HF row 3, coupling row 12 | State semantics not preserved |
+| 6 | Physical blocks | Number commutator and sector dimensions | Sector extraction or conservation error |
+| 7 | Direct eigenspectrum | Sorted eigenvalues with multiplicities and stated tolerance | Spectral discrepancy |
+| 8 | Independent chemistry | Same geometry, basis and quantum numbers | Disagreement with the physical reference |
 
-If check 4 fails, the most likely cause is the cross-spin bug from Chapter 3. If check 5 fails, there is a bug in at least one encoding or in the comparison pipeline. A passing check 5 still needs check 6: all encodings can agree on the same bad input.
+Term count, identity coefficient and spin-paired coefficients are useful
+early diagnostics, not unique diagnoses. Fifteen terms can have fifteen
+wrong coefficients. Equal identity coefficients can coexist with wrong
+off-diagonal entries. A cross-encoding disagreement locates a problem
+somewhere in the encoding/comparison path; it does not identify which
+implementation is guilty without a reference.
+
+### Make the tests fail on purpose
+
+A useful **negative control** deliberately changes a known-good input or
+intermediate result and checks that the relevant guard rejects it.
+Reverse a labelled Pauli signature without updating the row convention:
+the number-operator test should fail even if eigenvalues survive.
+Flip one coupling coefficient: the full coefficient and matrix tests
+should fail. Use $Y$ to check complex handling, and the split-degeneracy
+example to reject a moment-only eigenvalue certificate.
+
+The committed oracle is read-only input to verification. If it is
+corrupted, the verifier should report a mismatch, not regenerate the
+answer over the evidence. Regeneration is a separate, explicit operation
+with reviewed provenance. Otherwise a green result may mean only that
+the program agreed with what it just wrote.
 
 ---
 
@@ -168,11 +337,13 @@ But can we make it *smaller*? Can we remove qubits without losing physics? That'
 
 ## Key Takeaways
 
-- Chapter 8 established **algebraic verification** (CAR checks). This chapter adds **numerical verification** (eigenvalue comparison). Both are necessary: algebraic checks validate the encoding; numerical checks validate the full pipeline.
+- CAR, direct matrix, labelled-state, sector and eigenvalue checks answer
+  different questions. No single one replaces the others.
 - The H₂/STO-3G ground-state energy at 0.74 Å is $E_0 = -1.1372838345$ Ha (Full CI, exact within basis).
 - The direct fermionic matrix and independent JW Pauli matrix agree; all six package encodings must be checked against that external reference.
-- Encoding bugs produce structurally plausible but numerically wrong Hamiltonians. Check eigenvalues early and often.
-- Matrix diagonalization is used *only* for verification. The actual quantum simulation operates on the symbolic Pauli sum.
+- Spectral moments are diagnostics, not an eigenvalue-error certificate.
+- A basis permutation can preserve all eigenvalues while changing every state label.
+- Matrix diagonalisation is used *only* for verification. The actual quantum simulation operates on the symbolic Pauli sum.
 
 ## Common Mistakes
 
@@ -184,15 +355,29 @@ But can we make it *smaller*? Can we remove qubits without losing physics? That'
 
 ## Exercises
 
-1. **Sector analysis.** The 0-electron sector has eigenvalue 0. Why? (Hint: what does the Hamiltonian do to the vacuum state $\lvert 0000\rangle$?)
+1. **Sector analysis.** The electronic 0-electron sector has eigenvalue 0.
+   Explain this from right-to-left ladder action. What eigenvalue does it
+   have if the separate $0.7151043391$ Ha nuclear constant is included?
 
 2. **Correlation energy.** Compute the Hartree–Fock energy of H₂ by hand: $E_\text{HF} = h_{00} + h_{11} + [00\mid00] + V_{nn}$. Verify that $E_\text{corr} = E_\text{FCI} - E_\text{HF} = -0.0205245271$ Ha, about $-12.88$ kcal/mol. Then reproduce Chapter 6's separate diagonal and off-diagonal expectation contributions.
 
 3. **Independent reference.** Run `make verify-data` and inspect the full sector spectrum. Then compare each pinned FockMap encoding against that matrix rather than only against another encoding.
 
+4. **A spectrum cannot label a state.** For
+   $H=\hat n_0+3\hat n_1$ on two modes, exchange stored qubits 0 and 1.
+   Show that the spectrum is unchanged but the energy assigned to displayed
+   `10` changes if its label is not transformed.
+
+5. **Moment counterexample.** For the matrices $A,B$ above, calculate
+   $\operatorname{tr}(B)-\operatorname{tr}(A)$ and
+   $\operatorname{tr}(B^2)-\operatorname{tr}(A^2)$ exactly in terms of
+   $\delta$. Contrast them with the maximum sorted eigenvalue error.
+
 ## Further Reading
 
-- Szabo, A. and Ostlund, N. S. *Modern Quantum Chemistry.* §4.1 gives the Full CI eigenvalues for H₂/STO-3G.
+- Szabo, A. and Ostlund, N. S. *Modern Quantum Chemistry.* Background on
+  Hartree–Fock and configuration interaction; the numerical table here is
+  tied to the committed 0.74 Å fixture, not to a textbook's geometry.
 - Helgaker, T., Jørgensen, P., and Olsen, J. *Molecular Electronic-Structure Theory.* Chapter 12 covers Full CI theory and implementation.
 
 ---
