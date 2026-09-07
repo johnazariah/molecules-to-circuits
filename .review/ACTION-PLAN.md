@@ -29,6 +29,28 @@ history remains useful evidence of particular repairs, not a present
 whole-book approval. September found residual contradictions outside the
 previously repaired passages as well as newly identified errors.
 
+### Implementation ownership and integration
+
+Five isolated workstreams branch from review/authority commit `c9f40e0`.
+They commit locally for coordinator integration; none may publish, change
+rights, overwrite another workstream's files or close the authoritative
+audit on its own.
+
+| Workstream | Owned surface | Integration responsibility |
+|---|---|---|
+| Foundations | Chapters 1-6 | Chemical/operator/code prerequisites, canonical numbers, JW/Fenwick and complete coupling derivation |
+| Encodings and tapering | Chapters 7-13 | Public tree construction, actual representation scope, labelled verification and physical-sector tapering |
+| Simulation and algorithms | Chapters 14-23 | Error/measurement/phase derivations, actual capstone scope, water interpretation and export |
+| Executable integrity | Code, labs, data-validation/generation helpers | True complex-Hermitian and read-only-oracle gates, convergence/provenance, matched executable teaching examples |
+| Assembly and production | Front/back matter, code bridge, selected solutions, bibliography, manifests/build tools | Define-before-use support, checked answers/citations, coherent book outputs and fail-closed rendering |
+
+The coordinator reconciles shared definitions, helper contracts, cross-chapter
+examples, citations and solutions before full-book regeneration. No
+workstream completion by itself establishes that the full book is complete.
+Independent technical and reader-facing review follows the integrated draft;
+any remaining failed gate stays visible rather than being removed from the
+acceptance criteria.
+
 ### 1. Correct the trust-critical book passages before polishing or exporting them
 
 | Order / IDs | Required manuscript change | Acceptance |
