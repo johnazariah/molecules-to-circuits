@@ -345,7 +345,7 @@ geometry, a mass-weighted Hessian and removal of translational
 and rotational modes. This one-dimensional fixed-bond curvature
 does not supply all of that information.
 
-## Algorithms: Measurement statistics and covariance
+## Algorithms — VQE and QPE: Statistics and covariance
 
 Seven $+1$ and three $-1$ outcomes give a sample mean
 $\bar x=(7-3)/10=0.4$. The sum of squared deviations is
@@ -374,7 +374,7 @@ Dropping covariance would incorrectly give 2 for both sums.
 Grouping can help or hurt a weighted estimator's variance,
 even though it reduces the number of measurement settings.
 
-## Algorithms: Shifted QPE decoding
+## Algorithms — VQE and QPE: Phase decode
 
 The supplied convention is
 $U=e^{-i(H-E_\mathrm{shift}I)t_0}$, with
@@ -401,3 +401,100 @@ the desired eigenstate, repair product-formula error, or by
 themselves provide a desired confidence level. The input's
 overlap with the target eigenstate determines how often that
 eigenphase can be obtained.
+
+## Speaking the Hardware's Language: Schema and angle
+
+The exercise's ordered gate list is H(0), CNOT(0→1),
+Rz(1, 0.01234567), CNOT(0→1), H(0).
+Its declared width is two and its length is five, so the
+FockMap JSON fields are `numQubits: 2` and `gateCount: 5`.
+Each gate record uses the discriminator `gate`.
+
+Conjugating the Z rotation by the CNOT changes $Z_1$ to
+$Z_0Z_1$; conjugating by H on qubit 0 then changes this
+to $X_0Z_1$. Because Rz has a half-angle in its exponential,
+the resulting operator is
+
+$$
+e^{-i(0.01234567/2)X_0Z_1}
+=e^{-i\,0.006172835\,X_0Z_1}.
+$$
+
+Thus the displayed Pauli signature is `XZ`, not `ZX`,
+and the Pauli exponent angle is 0.006172835.
+An importer encountering an unknown gate record must fail,
+not skip it: a shorter circuit may parse and still implement
+the wrong operator.
+
+## Speaking the Hardware's Language: Which check failed?
+
+Halving the Rz angle leaves a syntactically valid QASM program.
+A syntax-only import test therefore accepts it. The appropriate
+next comparison is between the **imported circuit's unitary**
+and the intended **ordered product of Pauli rotations**, with
+the same qubit ordering and stated phase policy.
+
+Comparing only to $e^{-iHt}$ introduces product-formula error
+into a test of serialization. That is a different comparison.
+Changing the time step to explain away the half-angle changes
+the intended simulation rather than fixing the exporter.
+Finally, matching one state's energy expectation cannot
+establish equality of the two unitaries on all states.
+
+## Scaling: A restricted state vector
+
+There are ten spatial orbitals and seven electrons of each
+spin. Choose seven alpha orbitals and independently choose
+seven beta orbitals:
+
+$$
+\dim\mathcal H_{7,7}
+=\binom{10}{7}\binom{10}{7}=120^2=14400.
+$$
+
+At 16 bytes per complex amplitude, this sector's state vector
+uses 230400 bytes, or 225 KiB. The full 20-qubit state vector
+uses $2^{20}\times16=16777216$ bytes, or 16 MiB.
+These are storage counts for state vectors, not dense
+Hamiltonian matrices or the complete memory footprint of
+an FCI solver.
+
+For the chapter's reliability calculation, a union bound over $10^8$
+logical locations gives total failure probability at most
+$10^8p_L$. Keeping this bound below 0.01 requires
+$p_L\leq10^{-10}$. The union bound does not require
+independence. Translating that target into a code distance,
+physical-qubit count or runtime requires additional
+error-correction and hardware assumptions.
+
+## What Comes Next: Three retained bosonic levels
+
+With $d=3$, the retained basis is
+$\lvert0\rangle,\lvert1\rangle,\lvert2\rangle$, and
+
+$$
+b_3=
+\begin{pmatrix}
+0&1&0\\
+0&0&\sqrt2\\
+0&0&0
+\end{pmatrix},
+\qquad
+b_3b_3^\dagger=
+\begin{pmatrix}1&0&0\\0&2&0\\0&0&0\end{pmatrix},
+\qquad
+b_3^\dagger b_3=
+\begin{pmatrix}0&0&0\\0&1&0\\0&0&2\end{pmatrix}.
+$$
+
+Subtracting gives $\mathrm{diag}(1,1,-2)$, or
+$I_3-3\lvert2\rangle\langle2\rvert$. Its trace is zero,
+unlike the trace of $I_3$. This directly exhibits the finite
+cutoff's departure from the infinite-space commutation relation.
+
+In the truncated representation $b_3^\dagger\lvert2\rangle=0$.
+The infinite oscillator would instead give
+$\sqrt3\lvert3\rangle$, outside the retained space.
+Unary one-hot encoding uses three qubits; binary encoding
+uses two, with one of its four computational states unused.
+Neither choice removes the cutoff approximation.
