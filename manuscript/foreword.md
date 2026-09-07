@@ -22,18 +22,33 @@ Every chemistry textbook tells you that water's bond angle is 104.5°
 and waves at VSEPR theory. Every quantum computing textbook tells you
 that fermions need to be encoded as qubits and shows you the
 Jordan-Wigner transform. Very few resources connect these two worlds
-with enough detail that you could actually *compute* the bond angle
-from the quantum simulation, or understand *why* the encoding choice
-matters for the circuit you'll run on a quantum computer.
+with enough detail to show what has to happen between a chemistry
+calculation and a circuit, or which part of that work an encoding
+library actually does.
 
-This book fills that gap.
+This book follows that translation layer. It does not turn circuit
+construction into an energy measurement by giving it a more ambitious name.
 
 We walk through the translation from molecular data to logical quantum
 circuits with two running examples: the hydrogen molecule
 (H₂), because it is the simplest system that exhibits all the
-essential structure, and the water molecule (H₂O), because it is
-the most important molecule on Earth and rich enough to make the
-engineering trade-offs tangible.
+essential structure, and the water molecule (H₂O), because it gives us
+a useful, larger chemistry reference against which to ask what remains.
+
+For H₂ in the STO-3G basis at a bond length of 0.74 Å, generated
+integrals lead to a checked Jordan-Wigner Hamiltonian, comparisons between
+encodings, and logical product-formula circuits. Nuclear repulsion is a
+separate energy contribution. State preparation and energy estimation
+are separate algorithmic tasks, not hidden services supplied by the
+Hamiltonian builder.
+
+For water, the supplied calculation is a **classical PySCF FCI angular
+scan at fixed experimental O–H length, 0.9584 Å**. Its sampled minimum
+is conditional on that length, basis and grid. It is neither a full
+geometry optimisation nor a water energy calculated by running a
+FockMap circuit. The distinction matters: a reference calculation can
+teach us what a quantum pipeline would have to reproduce without
+pretending that the pipeline has already done it.
 
 Core transformations have executable FockMap companions, while PySCF scripts
 produce the independent chemistry references. The companions expose signs,
@@ -65,12 +80,18 @@ eigenvalues) and introductory quantum mechanics (wavefunctions,
 bra-ket notation, the hydrogen atom). We do *not* assume prior
 knowledge of:
 
+- Chemistry, including molecular orbitals and electronic-structure methods
 - Second quantization or Fock space
 - Pauli algebra or qubit representations
 - Fermion-to-qubit encodings
 - F# or functional programming
+- Measurement statistics
 
-All of these are developed from scratch within the book.
+The chapters introduce these as they become useful. Read the unnumbered
+**Reading and Running the Code** bridge between Chapters 1 and 2 before
+the first coefficient factory. Later chapters explain the particular
+tree, record, circuit and statistical constructions they need; the
+bridge is not a requirement to learn a programming language in advance.
 
 ### How to Read This Book
 
@@ -88,19 +109,47 @@ simulation pipeline:
 You can read straight through (recommended for first reading), or
 jump to a specific stage if you already know the earlier material.
 Each chapter begins with "In This Chapter" learning objectives and
-ends with "Key Takeaways" and exercises.
+ends with a summary and exercises. The appendices are retrieval aids:
+Appendix A collects selected API contracts and complete small programs;
+Appendix B collects notation and conventions. Neither is a store of
+prerequisites that you were expected to read before Chapter 1.
+
+For a first reading, work through the derivations and trace the small
+examples before running the longer companions. For a practical reading,
+keep the repository beside the book and compare the named intermediate
+results, not just the last printed energy. A successful execution tells
+you that a program ran; the physical sector, matrix ordering and energy
+convention tell you what its result means.
+
+Exercises range from a hand calculation to a bounded programming task.
+Try the calculation first, then use the companion to inspect the result.
+**Selected Worked Solutions** gives reasoning for selected questions,
+identified by chapter title and exercise name rather than just a number.
+It is not a complete instructor answer key. An open-ended investigation
+does not acquire a unique answer merely because it appears at the end
+of a chapter.
 
 ### The Companion Software
 
-All computations in this book are reproducible using the FockMap
-library:
+The F# encoding and circuit companions use the pinned FockMap library:
 
 - **Source code:** https://github.com/johnazariah/encodings
 - **NuGet package:** `dotnet add package FockMap --version 0.9.0`
 - **Web documentation:** https://johnazariah.github.io/encodings/
 
-The library is open-source (MIT license), runs on Windows, macOS,
-and Linux via .NET 10, and has no third-party dependencies.
+The library is open-source (MIT license) and runs on Windows, macOS,
+and Linux via .NET 10. The book repository, including the Python
+chemistry references and F# entry points, is at
+<https://github.com/johnazariah/molecules-to-circuits>.
+Python/PySCF dependencies are listed separately in `requirements-data.txt`;
+installing FockMap does not install them.
+
+Run scripts from the repository root, for example
+`dotnet fsi labs/01-first-encoding.fsx`. The code-reading bridge explains
+package restoration, paths and the distinction between a complete script,
+a contextual excerpt and pseudocode. Numerical agreement within a stated
+tolerance is the portable target; reproducing archived bytes additionally
+requires the recorded numerical environment.
 
 ### Acknowledgements
 

@@ -1,52 +1,49 @@
--- sample-filter.lua — Builds a sample PDF with full ToC but only selected chapters.
--- Non-sample chapters appear as gray entries in the ToC with gray headings on
--- otherwise blank pages. Sample chapters render normally with full content.
-
-local sample_prefixes = { "Chapter 1:", "Chapter 5:", "Chapter 19:" }
-
-local function is_sample_chapter(text)
-    for _, prefix in ipairs(sample_prefixes) do
-        if text:find(prefix, 1, true) then
-            return true
+-- Read the complete book, retain selected bodies, and list omitted headings
+-- without manufacturing blank chapter pages or fictitious page references.
+local manuscript = pandoc.path.directory(PANDOC_SCRIPT_FILE)
+local selected = {}
+local manifest = assert(io.open(pandoc.path.join({manuscript, "Sample.txt"})))
+for filename in manifest:lines() do
+    if filename ~= "" and not filename:match("^#") then
+        local file = assert(io.open(pandoc.path.join({manuscript, filename})))
+        local document = pandoc.read(file:read("*a"), "markdown")
+        file:close()
+        local found = false
+        for _, block in ipairs(document.blocks) do
+            if block.t == "Header" and block.level == 1 then
+                selected[pandoc.utils.stringify(block)] = true
+                found = true
+                break
+            end
         end
+        assert(found, "Sample file has no level-one heading: " .. filename)
     end
-    return false
+end
+manifest:close()
+
+local function latex_text(inlines)
+    return pandoc.write(pandoc.Pandoc({pandoc.Plain(inlines)}), "latex"):gsub("%s+$", "")
 end
 
 function Pandoc(doc)
-    local new_blocks = {}
-    local in_excluded = false
-
+    local blocks = {
+        pandoc.Para({pandoc.Str("Sample edition. Omitted material appears in the contents "
+            .. "with a dash instead of a page number; its text is not included.")})
+    }
+    local included = false
     for _, block in ipairs(doc.blocks) do
         if block.t == "Header" and block.level == 1 then
-            local text = pandoc.utils.stringify(block)
-
-            if is_sample_chapter(text) then
-                in_excluded = false
-                -- Restore black for ToC entry and chapter heading
-                table.insert(new_blocks, pandoc.RawBlock('latex',
-                    '\\addtocontents{toc}{\\protect\\color{black}}'))
-                table.insert(new_blocks, block)
-            else
-                in_excluded = true
-                -- Gray ToC entry
-                table.insert(new_blocks, pandoc.RawBlock('latex',
-                    '\\addtocontents{toc}{\\protect\\color{gray}}'))
-                -- Gray chapter heading on the page, then reset
-                table.insert(new_blocks, pandoc.RawBlock('latex',
-                    '{\\color{gray}'))
-                table.insert(new_blocks, block)
-                table.insert(new_blocks, pandoc.RawBlock('latex', '}'))
-            end
-        elseif not in_excluded then
-            table.insert(new_blocks, block)
+            included = selected[pandoc.utils.stringify(block)] == true
         end
-        -- All non-Header blocks in excluded chapters are silently dropped
+        if included then
+            table.insert(blocks, block)
+        elseif block.t == "Header" and block.level <= 2 then
+            local level = block.level == 1 and "chapter" or "section"
+            table.insert(blocks, pandoc.RawBlock("latex",
+                "\\addtocontents{toc}{\\protect\\contentsline{" .. level
+                .. "}{\\protect\\textcolor{gray}{" .. latex_text(block.content)
+                .. "}}{\\protect\\textemdash}{}}"))
+        end
     end
-
-    -- Reset ToC color at the end
-    table.insert(new_blocks, pandoc.RawBlock('latex',
-        '\\addtocontents{toc}{\\protect\\color{black}}'))
-
-    return pandoc.Pandoc(new_blocks, doc.meta)
+    return pandoc.Pandoc(blocks, doc.meta)
 end

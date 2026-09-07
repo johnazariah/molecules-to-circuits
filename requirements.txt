@@ -3,6 +3,8 @@
 # ============================================================================
 
 # Publishing
-jupyter-book>=1.0
+# MyST-based Jupyter Book 2 supplies `python -m jupyter_book build --html`.
+# The Sphinx-based 1.x CLI is not compatible with myst.yml.
+jupyter-book>=2.0,<3
 
 # Chemistry-data dependencies are kept separately in requirements-data.txt.
