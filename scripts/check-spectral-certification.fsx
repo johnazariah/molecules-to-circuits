@@ -33,3 +33,15 @@ rejects "NaN" (fun () -> hermitianEigenvalues (diagonal [|Double.NaN|]) |> ignor
 rejects "infinity" (fun () -> hermitianEigenvalues (diagonal [|Double.PositiveInfinity|]) |> ignore)
 rejects "nonsquare" (fun () -> hermitianEigenvalues (Array2D.zeroCreate 2 3) |> ignore)
 rejects "wrong spectrum dimension" (fun () -> assertSpectrumMatrix "shape" 1e-7 [|0.0|] y)
+let mixed = Array2D.zeroCreate<Complex> 3 3
+mixed[0,0] <- Complex(1e10,0.0)
+mixed[1,2] <- Complex(0.0,-9e-7)
+mixed[2,1] <- Complex(0.0,9e-7)
+rejects "mixed scale cannot certify 1e-7 absolute accuracy" (fun () ->
+    assertSpectrumMatrix "mixed" 1e-7 [|0.0;0.0;1e10|] mixed)
+// With attainable accuracy, retain the small imaginary block rather than
+// discarding it according to the unrelated largest diagonal entry.
+mixed[0,0] <- Complex(1e3,0.0)
+assertSpectrumMatrix "mixed resolvable" 1e-7 [|-9e-7;9e-7;1e3|] mixed
+rejects "mixed-scale imaginary block omitted" (fun () ->
+    assertSpectrumMatrix "mixed omitted" 1e-7 [|0.0;0.0;1e3|] mixed)
