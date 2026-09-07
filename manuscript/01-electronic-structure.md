@@ -12,87 +12,153 @@ _We have a molecule. We want a quantum circuit. This chapter is about the first 
 
 ## The Question
 
-Here is a question that a first-year chemistry student can state but no classical computer can answer exactly for anything larger than helium:
+Here is a question that a first-year chemistry student can state, and whose accurate answer can occupy a computational chemist for years:
 
 > **Given a molecule — its atoms and their positions — what is its ground-state energy?**
 
-The ground-state energy determines whether a chemical reaction will happen, how strong a bond is, what shape a molecule takes, and why water boils at 100°C rather than −50°C. It is arguably the single most important quantity in all of chemistry. And for any system with more than one electron, we cannot compute it analytically — the electron–electron repulsion couples the electrons' coordinates, making the Schrödinger equation non-separable. Even helium, the simplest multi-electron atom, has no closed-form solution. Perturbation theory can improve the picture incrementally — each order of the expansion buys another digit or two of accuracy — but it never closes the gap to an exact result, and it converges poorly (or not at all) for strongly correlated systems.
+Electronic ground-state energies are essential inputs to predictions of bond strengths, molecular shapes and reaction energies. They are not, by themselves, predictions of whether a reaction proceeds or where a liquid boils. Reaction rates also depend on barriers and dynamics; phase equilibrium depends on free energies at a specified temperature and pressure. An isolated molecule's electronic energy does not contain the entropy of a beaker of water.
 
-Classical computational chemistry has developed an extraordinary arsenal of approximation methods — Hartree–Fock, density functional theory, coupled cluster, configuration interaction — each trading accuracy for tractability in a different way. These methods have transformed chemistry and earned multiple Nobel Prizes. But they share a fundamental limitation: while methods like CCSD(T) capture most correlation energy at steep but polynomial cost (O(N⁷)), they break down for strongly correlated systems. And the cost of capturing the *exact* correlation energy — full configuration interaction — grows exponentially with the number of electrons.
+Even the narrower electronic problem is hard. Electron–electron repulsion couples the electrons' coordinates, so the familiar hydrogen-atom separation of variables no longer solves it. Helium has no corresponding elementary closed-form solution, though highly accurate numerical calculations are possible. Perturbation theory can improve an approximate answer, but successive orders do not guarantee successive digits; a series can converge slowly or fail, particularly when several electronic configurations compete.
+
+Classical computational chemistry has developed an extraordinary arsenal of approximation methods — Hartree–Fock, density functional theory, coupled cluster, configuration interaction — each trading accuracy for tractability in a different way. We will define Hartree–Fock and full configuration interaction below; the others are alternatives, not prerequisites for this chapter. For example, CCSD(T), a widely used coupled-cluster approximation, has conventional cost scaling as the seventh power of basis size and is often excellent near a single-determinant reference. It is not generally reliable when several determinants are equally important. Keeping *all* configurations avoids that particular truncation, but their number grows combinatorially with the number of orbitals and electrons.
 
 This is where quantum simulation enters the picture. An $n$-qubit register can represent amplitudes over $2^n$ occupation states without storing those amplitudes one by one in classical memory. That compact representation is necessary, but it is not an algorithmic guarantee: preparing a useful molecular state and estimating its ground-state energy can still be hard. Quantum algorithms may offer better scaling for structured chemistry problems when the Hamiltonian can be implemented efficiently, the trial state has adequate overlap with the target, and the required precision and fault-tolerant resources are available (Kempe, Kitaev & Regev, 2006; Reiher et al., 2017). Translating the molecular problem into that form requires a specific sequence of mathematical transformations, each with its own conventions, sign choices, and opportunities for error.
 
 This chapter covers the first transformation: turning the continuous, infinite-dimensional molecular problem into a finite-dimensional matrix problem. The result will be a set of numbers — the **molecular integrals** — that encode everything we need to know about the molecule.
 
-We will do this for the hydrogen molecule, H₂. Not because H₂ is interesting in itself (it isn't — any laptop can solve H₂ exactly in milliseconds), but because H₂ is small enough that we can see every step, check every number, and build intuition for what happens at larger scale. Later, when we work with H₂O, the same pipeline will produce larger numbers but the same kinds of objects.
+We will do this for the hydrogen molecule, H₂. Its smallest basis model is trivial for a laptop, which is precisely why it is useful here: we can see every step, check every number, and build intuition for what happens at larger scale. Solving that small model is not the same as solving the continuous molecular problem exactly. Later, when we work with H₂O, the same kinds of objects will be larger.
 
 ---
 
 ## A Molecule Is a Collection of Charges
 
-Strip away the language of orbitals and bonds and wavefunctions, and what remains is electrostatics: a molecule is a collection of positively charged nuclei and negatively charged electrons, interacting via Coulomb's law.
+Strip away the language of orbitals and bonds, and the interactions are recognisable: positively charged nuclei and negatively charged electrons interacting via Coulomb's law. The particles also have kinetic energy, and their state is quantum mechanical. Electrostatics supplies the interactions, not the whole answer.
 
 For H₂, this means:
 - **Two protons** (charge $+e$ each), separated by a distance $R$
 - **Two electrons** (charge $-e$ each), somewhere in the space around them
 
-The total energy of this system depends on five types of interaction:
+Before writing the Hamiltonian, we need to name its symbols and choose units.
+
+| Symbol | Meaning |
+|:---|:---|
+| $M$, $A,B$ | Number of nuclei and indices labelling nuclei |
+| $N$, $i,j$ | Number of electrons and indices labelling electron coordinates |
+| $\mathbf R_A$, $\mathbf r_i$ | Three-dimensional nuclear and electronic positions |
+| $Z_A$, $M_A$ | Nuclear charge number and nuclear mass |
+| $r_{ij}=\lvert\mathbf r_i-\mathbf r_j\rvert$ | Distance between two electrons |
+| $\nabla_i^2$ | Laplacian: sum of second derivatives in electron $i$'s three coordinates |
+| $\sum_{A<B}$, $\sum_{i<j}$ | Sums over distinct unordered pairs; each pair appears once |
+
+We use **atomic units** from this point onwards. One length unit is the
+Bohr radius $a_0\approx0.5291772109$ Å; one energy unit is the hartree,
+$E_h\approx27.2114$ eV. The abbreviations Ha and hartree mean the same energy
+unit. In these units the numerical values of $\hbar$, the electron mass
+$m_e$, the elementary charge magnitude $e$, and $4\pi\epsilon_0$ are one.
+Nuclear masses below are therefore measured in electron masses.
+
+This is a unit convention, not a deletion of physical constants. In SI,
+the repulsion between charges $+e$ is $e^2/(4\pi\epsilon_0 r)$.
+Atomic units absorb that factor into the length and energy scales:
+for a distance whose numerical value in Bohr is $r$, the repulsion has
+numerical value $1/r$ in hartree. We must not put a distance in Å directly
+into $1/r$ and call the result hartree.
+
+The total energy contains five contributions:
 
 | Interaction | Formula | Sign | Strength |
 |:---|:---|:---:|:---|
-| Proton kinetic energy | $-\frac{\hbar^2}{2M_p}\nabla_A^2$ | — | Tiny (protons are heavy) |
-| Electron kinetic energy | $-\frac{\hbar^2}{2m_e}\nabla_i^2$ | — | Significant |
-| Proton–proton repulsion | $\frac{e^2}{\lvert\mathbf{R}_A - \mathbf{R}_B\rvert}$ | $+$ | Repulsive |
-| Electron–proton attraction | $-\frac{Z_A e^2}{\lvert\mathbf{r}_i - \mathbf{R}_A\rvert}$ | $-$ | Attractive (this is what holds the molecule together) |
-| Electron–electron repulsion | $\frac{e^2}{\lvert\mathbf{r}_i - \mathbf{r}_j\rvert}$ | $+$ | Repulsive (and this is what makes the problem hard) |
+| Nuclear kinetic energy | $-\frac{1}{2M_A}\nabla_A^2$ | — | Small inverse-mass coefficient; not identically zero |
+| Electron kinetic energy | $-\frac12\nabla_i^2$ | — | Significant |
+| Nuclear repulsion | $\frac{Z_A Z_B}{\lvert\mathbf{R}_A - \mathbf{R}_B\rvert}$ | $+$ | Repulsive |
+| Electron–nuclear attraction | $-\frac{Z_A}{\lvert\mathbf{r}_i - \mathbf{R}_A\rvert}$ | $-$ | Attractive |
+| Electron–electron repulsion | $\frac{1}{\lvert\mathbf{r}_i - \mathbf{r}_j\rvert}$ | $+$ | Repulsive, and couples electronic coordinates |
 
 The full Hamiltonian is the sum of all five:
 
 $$
-\hat{H} = \underbrace{-\sum_{A=1}^{M} \frac{\hbar^2}{2M_A} \nabla_A^2}_{\text{nuclear KE}}
-         \underbrace{-\sum_{i=1}^{N} \frac{\hbar^2}{2m_e} \nabla_i^2}_{\text{electronic KE}}
-         + \underbrace{\sum_{A<B} \frac{Z_A Z_B e^2}{\lvert\mathbf{R}_A - \mathbf{R}_B\rvert}}_{\text{nuclear repulsion}}
-         \underbrace{- \sum_{i,A} \frac{Z_A e^2}{\lvert\mathbf{r}_i - \mathbf{R}_A\rvert}}_{\text{electron-nuclear attraction}}
-         + \underbrace{\sum_{i<j} \frac{e^2}{\lvert\mathbf{r}_i - \mathbf{r}_j\rvert}}_{\text{electron repulsion}}
+\hat{H} = \underbrace{-\sum_{A=1}^{M} \frac{1}{2M_A} \nabla_A^2}_{\text{nuclear KE}}
+         \underbrace{-\frac12\sum_{i=1}^{N} \nabla_i^2}_{\text{electronic KE}}
+         + \underbrace{\sum_{A<B} \frac{Z_A Z_B}{\lvert\mathbf{R}_A - \mathbf{R}_B\rvert}}_{\text{nuclear repulsion}}
+         \underbrace{- \sum_{i,A} \frac{Z_A}{\lvert\mathbf{r}_i - \mathbf{R}_A\rvert}}_{\text{electron-nuclear attraction}}
+         + \underbrace{\sum_{i<j} \frac{1}{\lvert\mathbf{r}_i - \mathbf{r}_j\rvert}}_{\text{electron repulsion}}
 $$
 
 This is exact within the non-relativistic, point-charge Coulomb model. Relativistic, quantum-electrodynamic, finite-nuclear-size, and other corrections are outside that model. If we could solve this equation, we would have its exact molecular energy.
 
-We can't. Not for H₂, not for anything with more than one electron. The electron–electron repulsion term couples the coordinates of every pair of electrons, making the equation non-separable.
+There is no general closed-form solution of this molecular equation. Numerical
+answers are possible, but we must state which parts of the model and state
+space we approximate.
 
-> **Common Mistake #1:** Students sometimes think the difficulty is the number of particles. It isn't — classical N-body problems with gravitational interactions are also hard. The quantum difficulty is that we must find the *wavefunction* $\Psi(\mathbf{r}_1, \mathbf{r}_2, \ldots, \mathbf{r}_N)$, which lives in a $3N$-dimensional space. For a modest molecule with 50 electrons, this is a function of 150 continuous variables. No grid-based method can touch that.
+> **Common Mistake #1:** Counting particles alone misses the state-space problem. The electronic *wavefunction* $\Psi(\mathbf{r}_1, \mathbf{r}_2, \ldots, \mathbf{r}_N)$ depends on $3N$ spatial coordinates, as well as spin. For 50 electrons that is 150 continuous spatial variables. A naive direct-product grid is hopelessly large; useful classical methods exploit structure rather than storing that grid.
 
 ---
 
 ## The Born–Oppenheimer Approximation: Freezing the Nuclei
 
-Protons are 1836 times heavier than electrons. On the timescale of electronic motion, the nuclei are essentially stationary. This observation — due to Born and Oppenheimer (1927) — is the first simplification, and by far the most consequential: we treat the nuclear positions $\{\mathbf{R}_A\}$ as fixed parameters, not dynamical variables.
+Protons are about 1836 times heavier than electrons. This mass separation
+motivates the Born–Oppenheimer approximation: solve an electronic problem at
+fixed nuclear positions, then use the resulting energy surface to describe
+nuclear motion. Here we perform the first, **clamped-nuclei** step. We treat
+the positions $\{\mathbf{R}_A\}$ as parameters, not electronic variables.
+The approximation can fail where electronic states approach or cross and
+nuclear motion couples them strongly; heavy nuclei alone are not a universal
+guarantee.
 
 The result is the **electronic Hamiltonian**:
 
 $$
-\hat{H}_\text{el} = -\sum_{i=1}^{N} \frac{\hbar^2}{2m_e} \nabla_i^2
-                     - \sum_{i,A} \frac{Z_A e^2}{\lvert\mathbf{r}_i - \mathbf{R}_A\rvert}
-                     + \sum_{i<j} \frac{e^2}{\lvert\mathbf{r}_i - \mathbf{r}_j\rvert}
+\hat{H}_\text{el} = -\frac12\sum_{i=1}^{N} \nabla_i^2
+                     - \sum_{i,A} \frac{Z_A}{\lvert\mathbf{r}_i - \mathbf{R}_A\rvert}
+                     + \sum_{i<j} \frac{1}{\lvert\mathbf{r}_i - \mathbf{r}_j\rvert}
 $$
 
 The nuclear repulsion energy becomes a constant for a given geometry:
 
-$$V_{nn} = \frac{Z_A Z_B e^2}{R}$$
+$$V_{nn} = \sum_{A<B}\frac{Z_A Z_B}{\lvert\mathbf R_A-\mathbf R_B\rvert}
+\quad\text{and, for H₂,}\quad V_{nn}=\frac1R.$$
 
-For H₂ at bond length $R = 0.74$ Å (= 1.398 Bohr), close to the experimental equilibrium of 0.7414 Å: $V_{nn} = 1/R = 0.7151$ Ha. We add this constant back at the end.
+Our canonical H₂ input is $R=0.74$ Å, near equilibrium, not a claim that
+this is the optimised bond length of every model. The conversion is
 
-What remains is a problem in the electronic coordinates alone. Solve it for one nuclear geometry, and you get the electronic energy $E_\text{el}(R)$. Repeat for many geometries, and you trace out the **potential energy surface** — the curve that tells you bond lengths, bond angles, and vibrational frequencies.
+$$R/a_0=\frac{0.74}{0.5291772109}\approx1.3983973,
+\qquad V_{nn}/E_h=\frac{1}{1.3983973}\approx0.7151043.$$
 
-> **Why this matters for quantum simulation:** The Born–Oppenheimer approximation is not unique to quantum computing — every classical electronic structure method uses it too. It means the quantum computer's job is to solve the electronic problem at a *fixed* geometry. If you want a potential energy surface, you run the quantum computer many times, once per geometry. (This is exactly what our H₂O bond-angle scan will do in later chapters.)
+The committed calculation supplies $V_{nn}=0.7151043391$ Ha. We retain its
+precision in the data and round only for display. Two electrons do not double
+this nuclear term: there is exactly one nuclear pair.
+
+What remains is a problem in the electronic coordinates alone. Solve it for one
+geometry and obtain $E_\text{el}(R)$. Add $V_{nn}(R)$ to obtain the
+Born–Oppenheimer **potential energy surface**, a function of nuclear geometry.
+For a diatomic bond coordinate this is a curve. Its minimum gives a model
+equilibrium separation; its curvature, together with nuclear masses, supports
+a harmonic vibrational estimate. For a polyatomic molecule one needs the
+appropriate multidimensional derivatives and mass weighting, not just any
+one-dimensional slice.
+
+> **Why this matters for quantum simulation:** Most conventional electronic-structure calculations, classical or quantum, start with this fixed-geometry problem. A quantum energy algorithm could be repeated at several geometries. Our demonstrated H₂O angular scan instead uses **classical PySCF RHF/FCI energies**, with O–H length fixed at 0.9584 Å. FockMap constructs operators and circuits; that is not the same task as preparing a state and estimating its energy. The water scan is a reference calculation, not a completed quantum geometry optimisation.
 
 ---
 
 ## Basis Sets: Making the Infinite Finite
 
-The electronic Hamiltonian acts on wavefunctions $\Psi(\mathbf{r}_1, \mathbf{r}_2)$ — functions of continuous 3D coordinates. A computer (classical or quantum) cannot represent a continuous function exactly. We need to discretize.
+The electronic Hamiltonian acts on wavefunctions $\Psi(\mathbf{r}_1, \mathbf{r}_2)$ — functions of continuous 3D coordinates. A finite computer cannot represent an arbitrary such function exactly. We need a finite representation.
 
 The standard approach: expand each molecular orbital as a **linear combination of known functions**, called basis functions. This is the same idea as representing a vector in a finite basis, except the "vectors" are functions and the "basis" is a set of atomic orbital shapes.
+
+An **orbital** is a one-electron wavefunction, not a little orbit traced by
+an electron. We call an atom-centred basis function an **atomic orbital**
+(AO) here, even when it is an approximate Gaussian function rather than an
+exact isolated-atom eigenfunction. A **molecular orbital** (MO) is a
+one-electron function assembled from the chosen AOs:
+
+$$\phi_p(\mathbf r)=\sum_{\mu=0}^{K-1}C_{\mu p}\chi_\mu(\mathbf r).$$
+
+The $\chi_\mu$ are the $K$ AO basis functions; column $p$ of $C$ contains
+the coefficients of MO $p$. Choosing a finite basis restricts the space of
+functions we can represent. Changing $C$ rotates within that space; it
+does not enlarge the basis.
 
 ### The Hydrogen Atom: Exact Solutions We Can't Use Directly
 
@@ -100,7 +166,9 @@ For a single hydrogen atom, the Schrödinger equation has exact solutions: the f
 
 $$\phi_{1s}(r) \propto e^{-\zeta r}$$
 
-where $\zeta$ determines how tightly the electron is bound. These Slater-type orbitals are physically correct, but they have a computational problem: the integrals involving products of Slater functions on *different* atomic centres cannot be evaluated in closed form.
+where $\zeta$ determines the radial decay. Slater-type functions reproduce the
+hydrogenic cusp and exponential tail, but multicentre molecular integrals
+are substantially less convenient than their Gaussian counterparts.
 
 ### Gaussians: The Practical Compromise
 
@@ -118,7 +186,12 @@ Is STO-3G a good basis set? No — it is the smallest possible choice, and it ca
 
 > **Common Mistake #2:** Confusing "basis set" with "basis states." The basis set (STO-3G) determines which *orbitals* we use. The basis states (the 6 configurations in the table below) are the many-electron states built from those orbitals. A bigger basis set gives more orbitals, which gives exponentially more configurations — and this is where the computational hardness lives.
 
-> **What "exact" means in this book:** When we say a computation is "exact" (e.g., Full Configuration Interaction), we mean exact *within the chosen basis set*. STO-3G H₂ has only 4 spin-orbitals and 6 configurations, so FCI is trivial and gives the exact answer for that basis. But STO-3G itself is a crude approximation to the true electronic wavefunction — a larger basis set (cc-pVDZ, cc-pVTZ) would give a more accurate energy. The quantum simulation pipeline operates at the basis-set level: it solves the finite-dimensional problem exactly, but the finite-dimensional problem is only as good as the basis set that defines it. Throughout this book, "exact" always means "exact within the basis."
+> **What "exact" means in this book:** Full configuration interaction gives the
+> exact eigenvalue of the finite-basis Hamiltonian in the specified electron
+> sector, up to numerical solver tolerance. That is not complete-basis
+> accuracy, nor an exact treatment of nuclear motion or relativity. An
+> encoding can represent this finite operator exactly; a later simulation
+> or energy-estimation algorithm can still introduce additional error.
 
 ---
 
@@ -132,7 +205,25 @@ $$\sigma_u = \frac{1s_A - 1s_B}{\sqrt{2(1-S)}} \qquad \text{(antibonding)}$$
 
 where $S = \langle 1s_A \mid 1s_B \rangle$ is the overlap integral between the two atomic orbitals.
 
-The **bonding** orbital $\sigma_g$ has its electron density concentrated *between* the nuclei — this is what holds the molecule together. The **antibonding** orbital $\sigma_u$ has a nodal plane at the midpoint — electron density here pushes the nuclei apart.
+The denominators earn their place. Write the normalised, real AOs as $A$
+and $B$, with $\langle A|A\rangle=\langle B|B\rangle=1$ and
+$\langle A|B\rangle=\langle B|A\rangle=S$. Then
+
+$$\langle A+B|A+B\rangle=1+S+S+1=2(1+S).$$
+
+Dividing by its square root normalises the bonding combination. Replacing
+both plus signs by minus signs gives $2(1-S)$ for the antibonding
+combination. Also
+$\langle A+B|A-B\rangle=1-S+S-1=0$, so the two MOs are orthogonal.
+The overlap is dimensionless: it measures how much two normalised functions
+coincide, not an energy.
+
+The **bonding** orbital $\sigma_g$ has enhanced density between the nuclei.
+The **antibonding** orbital $\sigma_u$ has a nodal plane at the midpoint,
+where its amplitude and density vanish. Occupying it tends to weaken this
+bond; there is no density *at the node* pushing nuclei apart.
+The labels $g$ and $u$ name even and odd behaviour under inversion through
+the molecular midpoint. That symmetry will explain a zero integral below.
 
 Each spatial orbital can hold one electron of each spin ($\alpha$ = spin-up, $\beta$ = spin-down), giving us 2 spatial orbitals × 2 spins = **4 spin-orbitals**:
 
@@ -147,20 +238,93 @@ Each spatial orbital can hold one electron of each spin ($\alpha$ = spin-up, $\b
 
 ## The Six Configurations of H₂
 
-Two electrons distributed among 4 spin-orbitals can occupy $\binom{4}{2} = 6$ distinct configurations. We write each as an occupation vector $\lvert n_0 n_1 n_2 n_3\rangle$, where $n_p \in \{0, 1\}$ indicates whether spin-orbital $p$ is occupied:
+A **spin-orbital** includes both spatial and spin information:
+$\psi_p(x)=\phi_\mu(\mathbf r)\omega_\sigma(s)$, with
+$x=(\mathbf r,s)$ and spin function $\omega_\sigma$ equal to $\alpha$ or
+$\beta$. These spin functions are orthonormal. Chapter 3 will use that
+fact to integrate out spin.
+
+Two occupied spin-orbitals do not give an ordinary product of distinguishable
+electron wavefunctions. For orthonormal $\psi_p,\psi_q$, the normalised
+two-electron **Slater determinant** is
+
+$$\Phi_{pq}(x_1,x_2)=\frac{1}{\sqrt2}
+\left[\psi_p(x_1)\psi_q(x_2)-\psi_q(x_1)\psi_p(x_2)\right],
+\qquad p<q.$$
+
+Exchanging the two electron coordinates changes its sign. Trying $p=q$
+gives zero, which is the exclusion principle in the formula. For $p\ne q$
+the two product terms are orthogonal and each has norm one, explaining
+$1/\sqrt2$. The electron coordinate labels are not persistent identities:
+the determinant does not say which electron owns which orbital.
+
+An **occupation configuration** specifies the occupied spin-orbitals and,
+with an ordering convention, denotes this antisymmetric state. For two
+electrons in four spin-orbitals there are
+$\binom42=4!/(2!2!)=6$ choices. We write each as
+$\lvert n_0 n_1 n_2 n_3\rangle$, with $n_p\in\{0,1\}$.
+Index 0 is displayed on the left; these strings are labels, not
+ordinary left-to-right binary numerals.
+
+Spin projection is $M_S=(N_\alpha-N_\beta)/2$ in units of $\hbar$.
+Total spin $S$ is a different quantum number: $S=0$ is a **singlet** and
+$S=1$ a **triplet**, with respectively one or three possible projections.
+Having one electron of each spin fixes $M_S=0$, not necessarily $S=0$.
+Two open-shell opposite-spin determinants can combine into a singlet or
+the $M_S=0$ member of a triplet.
 
 | Configuration | Occupation | Description |
 |:---:|:---:|:---|
-| $\lvert 1100\rangle$ | $\sigma_{g\alpha}\, \sigma_{g\beta}$ | Both electrons in the bonding orbital (ground state in Hartree–Fock) |
+| $\lvert 1100\rangle$ | $\sigma_{g\alpha}\, \sigma_{g\beta}$ | Doubly occupied bonding orbital; closed-shell singlet |
 | $\lvert 1010\rangle$ | $\sigma_{g\alpha}\, \sigma_{u\alpha}$ | One in each orbital, same spin (triplet) |
 | $\lvert 1001\rangle$ | $\sigma_{g\alpha}\, \sigma_{u\beta}$ | One in each, opposite spin |
 | $\lvert 0110\rangle$ | $\sigma_{g\beta}\, \sigma_{u\alpha}$ | One in each, opposite spin |
 | $\lvert 0101\rangle$ | $\sigma_{g\beta}\, \sigma_{u\beta}$ | One in each, same spin (triplet) |
-| $\lvert 0011\rangle$ | $\sigma_{u\alpha}\, \sigma_{u\beta}$ | Both in antibonding orbital (highest energy) |
+| $\lvert 0011\rangle$ | $\sigma_{u\alpha}\, \sigma_{u\beta}$ | Doubly occupied antibonding orbital; closed-shell singlet |
 
-The **exact** ground state of H₂ is a *superposition* of some of these configurations. The Hartree–Fock approximation uses only the first ($\lvert 1100\rangle$), capturing about 99% of the ground-state energy. The remaining ~1% is the **correlation energy** — the part that arises from electron–electron interactions that a single-configuration picture misses.
+### What HF optimises, and what FCI adds
 
-This 1% sounds small. It isn't. The correlation energy often determines whether a reaction happens, which isomer is more stable, and what the dissociation curve looks like — though many qualitative features (such as molecular geometries and shapes) are already captured at the Hartree–Fock level. The challenge is that methods which systematically improve on HF — full CI, for example — scale exponentially. Polynomial approximations like CCSD(T) work well for weakly correlated systems but fail for strongly correlated ones (bond-breaking, transition metals, open shells). This is precisely the gap that quantum simulation aims to fill.
+**Hartree–Fock (HF)** minimises the energy over single Slater determinants
+by optimising their orbitals. It includes electron–electron interaction,
+including exchange from antisymmetry; it does not mean switching repulsion
+off. In **restricted Hartree–Fock (RHF)** for a closed shell, each occupied
+spatial orbital is used by an $\alpha$ electron and a $\beta$ electron.
+The two spin partners share the same spatial function.
+
+For the canonical H₂ calculation, RHF selects the doubly occupied
+$\sigma_g$ orbital. Once those MOs define our table, the RHF state is the
+single configuration $\lvert1100\rangle$. **Full configuration interaction
+(FCI)** instead varies the coefficients of *all* determinants in the chosen
+electron sector:
+
+$$|\Psi\rangle=\sum_{D=1}^{6}c_D|D\rangle,\qquad
+\sum_D|c_D|^2=1.$$
+
+The variational principle says a normalised trial state's energy cannot be
+below the lowest eigenvalue in that sector. FCI includes the RHF state as
+one candidate, so its minimum cannot be higher. FCI does not need a second
+orbital optimisation to be complete in this finite space: a unitary
+rotation of the full orbital basis changes the determinant coordinates,
+not the space they span.
+
+At 0.74 Å the electronic RHF and FCI energies are respectively
+$-1.8318636465$ and $-1.8523881736$ Ha. Their difference,
+
+$$E_{\mathrm{corr}}=E_{\mathrm{FCI}}-E_{\mathrm{RHF}}
+\approx-0.0205245271\ \text{Ha},$$
+
+is the **correlation energy** relative to this RHF reference in this basis.
+Adding the same nuclear constant to both energies leaves the difference
+unchanged. A percentage of an energy, in contrast, changes when its
+reference offset changes; the difference in hartree is the useful quantity.
+
+That correction is small compared with the magnitude of the electronic
+energy, but chemical predictions depend on *differences* between large
+energies. Unequal correlation corrections can change an isomer ordering
+or reaction-energy estimate. During bond breaking, the single-determinant
+description may become qualitatively poor. This is one reason to seek
+methods that treat competing configurations without explicitly storing
+every coefficient classically.
 
 > **A hint of what's coming:** Those occupation vectors $\lvert n_0 n_1 n_2 n_3\rangle$ look exactly like qubit computational basis states $\lvert q_0 q_1 q_2 q_3\rangle$. Four spin-orbitals → four qubits. Six configurations → a 16-dimensional Hilbert space (of which 6 states have two electrons). A quantum computer can represent superpositions of these configurations natively.
 >
@@ -170,7 +334,7 @@ This 1% sounds small. It isn't. The correlation energy often determines whether 
 
 ## Second Quantization: A Preview
 
-At this point we could write down the $6 \times 6$ Hamiltonian matrix in the configuration basis and diagonalize it. For H₂, that would work fine. But it wouldn't scale — for H₂O with 14 spin-orbitals, the configuration space has $\binom{14}{10} = 1001$ states, and for larger molecules the dimension grows combinatorially.
+At this point we could write down the $6 \times 6$ Hamiltonian matrix in the configuration basis and diagonalise it. For H₂, that works fine, and water's $\binom{14}{10}=1001$ determinants are also manageable. It is the combinatorial growth towards larger orbital and electron counts that defeats this direct approach.
 
 There is a more compact way to write the Hamiltonian — using **creation and annihilation operators** rather than wavefunctions. We will develop this formalism properly in Chapter 5, where we'll need it to understand encoding. For now, the key result is that the electronic Hamiltonian can be written as:
 
@@ -184,18 +348,60 @@ This is the object that the rest of the book operates on. Everything that follow
 
 ## The Numbers: H₂ Integrals in STO-3G
 
-For H₂ in STO-3G at the equilibrium bond length, the non-zero one-body integrals (in the spatial orbital basis) are:
+First define the one-electron operator at fixed nuclear geometry:
+
+$$\hat h=-\frac12\nabla^2-\sum_A\frac{Z_A}{|\mathbf r-\mathbf R_A|}.$$
+
+Its **matrix element** between two spatial MOs is
+
+$$h_{pq}=\langle\phi_p|\hat h|\phi_q\rangle
+=\int\phi_p^*(\mathbf r)
+\left[-\frac12\nabla^2-\sum_A\frac{Z_A}{|\mathbf r-\mathbf R_A|}\right]
+\phi_q(\mathbf r)\,d^3\mathbf r.$$
+
+Read the operator rightmost first: differentiate or multiply $\phi_q$,
+multiply the result by $\phi_p^*$, then integrate. A diagonal entry
+$h_{pp}$ is the kinetic-plus-nuclear-attraction expectation in one MO.
+An off-diagonal entry measures a coupling between MOs. Neither includes
+electron–electron repulsion.
+
+This also connects the AO calculation to the MO table. If $h^{\mathrm{AO}}$
+is the matrix evaluated in the atom-centred functions, substitution of
+$\phi_p=\sum_\mu C_{\mu p}\chi_\mu$ gives
+
+$$h^{\mathrm{MO}}_{pq}
+=\sum_{\mu\nu}C_{\mu p}^*h^{\mathrm{AO}}_{\mu\nu}C_{\nu q},
+\qquad h^{\mathrm{MO}}=C^\dagger h^{\mathrm{AO}}C.$$
+
+The dagger means conjugate transpose. AOs on different atoms usually
+overlap, so MO orthonormality is $C^\dagger S_{\mathrm{AO}}C=I$, where
+$(S_{\mathrm{AO}})_{\mu\nu}=\langle\chi_\mu|\chi_\nu\rangle$.
+The molecular integrals are therefore not just a relabelled AO array:
+they have been transformed into the specified orbital basis.
+
+For H₂/STO-3G at **0.74 Å in the canonical RHF MO basis**, the non-zero
+spatial one-body integrals are:
 
 | Integral | Value (Hartree) | Physical meaning |
 |:---:|:---:|:---|
-| $h_{00}$ | $-1.2563$ | $\sigma_g$ orbital energy (kinetic + nuclear attraction) |
-| $h_{11}$ | $-0.4719$ | $\sigma_u$ orbital energy |
+| $h_{00}$ | $-1.2533097866$ | $\langle\sigma_g\mid\hat h\mid\sigma_g\rangle$ |
+| $h_{11}$ | $-0.4750688488$ | $\langle\sigma_u\mid\hat h\mid\sigma_u\rangle$ |
 
-The off-diagonal elements $h_{01} = h_{10} = 0$ by symmetry ($\sigma_g$ and $\sigma_u$ are orthogonal).
+These are **not HF orbital eigenvalues**. The HF effective one-electron
+operator, called the Fock operator, also includes the mean-field Coulomb
+and exchange contributions from the occupied orbitals. Its eigenvalues
+are conventionally written $\epsilon_p$, not $h_{pp}$.
+
+The off-diagonal elements $h_{01}=h_{10}=0$ by inversion symmetry:
+$\hat h$ is even, $\sigma_g$ is even and $\sigma_u$ is odd, making the
+integrand odd. Orthogonality alone would not suffice. For example, the
+orthogonal coordinate vectors $(1,0)^T$ and $(0,1)^T$ have off-diagonal
+matrix element 1 under $\begin{pmatrix}0&1\\1&0\end{pmatrix}$.
+An overlap matrix and a Hamiltonian matrix answer different questions.
 
 The two-body integrals are a $2 \times 2 \times 2 \times 2$ tensor — 16 elements, of which only a few are distinct by symmetry. We will develop these fully in Chapter 3, after sorting out the notation conventions in Chapter 2.
 
-The nuclear repulsion constant is $V_{nn} = 0.7151$ Ha.
+The nuclear repulsion constant is $V_{nn}=0.7151043391$ Ha.
 
 These numbers — the integrals and the nuclear repulsion — are the *output* of this chapter and the *input* to everything that follows. A classical electronic structure code (PySCF, Gaussian, ORCA) computes them from the molecular geometry and basis set. We will treat them as given.
 
@@ -207,7 +413,7 @@ These numbers — the integrals and the nuclear repulsion — are the *output* o
 
 - A molecule is a collection of charged particles interacting via Coulomb's law. The ground-state energy is the lowest eigenvalue of the molecular Hamiltonian.
 - The **Born–Oppenheimer approximation** fixes the nuclear positions, reducing the problem to the electronic Hamiltonian at a specific geometry.
-- A **basis set** (STO-3G) discretizes the continuous orbital space into a finite set of molecular orbitals. For H₂, this gives 2 spatial orbitals → 4 spin-orbitals → 6 two-electron configurations.
+- A **basis set** (STO-3G) restricts the continuous orbital space to a finite span. For H₂, this gives 2 spatial orbitals → 4 spin-orbitals → 6 two-electron configurations.
 - **Second quantization** rewrites the Hamiltonian in terms of creation and annihilation operators, encoding the Pauli exclusion principle through anti-commutation relations (CAR).
 - The result is a Hamiltonian specified by one-body integrals $h_{pq}$, two-body integrals $\langle pq \mid rs\rangle$, and a nuclear repulsion constant $V_{nn}$. These numbers are the starting point for encoding.
 
@@ -221,11 +427,17 @@ These numbers — the integrals and the nuclear repulsion — are the *output* o
 
 ## Exercises
 
-1. **Configuration counting.** How many two-electron configurations exist for H₂O in a minimal (STO-3G) basis with 7 spatial orbitals (14 spin-orbitals, 10 electrons)? How does this compare with H₂?
+1. **Configuration counting.** How many ten-electron determinants exist for H₂O in STO-3G with 7 spatial orbitals (14 spin-orbitals)? Count the whole ten-electron sector, without restricting spin projection. How does this compare with the six two-electron determinants of H₂?
 
-2. **Born–Oppenheimer curve.** If you vary the bond length $R$ from 0.5 to 3.0 Å and compute the electronic energy $E_\text{el}(R)$ at each point, what shape does the curve $E_\text{el}(R) + V_{nn}(R)$ have? Where is the minimum? (You don't need to compute this — sketch it from physical reasoning.)
+2. **Born–Oppenheimer curve.** Sketch a qualitatively bound H₂ curve $E_\text{el}(R)+V_{nn}(R)$, marking the repulsive short-distance region, a minimum, and the dissociation limit. Explain why physical reasoning alone does not locate a numerical minimum for a specified basis. Would changing the fixed O–H length in a water angular scan define the same curve?
 
 3. **Basis set scaling.** If we used the cc-pVDZ basis instead of STO-3G, hydrogen would have 5 basis functions per atom instead of 1. How many spatial orbitals, spin-orbitals, and two-electron configurations would H₂ have?
+
+4. **Units before arithmetic.** Convert 0.74 Å to Bohr using the conversion above and recover the displayed nuclear repulsion to seven significant figures. What erroneous value results from treating 0.74 as a distance in Bohr?
+
+5. **Normalisation and exclusion.** Take two normalised real AOs with overlap $S=0.2$. Find the normalisation constants for their sum and difference. Separately, set $p=q$ in $\Phi_{pq}$ and explain why the zero function cannot be normalised into a two-electron state.
+
+6. **Energy ledger.** Add $V_{nn}$ to the canonical electronic RHF and FCI energies. Verify that the correlation energy is unchanged. Explain why a one-body integral, an RHF orbital eigenvalue and a total molecular energy should not share the label "orbital energy".
 
 ## Further Reading
 
