@@ -107,7 +107,9 @@ let spectralMoments (value: Complex[,]) =
             yield trace power
     |]
 
-let hermitianEigenvalues (value: Complex[,]) =
+let hermitianEigenvaluesAtTolerance accuracy (value: Complex[,]) =
+    if not (Double.IsFinite accuracy) || accuracy <= 0.0 then
+        invalidArg "accuracy" "Expected a positive finite absolute accuracy"
     let n = Array2D.length1 value
     if n = 0 || Array2D.length2 value <> n then
         invalidArg "value" "Expected a nonempty square matrix"
@@ -115,9 +117,11 @@ let hermitianEigenvalues (value: Complex[,]) =
         if not (Double.IsFinite z.Real && Double.IsFinite z.Imaginary) then
             invalidArg "value" "Matrix contains a nonfinite entry"
     let scale = max 1.0 (value |> Seq.cast<Complex> |> Seq.map Complex.Abs |> Seq.max)
+    if Math.BitIncrement(scale) - scale > accuracy / 8.0 then
+        failwithf "Requested absolute eigensolver accuracy %.3e is below arithmetic resolution at matrix scale %.3e" accuracy scale
     for i in 0 .. n - 1 do
         for j in 0 .. n - 1 do
-            if Complex.Abs(value[i,j] - Complex.Conjugate(value[j,i])) > 1e-12 * scale then
+            if Complex.Abs(value[i,j] - Complex.Conjugate(value[j,i])) > accuracy / 16.0 then
                 invalidArg "value" "Matrix is not Hermitian"
 
     // Realification preserves the COMPLETE complex operator; every eigenvalue
@@ -129,13 +133,17 @@ let hermitianEigenvalues (value: Complex[,]) =
         elif i < n then -z.Imaginary else z.Imaginary)
     let mutable residual = Double.PositiveInfinity
     let mutable sweeps = 0
-    while residual > 1e-14 * scale && sweeps < 100 do
+    let residualTarget = accuracy / 16.0
+    let entryCutoff = residualTarget / float size
+    while residual > residualTarget && sweeps < 100 do
         for p in 0 .. size - 2 do
             for q in p + 1 .. size - 1 do
                 let apq = a[p,q]
-                if abs apq > 1e-16 * scale then
+                if abs apq > entryCutoff then
                     let tau = (a[q,q] - a[p,p]) / (2.0 * apq)
-                    let t = (if tau >= 0.0 then 1.0 else -1.0) / (abs tau + sqrt (1.0 + tau*tau))
+                    if not (Double.IsFinite tau) then failwith "Jacobi rotation exceeds finite arithmetic range"
+                    let root = Double.Hypot(1.0, tau)
+                    let t = (if tau >= 0.0 then 1.0 else -1.0) / (abs tau + root)
                     let c = 1.0 / sqrt (1.0 + t*t)
                     let s = t*c
                     a[p,p] <- a[p,p] - t*apq
@@ -154,20 +162,22 @@ let hermitianEigenvalues (value: Complex[,]) =
                 [| for j in 0 .. size - 1 do if i <> j then yield abs a[i,j] |] |> Array.sum |]
             |> Array.max
         sweeps <- sweeps + 1
-    if not (Double.IsFinite residual) || residual > 1e-14 * scale then
+    if not (Double.IsFinite residual) || residual > residualTarget then
         failwithf "Hermitian eigensolver failed to converge: off-diagonal row-sum %.3e" residual
     let duplicated = [| for i in 0 .. size - 1 -> a[i,i] |] |> Array.sort
     Array.init n (fun i ->
-        if abs (duplicated[2*i] - duplicated[2*i+1]) > 1e-11 * scale then
+        if abs (duplicated[2*i] - duplicated[2*i+1]) > accuracy / 4.0 then
             failwith "Realified Hermitian eigenvalue pairing failed"
         (duplicated[2*i] + duplicated[2*i+1]) / 2.0)
+
+let hermitianEigenvalues value = hermitianEigenvaluesAtTolerance 1e-11 value
 
 let assertSpectrumMatrix name tolerance (expected: float[]) (value: Complex[,]) =
     if not (Double.IsFinite tolerance) || tolerance <= 0.0 then
         invalidArg "tolerance" "Expected a positive finite eigenvalue tolerance"
     if expected.Length <> Array2D.length1 value || expected |> Array.exists (Double.IsFinite >> not) then
         invalidArg "expected" "Spectrum dimension or finiteness mismatch"
-    let actual = hermitianEigenvalues value
+    let actual = hermitianEigenvaluesAtTolerance (tolerance / 4.0) value
     let maximumError = Array.map2 (fun x y -> abs (x-y)) actual (Array.sort expected) |> Array.max
     if maximumError > tolerance then
         failwithf "%s eigenvalue mismatch: max sorted error %.3e Ha exceeds %.3e Ha" name maximumError tolerance

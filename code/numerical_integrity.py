@@ -25,6 +25,20 @@ def converged(solver, label, *values):
         finite(value, label)
 
 
+def configure_solver(solver, kind):
+    # Explicit overrides allow bounded nonconvergence experiments in isolated runs.
+    key = f"BOOK_{kind}_MAX_CYCLE"
+    if key in os.environ:
+        solver.max_cycle = int(os.environ[key])
+        require(solver.max_cycle >= 0, f"{key} must be nonnegative")
+    return solver
+
+
+def solver_settings(solver):
+    return {"max_cycle": int(solver.max_cycle), "conv_tol": float(solver.conv_tol),
+            "converged": bool(np.all(solver.converged))}
+
+
 def compare_document(actual, expected, tolerance=5e-10, path="root", archival=False):
     """Compare schema/labels exactly and numerical values at absolute tolerance."""
     if isinstance(expected, dict):
@@ -42,7 +56,11 @@ def compare_document(actual, expected, tolerance=5e-10, path="root", archival=Fa
     elif isinstance(expected, (int, float)) and not isinstance(expected, bool):
         require(isinstance(actual, (int, float)) and not isinstance(actual, bool), f"{path}: expected number")
         finite([actual, expected], path)
-        require(abs(actual - expected) <= tolerance, f"{path}: absolute error {abs(actual-expected):.3e} exceeds {tolerance:.3e}")
+        exact_fields = {"input_threshold", "combined_pauli_threshold", "bond_length_angstrom"}
+        if isinstance(expected, int) or path.rsplit(".", 1)[-1] in exact_fields:
+            require(type(actual) is type(expected) and actual == expected, f"{path}: fixed metadata type/value mismatch")
+        else:
+            require(abs(actual - expected) <= tolerance, f"{path}: absolute error {abs(actual-expected):.3e} exceeds {tolerance:.3e}")
     else:
         require(actual == expected, f"{path}: expected {expected!r}, got {actual!r}")
 

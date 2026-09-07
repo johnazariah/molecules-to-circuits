@@ -40,6 +40,9 @@ with tempfile.TemporaryDirectory(prefix="book-oracle-") as temporary:
         ("ordering", lambda d: d["ordering_anchor"].update(hf_matrix_row=12)),
         ("metadata", lambda d: d.update(matrix_order="unreversed")),
         ("NaN", lambda d: d["coefficients_Ha"].update(IIII=float("nan"))),
+        ("negative threshold", lambda d: d["acceptance_anchors"].update(input_threshold=-1e-10)),
+        ("zero threshold", lambda d: d["acceptance_anchors"].update(combined_pauli_threshold=0.0)),
+        ("fractional count", lambda d: d["acceptance_anchors"].update(input_one_body_entries=4.0)),
     ]
     for label, mutate in mutations:
         document = json.loads(original)
