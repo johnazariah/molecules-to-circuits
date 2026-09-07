@@ -143,6 +143,34 @@ class PublicationTests(unittest.TestCase):
                 )
                 self.assertIn(f"-o {output}", result.stdout)
 
+    def test_html_failure_stops_preview(self):
+        workspace = self.directory / "workspace"
+        (workspace / "scripts").mkdir(parents=True)
+        (workspace / "manuscript").mkdir()
+        (workspace / "manuscript/Book.txt").write_text("")
+        (workspace / "Makefile").write_bytes((ROOT / "Makefile").read_bytes())
+        (workspace / "scripts/build-site.sh").write_bytes(
+            (ROOT / "scripts/build-site.sh").read_bytes()
+        )
+        python = self.directory / "fake-python"
+        log = self.directory / "calls"
+        python.write_text(
+            f"#!{sys.executable}\n"
+            "from pathlib import Path\nimport sys\n"
+            f"with Path({str(log)!r}).open('a') as f: f.write(' '.join(sys.argv[1:])+'\\n')\n"
+            "if 'build' in sys.argv: sys.exit(31)\n",
+            encoding="utf-8",
+        )
+        python.chmod(0o755)
+        result = subprocess.run(
+            ["make", "preview", f"PYTHON={python}"], cwd=workspace,
+            text=True, capture_output=True,
+        )
+        self.assertNotEqual(result.returncode, 0)
+        calls = log.read_text()
+        self.assertIn("jupyter_book build --html --force --strict", calls)
+        self.assertNotIn("http.server", calls)
+
 
 if __name__ == "__main__":
     unittest.main()

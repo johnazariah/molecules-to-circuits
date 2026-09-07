@@ -26,10 +26,8 @@ local function latex_text(inlines)
 end
 
 function Pandoc(doc)
-    local blocks = {
-        pandoc.Para({pandoc.Str("Sample edition. Omitted material appears in the contents "
-            .. "with a dash instead of a page number; its text is not included.")})
-    }
+    local blocks = {}
+    local introduction = false
     local included = false
     for _, block in ipairs(doc.blocks) do
         if block.t == "Header" and block.level == 1 then
@@ -37,6 +35,12 @@ function Pandoc(doc)
         end
         if included then
             table.insert(blocks, block)
+            if not introduction and block.t == "Header" and block.level == 1 then
+                table.insert(blocks, pandoc.Para({pandoc.Str(
+                    "Sample edition. Omitted material appears in the contents "
+                    .. "with a dash instead of a page number; its text is not included.")}))
+                introduction = true
+            end
         elseif block.t == "Header" and block.level <= 2 then
             local level = block.level == 1 and "chapter" or "section"
             table.insert(blocks, pandoc.RawBlock("latex",
