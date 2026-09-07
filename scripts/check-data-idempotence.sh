@@ -1,5 +1,12 @@
 #!/usr/bin/env bash
 set -euo pipefail
+mode="${1:---portable}"
+if [[ "$mode" != "--portable" && "$mode" != "--archival" ]]; then
+  echo "Usage: $0 [--portable|--archival]" >&2
+  exit 2
+fi
+export OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 VECLIB_MAXIMUM_THREADS=1
+python="$(command -v "${PYTHON:-python3}")"
 
 repository_root="$(cd "$(dirname "$0")/.." && pwd)"
 temporary_root="$(mktemp -d)"
@@ -12,6 +19,8 @@ rsync -a \
   --exclude .git \
   --exclude .review \
   --exclude _build \
+  --exclude '.venv*' \
+  --exclude __pycache__ \
   --exclude manuscript/mermaid-images \
   --exclude manuscript/molecules-to-circuits.pdf \
   --exclude manuscript/molecules-to-circuits-sample.pdf \
@@ -20,12 +29,15 @@ rsync -a \
 
 cd "$copy_root"
 
-python3 code/ch18-generate-h2-integrals.py >/dev/null
-python3 code/ch18-dissociation-scan.py >/dev/null
-python3 code/ch19-bond-angle-scan.py >/dev/null
-python3 code/ch09-verify-h2.py >/dev/null
+"$python" code/ch18-generate-h2-integrals.py >/dev/null
+"$python" code/ch18-dissociation-scan.py >/dev/null
+"$python" code/ch19-bond-angle-scan.py >/dev/null
+"$python" code/ch09-verify-h2.py --write >/dev/null
+"$python" scripts/compare-data-parity.py "$repository_root" "$copy_root"
 
 canonical_files=(
+  code/physicist_spin_integrals.json
+  code/physicist_spin_integrals.provenance.json
   code/h2_dissociation.csv
   code/h2_dissociation_integrals.json
   code/h2_0.74_fixture.json
@@ -37,14 +49,16 @@ canonical_files=(
   manuscript/figures/h2o_bond_angle.png
 )
 
+if [[ "$mode" == "--archival" ]]; then
 for path in "${canonical_files[@]}"; do
   if ! cmp -s "$repository_root/$path" "$copy_root/$path"; then
-    echo "ERROR: regeneration is not idempotent for $path" >&2
+    echo "ERROR: archival byte reproduction differs for $path (portable parity is a separate contract)" >&2
     exit 1
   fi
 done
+fi
 
-python3 - "$copy_root" <<'PY'
+"$python" - "$copy_root" <<'PY'
 import sys
 from pathlib import Path
 
@@ -75,4 +89,4 @@ for relative_path in required_loaders:
         raise SystemExit(f"ERROR: duplicate literal H2 map in {relative_path}")
 PY
 
-echo "Canonical chemistry regeneration is byte-identical and consumers share one loader."
+echo "Chemistry regeneration passed $mode checks in an isolated copy; accepted artifacts were not changed."

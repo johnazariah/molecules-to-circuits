@@ -1,4 +1,10 @@
-# Reproducing the committed chemistry data and figures
+# Portable numerical parity for chemistry data (not byte-identical archives).
+# Use a virtual environment, not a global install. Tested baseline:
+# Python 3.9.6, numpy 2.0.2, scipy 1.13.1, pyscf 2.13.0, matplotlib 3.9.4
+# on macOS arm64, one BLAS/OpenMP thread. Backend/platform/font differences can
+# change bytes; scripts/check-data-idempotence.sh --archival checks that stricter
+# contract explicitly and is not the normal scientific acceptance gate.
 numpy>=1.24
+scipy>=1.10
 matplotlib>=3.7
 pyscf>=2.0
