@@ -48,6 +48,9 @@ canonical_files=(
   manuscript/figures/h2_dissociation.png
   manuscript/figures/h2o_bond_angle.png
 )
+if [[ -f "$repository_root/code/h2_dissociation_solver_metadata.json" ]]; then
+  canonical_files+=(code/h2_dissociation_solver_metadata.json)
+fi
 
 if [[ "$mode" == "--archival" ]]; then
 for path in "${canonical_files[@]}"; do

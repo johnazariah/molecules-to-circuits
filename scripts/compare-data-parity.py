@@ -50,6 +50,14 @@ def main():
         for signature in ca.keys() | cb.keys():
             require(abs(ca.get(signature,0)-cb.get(signature,0)) < 5e-9, "Full coefficient parity failed")
     compare_document(load(generated,"code/h2_0.74_oracle.json"), load(accepted,"code/h2_0.74_oracle.json"))
+    solver_records = load(generated,"code/h2_dissociation_solver_metadata.json")
+    require(solver_records.keys() == right.keys() - {"_metadata"}, "H2 energy solver provenance grid mismatch")
+    for geometry,solvers in solver_records.items():
+        require(set(solvers) == {"rhf","fci"}, f"{geometry}: missing solver provenance")
+        for solver in solvers.values():
+            require(solver["converged"] is True, f"{geometry}: unconverged energy solver")
+            require(solver["max_cycle"] > 0 and solver["conv_tol"] > 0, "Invalid solver settings")
+            finite(solver["conv_tol"], "solver convergence tolerance")
     for path in ("code/h2_dissociation.csv","code/h2o_bond_angle_coarse.csv","code/h2o_bond_angle_fine.csv"):
         def rows(root):
             with (root/path).open() as stream:

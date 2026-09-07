@@ -26,6 +26,11 @@ def converged(solver, label, *values):
 
 
 def configure_solver(solver, kind):
+    from pyscf import lib
+    threads = int(os.environ.get("OMP_NUM_THREADS", "1"))
+    require(threads > 0, "OMP_NUM_THREADS must be positive")
+    if lib.num_threads() != threads:
+        lib.num_threads(threads)
     # Explicit overrides allow bounded nonconvergence experiments in isolated runs.
     key = f"BOOK_{kind}_MAX_CYCLE"
     if key in os.environ:
@@ -35,8 +40,9 @@ def configure_solver(solver, kind):
 
 
 def solver_settings(solver):
+    from pyscf import lib
     return {"max_cycle": int(solver.max_cycle), "conv_tol": float(solver.conv_tol),
-            "converged": bool(np.all(solver.converged))}
+            "converged": bool(np.all(solver.converged)), "pyscf_threads": lib.num_threads()}
 
 
 def compare_document(actual, expected, tolerance=5e-10, path="root", archival=False):
