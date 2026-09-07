@@ -151,9 +151,10 @@ printfn ""
 ## Full H2 Spectrum Comparison
 
 Term counts and mutual agreement are not enough. We construct each 16x16 Pauli
-matrix and compare all 16 spectral moments against the independent H2 spectrum.
-For a Hermitian 16x16 matrix, agreement of these power sums fixes the eigenvalue
-multiset to the stated numerical tolerance.
+matrix and diagonalise the complete complex-Hermitian operator. Sorted
+eigenvalues are compared directly at the stated absolute tolerance in Hartrees.
+Power sums remain diagnostics only: small moment errors do not bound eigenvalue
+errors at the same tolerance.
 *)
 
 let h2Lookup = ``Ch03-spin-orbitals``.h2RawPhysicistFactory
