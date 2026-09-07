@@ -17,10 +17,12 @@ import csv
 import hashlib
 import json
 import os
+from pathlib import Path
 
 import numpy as np
 import pyscf
 from pyscf import fci, gto, scf
+from numerical_integrity import configure_solver, converged, finite, output_batch, solver_settings
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 FIGURE_DIR = os.path.join(os.path.dirname(SCRIPT_DIR), "manuscript", "figures")
@@ -39,17 +41,20 @@ def h2o_energy(angle_degrees):
         symmetry=False,
         verbose=0,
     )
-    mf = scf.RHF(mol)
+    mf = configure_solver(scf.RHF(mol), "SCF")
     mf.kernel()
+    converged(mf, f"H2O angle={angle_degrees} RHF", mf.e_tot, mf.mo_coeff)
 
     # Full CI for exact ground-state energy
-    cisolver = fci.FCI(mf)
-    e_fci, _ = cisolver.kernel()
+    cisolver = configure_solver(fci.FCI(mf), "FCI")
+    e_fci, vector = cisolver.kernel()
+    converged(cisolver, f"H2O angle={angle_degrees} FCI", e_fci, vector)
+    finite(mol.energy_nuc(), "H2O nuclear repulsion")
 
-    return mol.energy_nuc(), mf.e_tot, e_fci
+    return mol.energy_nuc(), mf.e_tot, e_fci, {"rhf": solver_settings(mf), "fci": solver_settings(cisolver)}
 
 
-def scan(angles, label):
+def scan(angles, label, settings):
     """Run the scan and return list of (angle, Vnn, E_HF, E_FCI) tuples."""
     results = []
     print(f"\n{label}")
@@ -58,15 +63,15 @@ def scan(angles, label):
         f"  {'──────':>6}  {'────────────':>12}  {'──────────────':>14}  {'──────────────':>14}"
     )
     for angle in angles:
-        vnn, e_hf, e_fci = h2o_energy(angle)
+        vnn, e_hf, e_fci, settings[str(angle)] = h2o_energy(angle)
         results.append((angle, vnn, e_hf, e_fci))
         print(f"  {angle:6.1f}  {vnn:12.6f}  {e_hf:14.8f}  {e_fci:14.8f}")
     return results
 
 
-def write_csv(filename, results):
+def write_csv(filename, results, output_root):
     """Write results to CSV."""
-    path = os.path.join(SCRIPT_DIR, filename)
+    path = output_root / "code" / filename
     with open(path, "w", newline="") as f:
         writer = csv.writer(f)
         writer.writerow(["angle_degrees", "Vnn_Ha", "E_HF_Ha", "E_FCI_Ha"])
@@ -86,18 +91,18 @@ def file_sha256(path):
     return digest.hexdigest()
 
 
-def write_metadata(coarse_path, fine_path, plot_path):
+def write_metadata(coarse_path, fine_path, plot_path, output_root, settings):
     generated_files = {
-        os.path.relpath(coarse_path, os.path.dirname(SCRIPT_DIR)): file_sha256(
+        os.path.relpath(coarse_path, output_root): file_sha256(
             coarse_path
         ),
-        os.path.relpath(fine_path, os.path.dirname(SCRIPT_DIR)): file_sha256(
+        os.path.relpath(fine_path, output_root): file_sha256(
             fine_path
         ),
     }
     if plot_path and os.path.exists(plot_path):
         generated_files[
-            os.path.relpath(plot_path, os.path.dirname(SCRIPT_DIR))
+            os.path.relpath(plot_path, output_root)
         ] = file_sha256(plot_path)
 
     metadata = {
@@ -115,19 +120,21 @@ def write_metadata(coarse_path, fine_path, plot_path):
         "coarse_grid_degrees": list(range(60, 185, 5)),
         "fine_grid_degrees": list(range(95, 116)),
         "generated_files_sha256": generated_files,
+        "solver_settings_by_pass": settings,
     }
-    metadata_path = os.path.join(SCRIPT_DIR, "h2o_bond_angle_metadata.json")
+    metadata_path = output_root / "code/h2o_bond_angle_metadata.json"
     with open(metadata_path, "w") as stream:
-        json.dump(metadata, stream, indent=2)
+        json.dump(metadata, stream, indent=2, allow_nan=False)
         stream.write("\n")
     print("  Written to: h2o_bond_angle_metadata.json")
 
 
-def main():
+def generate(output_root):
+    settings = {"coarse": {}, "fine": {}}
     # ── Pass 1: Coarse scan ──
     coarse_angles = list(range(60, 185, 5))  # 60, 65, ..., 180
-    coarse = scan(coarse_angles, "Pass 1: Coarse scan (60°–180°, 5° steps)")
-    coarse_path = write_csv("h2o_bond_angle_coarse.csv", coarse)
+    coarse = scan(coarse_angles, "Pass 1: Coarse scan (60°–180°, 5° steps)", settings["coarse"])
+    coarse_path = write_csv("h2o_bond_angle_coarse.csv", coarse, output_root)
 
     # Find approximate minimum
     min_idx = min(range(len(coarse)), key=lambda i: coarse[i][3])
@@ -136,8 +143,8 @@ def main():
 
     # ── Pass 2: Fine scan ──
     fine_angles = [float(a) for a in range(95, 116)]  # 95, 96, ..., 115
-    fine = scan(fine_angles, "Pass 2: Fine scan (95°–115°, 1° steps)")
-    fine_path = write_csv("h2o_bond_angle_fine.csv", fine)
+    fine = scan(fine_angles, "Pass 2: Fine scan (95°–115°, 1° steps)", settings["fine"])
+    fine_path = write_csv("h2o_bond_angle_fine.csv", fine, output_root)
 
     # Find precise minimum
     min_idx_fine = min(range(len(fine)), key=lambda i: fine[i][3])
@@ -195,15 +202,14 @@ def main():
         ax2.grid(True, alpha=0.3)
 
         plt.tight_layout()
-        os.makedirs(FIGURE_DIR, exist_ok=True)
-        plot_path = os.path.join(FIGURE_DIR, "h2o_bond_angle.png")
+        plot_path = output_root / "manuscript/figures/h2o_bond_angle.png"
         plt.savefig(plot_path, dpi=150, bbox_inches="tight")
+        plt.close(fig)
         print("\n  Plot saved to: h2o_bond_angle.png")
-    except ImportError:
-        print("\n  matplotlib not installed — skipping plot.")
-        print("  Install with: pip install matplotlib")
+    except ImportError as error:
+        raise RuntimeError("Plotting is required for the complete output batch; install requirements-data.txt in a venv") from error
 
-    write_metadata(coarse_path, fine_path, plot_path)
+    write_metadata(coarse_path, fine_path, plot_path, output_root, settings)
 
     # ── Print markdown table for the book ──
     print("\n\nMarkdown table for Chapter 19 (coarse scan, selected angles):")
@@ -236,6 +242,14 @@ def main():
             print(f"| {la_str} | {le_str} | | {ra_str} | {re_str} |")
         else:
             print(f"| {la_str} | {le_str} | | | |")
+
+
+def main():
+    with output_batch(Path(SCRIPT_DIR).parent, [
+        "code/h2o_bond_angle_coarse.csv", "code/h2o_bond_angle_fine.csv",
+        "code/h2o_bond_angle_metadata.json", "manuscript/figures/h2o_bond_angle.png"
+    ]) as stage:
+        generate(stage)
 
 
 if __name__ == "__main__":

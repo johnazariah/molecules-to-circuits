@@ -17,6 +17,7 @@ import json
 from pathlib import Path
 
 import numpy as np
+from numerical_integrity import configure_solver, converged, finite, output_batch, solver_settings, write_json
 
 try:
     import pyscf
@@ -114,8 +115,9 @@ def compute_integrals(R_angstrom):
         symmetry=False,
         verbose=0,
     )
-    mf = scf.RHF(mol)
+    mf = configure_solver(scf.RHF(mol), "SCF")
     mf.kernel()
+    converged(mf, f"H2 R={R_angstrom} RHF", mf.e_tot, mf.mo_coeff, mf.mo_energy)
 
     Vnn = mol.energy_nuc()
     nao = mol.nao  # 2 for STO-3G H₂
@@ -126,6 +128,9 @@ def compute_integrals(R_angstrom):
     # Two-body integrals in MO basis (spatial, chemist's notation)
     eri_spatial = ao2mo.full(mol, mf.mo_coeff)
     eri_spatial = ao2mo.restore(1, eri_spatial, nao)  # (nao,nao,nao,nao)
+    finite(Vnn, "H2 nuclear repulsion")
+    finite(h1_spatial, "H2 one-body tensor")
+    finite(eri_spatial, "H2 two-body tensor")
 
     # ── Convert to spin-orbital with interleaved indexing ──
     # Spatial orbital p → spin-orbitals 2p (α), 2p+1 (β)
@@ -168,12 +173,13 @@ def compute_integrals(R_angstrom):
         "spatial_one_body_mo_Ha": h1_spatial.tolist(),
         "spatial_eri_chemist_mo_Ha": eri_spatial.tolist(),
         "spin_integrals_sha256": semantic_map_sha256(integrals),
+        "rhf_solver": solver_settings(mf),
     }
 
-    return Vnn, integrals, provenance
+    return Vnn, integrals, provenance, float(mf.e_tot)
 
 
-def main():
+def generate(output_root):
     if not HAS_PYSCF:
         raise SystemExit(
             "PySCF is required. Run: "
@@ -211,15 +217,7 @@ def main():
     print(f"  {'─' * 8}  {'─' * 12}  {'─' * 12}  {'─' * 10}")
 
     for R in BOND_LENGTHS:
-        mol = gto.M(
-            atom=f"H 0 0 0; H 0 0 {R}",
-            basis="sto-3g",
-            symmetry=False,
-            verbose=0,
-        )
-        mf = scf.RHF(mol)
-        ehf = mf.kernel()
-        Vnn, integrals, provenance = compute_integrals(R)
+        Vnn, integrals, provenance, ehf = compute_integrals(R)
         if R == 0.74:
             if integrals.keys() != canonical_integrals.keys():
                 raise RuntimeError("PySCF and canonical 0.74 Angstrom keys differ")
@@ -249,17 +247,17 @@ def main():
         print(f"  {R:8.2f}  {Vnn:12.6f}  {ehf:12.6f}  {len(integrals):10d}")
 
     # Write to JSON
-    out_path = SCRIPT_DIR / "h2_dissociation_integrals.json"
+    out_path = output_root / "code/h2_dissociation_integrals.json"
     with out_path.open("w") as f:
-        json.dump(results, f, indent=2)
+        json.dump(results, f, indent=2, allow_nan=False)
 
-    fixture_path = SCRIPT_DIR / "h2_0.74_fixture.json"
+    fixture_path = output_root / "code/h2_0.74_fixture.json"
     fixture = {
         "_metadata": results["_metadata"],
         "0.74": results["0.74"],
     }
     with fixture_path.open("w") as f:
-        json.dump(fixture, f, indent=2)
+        json.dump(fixture, f, indent=2, allow_nan=False)
         f.write("\n")
 
     print()
@@ -269,6 +267,13 @@ def main():
     print(f"Bond lengths: {len(BOND_LENGTHS)}")
     print("Use with:     dotnet fsi code/ch18-pipeline.fsx")
     print("Verify with:  python3 code/ch09-verify-h2.py")
+
+
+def main():
+    with output_batch(SCRIPT_DIR.parent, [
+        "code/h2_dissociation_integrals.json", "code/h2_0.74_fixture.json"
+    ]) as stage:
+        generate(stage)
 
 
 if __name__ == "__main__":
