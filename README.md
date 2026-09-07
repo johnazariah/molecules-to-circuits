@@ -167,6 +167,8 @@ myst.yml        HTML navigation, checked against Book.txt
 | `make manifest-check` | Check ordered print/web inventory and sample selection |
 | `make tooling-check` | Renderer failure/cache/cleanup and print-dependency negative controls |
 | `make support-check` | Execute the complete programs printed in the bridge/API appendix |
+| `make semantic-check` | Bounded immutable-pin, oracle, sector, algorithm and output-isolation gates; no full chemistry regeneration |
+| `make import-check` | The same bounded gates plus real pinned QASM 2/3, Q# and JSON imports and unitary comparisons |
 | `make word-count` | Per-chapter and total word counts |
 | `make data` | Regenerate H₂/H₂O data (requires PySCF) |
 | `make verify-data` | Independently verify H₂ integrals, JW coefficients, and sector spectra |
@@ -178,6 +180,22 @@ Generated filenames are `manuscript/molecules-to-circuits.pdf`,
 `manuscript/molecules-to-circuits-sample.pdf`,
 `manuscript/molecules-to-circuits.epub` and `_build/html/`.
 MyST does not produce a second set of PDF/EPUB exports.
+
+`make import-check` subsumes `make semantic-check`. Keep its optional
+external compiler/importer dependencies isolated from the science environment:
+
+```bash
+python3 -m venv _build/import-env
+_build/import-env/bin/python -m pip install -r scripts/requirements-import.txt
+IMPORT_PYTHON="$PWD/_build/import-env/bin/python" make import-check
+```
+
+`PYTHON` selects the scientific interpreter; `IMPORT_PYTHON` selects the
+separate importer interpreter. The reusable CI evidence job runs this
+bounded gate before PDF/sample/EPUB, Pages or release jobs. A full
+portable chemistry regeneration is separate. Archival byte comparison
+additionally needs the recorded environment and deliberately promoted
+canonical outputs; it is not interchangeable with numerical agreement.
 
 The obsolete checked-in `manuscript/from molecules to quantum circuits.pdf`
 (161 pages) has been removed from the active source tree; it remains in Git

@@ -72,7 +72,7 @@ SAMPLE_OPTS := --lua-filter=$(SAMPLE_FILTER) $(PANDOC_COMMON)
 # ══════════════════════════════════════════════════════════════
 
 .PHONY: all clean word-count diagrams data sample epub verify-data pipeline-check \
-	manifest-check tooling-check support-check html preview
+	manifest-check tooling-check support-check semantic-check import-check html preview
 
 all: $(OUT)
 
@@ -84,6 +84,13 @@ tooling-check:
 
 support-check:
 	$(PYTHON) scripts/check-support-examples.py
+
+semantic-check:
+	bash scripts/check-executable-integrity.sh
+
+# This includes semantic-check; do not run both in the same CI job.
+import-check:
+	bash scripts/check-executable-integrity.sh --imports
 
 $(OUT): $(CHAPTERS) $(FIGURES) $(BUILD_SCRIPTS) $(LUA_FILTER) $(PREAMBLE) $(MS_DIR)/Book.txt Makefile | manifest-check
 	@echo "Building manuscript..."
@@ -125,10 +132,6 @@ arxiv: $(CHAPTERS) $(FIGURES) $(BUILD_SCRIPTS) $(LUA_FILTER) $(PREAMBLE) $(MS_DI
 	@rm -rf $(ARXIV_DIR)
 	@mkdir -p $(ARXIV_DIR)
 	$(PANDOC) $(CHAPTERS) -o $(ARXIV_TEX) -s $(PANDOC_OPTS)
-	@if [ -d $(IMG_DIR) ] && [ "$$(ls -A $(IMG_DIR))" ]; then \
-	  cp $(IMG_DIR)/*.png $(ARXIV_DIR)/; \
-	fi
-	@cp $(MS_DIR)/figures/*.png $(ARXIV_DIR)/
 	@$(PYTHON) scripts/localise-tex-images.py $(ARXIV_TEX)
 	@cd $(ARXIV_DIR) && tar czf ../arxiv-submission.tar.gz *
 	@echo "Created arxiv-submission.tar.gz with:"
@@ -164,10 +167,6 @@ arxiv-pdflatex: $(CHAPTERS) $(FIGURES) $(BUILD_SCRIPTS) $(LUA_FILTER) $(PREAMBLE
 	@rm -rf $(ARXIV_DIR)
 	@mkdir -p $(ARXIV_DIR)
 	$(PANDOC) $(CHAPTERS) -o $(ARXIV_TEX) -s $(PANDOC_ARXIV_OPTS)
-	@if [ -d $(IMG_DIR) ] && [ "$$(ls -A $(IMG_DIR))" ]; then \
-	  cp $(IMG_DIR)/*.png $(ARXIV_DIR)/; \
-	fi
-	@cp $(MS_DIR)/figures/*.png $(ARXIV_DIR)/
 	@$(PYTHON) scripts/localise-tex-images.py $(ARXIV_TEX)
 	@python3 $(CONVERT_SCRIPT) $(ARXIV_TEX)
 	@echo "Compiling PDF (two passes)..."

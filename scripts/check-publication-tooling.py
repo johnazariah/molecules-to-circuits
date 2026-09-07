@@ -171,6 +171,23 @@ class PublicationTests(unittest.TestCase):
         self.assertIn("jupyter_book build --html --force --strict", calls)
         self.assertNotIn("http.server", calls)
 
+    def test_tex_package_copies_only_referenced_images(self):
+        source = self.directory / "cache"
+        source.mkdir()
+        (source / "used.png").write_bytes(PNG)
+        (source / "stale.png").write_bytes(PNG)
+        package = self.directory / "package"
+        package.mkdir()
+        tex = package / "manuscript.tex"
+        tex.write_text(r"\includegraphics[width=10pt]{" + str(source / "used.png") + "}")
+        subprocess.run(
+            [sys.executable, str(ROOT / "scripts/localise-tex-images.py"), str(tex)],
+            check=True, capture_output=True,
+        )
+        self.assertEqual(tex.read_text(), r"\includegraphics[width=10pt]{used.png}")
+        self.assertEqual((package / "used.png").read_bytes(), PNG)
+        self.assertFalse((package / "stale.png").exists())
+
 
 if __name__ == "__main__":
     unittest.main()

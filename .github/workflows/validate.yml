@@ -24,6 +24,11 @@ jobs:
           python-version: '3.12'
       - name: Install scientific dependencies
         run: python -m pip install -r requirements-data.txt
+      - name: Install isolated, pinned circuit importers
+        run: |
+          python -m venv "$RUNNER_TEMP/book-import"
+          "$RUNNER_TEMP/book-import/bin/python" -m pip install -r scripts/requirements-import.txt
+          echo "IMPORT_PYTHON=$RUNNER_TEMP/book-import/bin/python" >> "$GITHUB_ENV"
       - name: Check manuscript structure and manifests
         run: |
           make manifest-check
@@ -31,10 +36,5 @@ jobs:
           python -m unittest discover -s tests -p test_book_contract.py
       - name: Execute printed complete examples and numbered labs
         run: make support-check lab-check
-      - name: Check the read-only oracle and spectrum negative controls
-        run: |
-          python code/ch09-verify-h2.py
-          python scripts/check-oracle-integrity.py
-          dotnet fsi scripts/check-spectral-certification.fsx
-      - name: Check pipeline output isolation
-        run: make pipeline-check
+      - name: Check bounded scientific evidence and real circuit imports
+        run: make import-check

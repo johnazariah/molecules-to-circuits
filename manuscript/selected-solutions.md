@@ -6,6 +6,95 @@ reasoning remains findable if exercises are reordered. Use the
 question's stated model and inputs: a hypothetical coefficient table
 is not the canonical H₂ fixture.
 
+## The Electronic Structure Problem: Normalisation and exclusion
+
+Let the two constituent orbitals be individually normalised, with real
+overlap $S=0.2$. The squared norms of their sum and difference are
+$2+2S=2.4$ and $2-2S=1.6$. The normalised combinations therefore use
+coefficients
+
+$$
+N_+=\frac1{\sqrt{2.4}},\qquad
+N_-=\frac1{\sqrt{1.6}}.
+$$
+
+Using $1/\sqrt2$ would be correct only for zero overlap. Normalising
+each constituent separately does not make the cross term disappear.
+
+For two identical spin-orbitals $\chi$, the antisymmetrised expression
+$\chi(x_1)\chi(x_2)-\chi(x_2)\chi(x_1)$ is zero. There is no
+normalisation factor that can turn this zero vector into a
+two-electron state. The exclusion concerns the complete spin-orbital:
+electrons with opposite spin can occupy the same spatial orbital.
+
+For **Configuration counting**, choosing ten occupied spin-orbitals
+from water's fourteen gives $\binom{14}{10}=1001$ determinants.
+H₂ with two electrons in four spin-orbitals gives
+$\binom42=6$. The supplied cc-pVDZ H₂ example has ten spatial,
+hence twenty spin-orbitals, giving $\binom{20}{2}=190$.
+These counts fix electron number but do not further restrict spin
+projection or spatial symmetry.
+
+## The Notation Minefield: Prefactor diagnosis
+
+The hypothetical same-spin example gives Coulomb integral $J=0.7$
+and exchange integral $K=0.2$. Define
+$T=a_0^\dagger a_1^\dagger a_1a_0=n_0n_1$.
+The four unrestricted raw entries contribute
+
+| Raw key | Integral | Operator relative to $T$ | Contribution including the half |
+|:---:|:---:|:---:|:---:|
+| `0,1,0,1` | $J$ | $+T$ | $JT/2$ |
+| `1,0,1,0` | $J$ | $+T$ | $JT/2$ |
+| `0,1,1,0` | $K$ | $-T$ | $-KT/2$ |
+| `1,0,0,1` | $K$ | $-T$ | $-KT/2$ |
+
+Their sum is $(J-K)T=0.5T$.
+The unrestricted antisymmetrised tensor has corresponding values
+$J-K,J-K,-(J-K),-(J-K)$. Combining their signs with the
+operator signs and the quarter prefactor again gives $0.5T$.
+Restricting to $p<q$, $r<s$ retains one antisymmetrised
+coefficient $J-K$ and no additional prefactor, also giving $0.5T$.
+
+Only the doubly occupied state has $n_0n_1=1$, so all three
+correct representations have matrix
+$\mathrm{diag}(0,0,0,0.5)$ in integer-row order.
+Keeping just a restricted raw Coulomb entry gives 0.7 instead;
+omitting the half from the unrestricted raw sum gives 1.0.
+These particular errors are distinguishable because the question
+supplies the entire small operator, not merely a discrepant
+ground-state energy from an otherwise unknown calculation.
+
+## From Spatial to Spin-Orbital Integrals: Missing block detection
+
+The supplied Hartree-Fock configuration has two opposite-spin
+electrons in the bonding spatial orbital. Its electronic diagonal is
+
+$$
+E_\mathrm{HF,el}=2h_g+J_g=-1.831863646477506\ \mathrm{Ha}.
+$$
+
+With nuclear repulsion added, the total is
+$-1.1167593073964255$ Ha. Deleting cross-spin two-body
+blocks removes the repulsion between these electrons, leaving
+$2h_g=-2.5066195732919546$ Ha electronically and
+$-1.7915152342108734$ Ha in total.
+
+The broken result is lower because a positive interaction was lost,
+not because a better Hartree-Fock approximation was found.
+The variational principle compares states under the **same**
+Hamiltonian. It does not make an accidentally weakened Hamiltonian
+a better description of the molecule.
+
+For **Allowed is not nonzero**, the supplied
+$\langle01\mid23\rangle=0.1812104620$ Ha satisfies the spin
+selection rule, whereas $\langle01\mid32\rangle=0$ is spin
+forbidden. The raw value
+$\langle00\mid00\rangle=0.6747559268$ Ha is nonzero, but its
+same-mode two-body monomial contains a squared fermionic ladder
+and vanishes. An allowed tensor slot, a nonzero integral and a
+surviving operator contribution are three different things.
+
 ## The Quantum Computer's Vocabulary: Bell state
 
 Starting in $\lvert00\rangle$, the Hadamard on qubit 0 gives
@@ -34,17 +123,17 @@ $\langle XX\rangle=0$.
 
 ## The Quantum Computer's Vocabulary: CNOT cost
 
-The hypothetical Hamiltonian has 100 nonidentity terms. In JW,
-20 have weight 50 and 80 have weight 2; in the ternary example,
+The hypothetical Hamiltonian has 100 nonidentity terms. In encoding A,
+20 have weight 50 and 80 have weight 2; in encoding B,
 those same 20 heavy terms have weight 5. Using the unoptimised
 logical staircase cost $2(w-1)$ per term gives
 
 $$
-C_\mathrm{JW}=20[2(50-1)]+80[2(2-1)]=2120,
+C_A=20[2(50-1)]+80[2(2-1)]=2120,
 $$
 
 $$
-C_\mathrm{tree}=20[2(5-1)]+80[2(2-1)]=320.
+C_B=20[2(5-1)]+80[2(2-1)]=320.
 $$
 
 The difference is 1800 CNOTs per first-order step under this model,
@@ -53,29 +142,77 @@ a molecular error tolerance, routing overhead or a hardware
 runtime advantage. It is a comparison of the supplied weight
 distributions under one declared compilation rule.
 
-## Checking Our Answer: Sector analysis
+## A Visual Guide to Encodings: Fenwick query and update
 
-The question uses the normal-ordered electronic Hamiltonian,
-without nuclear repulsion. Every one-body monomial
-$a_p^\dagger a_q$ kills the vacuum because its rightmost
-annihilator does. Every two-body monomial
-$a_p^\dagger a_q^\dagger a_s a_r$ does so for the same reason.
-Thus
+The occupation vector is $(1,0,1,1,0,1,0,1)$ and its stored
+Fenwick bits are $(1,1,1,1,0,1,0,1)$.
+To find the parity $F_5$ of the first five occupations, start
+at one-based index 5. Its stored interval contributes $b_4$;
+subtracting `lowbit(5)=1` takes us to 4, whose interval
+contributes $b_3$. Subtract `lowbit(4)=4` to finish at zero.
+Thus $F_5=b_4\oplus b_3=0\oplus1=1$.
+
+Updating an occupation follows a different traversal. To toggle
+zero-based occupation 2, begin at one-based index 3 and repeatedly
+**add** the low bit: $3\to4\to8\to16$. Stop beyond the eight
+stored entries. The affected zero-based storage positions are
+2, 3 and 7. Toggling those bits gives
+$(1,1,0,0,0,1,0,0)$.
+
+For **Recover an occupation**, use a difference of prefix
+parities, which is XOR rather than subtraction here. The specified
+examples simplify to
+$n_1=b_1\oplus b_0=1\oplus1=0$ and
+$n_3=b_3\oplus b_2\oplus b_1=1\oplus1\oplus1=1$.
+One traversal queries disjoint intervals; another updates every
+stored interval containing the changed occupation. They are not
+the same "path up the tree".
+
+## Building the Qubit Hamiltonian: Closed-shell eigenstate
+
+In the ordered basis `1100`, `0011`, the exercise supplies
 
 $$
-H_\mathrm{el}\lvert0000\rangle=0.
+H_\mathrm{pair}=\begin{pmatrix}A&g\\g&D\end{pmatrix},
+\qquad
+A=-1.831863646477506,\quad
+D=-0.2524861930538954,\quad
+g=0.18121046201519672\ \mathrm{Ha}.
 $$
 
-The zero-electron sector contains only this one state, so its
-electronic spectrum is the single eigenvalue 0. Adding $V_{nn}I$
-would change that eigenvalue to $V_{nn}$. The vacuum argument
-does not say that the full molecular Hamiltonian, including its
-nuclear constant, has a zero-energy vacuum.
+Solving the quadratic determinant equation gives
 
-The Pauli expansion can contain an identity coefficient even
-though this eigenvalue is zero. Other diagonal Pauli terms
-cancel that coefficient on the vacuum. Treating the identity
-coefficient alone as the vacuum energy misses those terms.
+$$
+E_\pm=\frac{A+D}{2}
+\pm\sqrt{\left(\frac{D-A}{2}\right)^2+g^2}.
+$$
+
+The lower root is $E_-=-1.852388173569583$ Ha.
+The first row of the eigenvalue equation gives
+$c_1/c_0=(E_--A)/g$. Choosing positive $c_0$ and
+normalising gives
+
+$$
+\lvert\psi_-\rangle
+=0.9936467548998383\lvert1100\rangle
+-0.1125438868931603\lvert0011\rangle.
+$$
+
+Its squared HF overlap is approximately 0.9873338735.
+The relative minus sign lowers the energy for positive $g$;
+normalising the magnitudes without retaining that sign
+would produce the wrong expectation value.
+
+For **Same populations, different energy**, an incoherent
+mixture with those same squared amplitudes has only the
+diagonal contribution
+$E_\mathrm{diag}=-1.811859051897488$ Ha.
+That is about $+0.0200045946$ Ha above the HF diagonal.
+The coherent state's off-diagonal contribution is
+$2c_0c_1g=-0.0405291217$ Ha, giving the net change
+$-0.0205245271$ Ha. Population transfer alone does not
+explain the lowering. The relative phase and its interference
+term are essential.
 
 ## Six Encodings, One Interface: Cumulative parity
 
@@ -113,6 +250,30 @@ $A=(P-iQ)/2$, the same-type square is
 $(P^2-i\{P,Q\}-Q^2)/4=0$, while
 $\{A,A^\dagger\}=I$. The missing $i$ changed the algebra;
 it was not merely an overall phase on an otherwise valid ladder.
+
+## Checking Our Answer: Sector analysis
+
+The question uses the normal-ordered electronic Hamiltonian,
+without nuclear repulsion. Every one-body monomial
+$a_p^\dagger a_q$ kills the vacuum because its rightmost
+annihilator does. Every two-body monomial
+$a_p^\dagger a_q^\dagger a_s a_r$ does so for the same reason.
+Thus
+
+$$
+H_\mathrm{el}\lvert0000\rangle=0.
+$$
+
+The zero-electron sector contains only this one state, so its
+electronic spectrum is the single eigenvalue 0. Adding $V_{nn}I$
+would change that eigenvalue to $V_{nn}$. The vacuum argument
+does not say that the full molecular Hamiltonian, including its
+nuclear constant, has a zero-energy vacuum.
+
+The Pauli expansion can contain an identity coefficient even
+though this eigenvalue is zero. Other diagonal Pauli terms
+cancel that coefficient on the vacuum. Treating the identity
+coefficient alone as the vacuum energy misses those terms.
 
 ## Why Tapering?: Follow the ledger
 
