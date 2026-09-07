@@ -1,11 +1,15 @@
 # Chapter 18: The Question We Can Now Answer
 
-_Sixteen chapters of theory and code. Time to run the whole thing._
+_We have the ingredients. Time to follow the implemented calculation from its input file to its output circuit — and keep the energy reference in view._
 
 ## In This Chapter
 
-- **What you'll learn:** Every stage of the pipeline assembled into a single executable script — from molecular integrals to quantum circuit — for the hydrogen molecule.
-- **Why this matters:** This is the capstone. Every concept from the preceding chapters appears here in its final, integrated form. If you can follow this script line by line and understand what each call does, you have mastered the pipeline.
+- **What you'll learn:** The implemented untapered H₂ path from molecular
+  integrals to logical circuit, its independent classical energy reference,
+  and the checkpoints connecting them.
+- **Why this matters:** This is the capstone for operator construction.
+  Following both data tracks makes clear what a generated circuit proves
+  and what still belongs to an energy-estimation algorithm.
 - **Prerequisites:** All of the preceding stages (Chapters 1–17).
 
 ---
@@ -16,7 +20,12 @@ Look back at what we've built.
 
 In Chapter 1, we started with a molecule and asked: *what is its ground-state energy?* That question led us through electronic structure (the integrals), second quantization (the ladder operators), encoding (the Pauli strings), tapering (removing redundant qubits), Trotterization (turning operators into gates), and cost analysis (counting the CNOTs). At each stage we introduced one mathematical transformation, implemented it, and tested it on H₂.
 
-Now we put the whole chain together. The script below takes the H₂ molecular integrals and produces a quantum circuit — ready to run on a simulator or real hardware. Six function calls. Under fifty lines of code. Under a second of runtime.
+Now we run the implemented chain. The script takes H₂ molecular
+integrals and produces untapered logical circuits in six encodings.
+It does not silently select a tapering sector, prepare a ground state,
+or turn a logical gate list into a hardware-ready job. Those are
+important stages, but this script would teach the wrong lesson if
+it pretended to execute them.
 
 > **Two executable tracks:** `code/ch18-pipeline.fsx` uses FockMap to construct
 > encoded Hamiltonians and logical circuits. `code/ch18-dissociation-scan.py`
@@ -25,9 +34,70 @@ Now we put the whole chain together. The script below takes the H₂ molecular i
 > fermionic matrix with the derived JW Pauli matrix. The F# companion does not
 > infer a ground-state energy from a circuit coefficient.
 
+## The Input Contract
+
+The canonical checkpoint is H₂ at $R=0.74$ Å in STO-3G,
+with two electrons and four interleaved spin-orbitals. The raw
+single-bar physicist tensor contains four nonzero one-body entries
+and thirty-two two-body entries. These are tensor entries, not
+thirty-six distinct terms in the final qubit Hamiltonian.
+
+The independent provenance record identifies the research source
+commit `66ebdfe255c0cc6ba25a6d1b76b58401aee3ab06`
+and the source file SHA-256
+`6539afb30a1c03ec89202a2960a06c6580a91afaebf13a6cadbcfd32c2d71812`.
+The FockMap package is 0.9.0, built from `96320a5`.
+A geometry label alone is not this contract: two files both called
+"H₂ integrals" may differ in basis, orbital order, tensor convention
+or coefficient prefactors.
+
+The labelled-state convention is equally explicit. Displayed HF
+occupation `1100` has modes 0 and 1 occupied, giving integer row
+$1+2=3$. A displayed Pauli signature $P_0P_1P_2P_3$ becomes the
+dense tensor $P_3\otimes P_2\otimes P_1\otimes P_0$ in this
+row convention. The state and operator must cross this boundary
+together.
+
+### Checkpoints rather than one final number
+
+| Checkpoint | Object | Concrete question |
+|:---|:---|:---|
+| Molecular specification | Geometry, basis, charge, spin counts | Are both tracks solving the same finite-basis problem? |
+| Integral input | Raw tensor and provenance | Is the builder receiving raw rather than preweighted coefficients? |
+| Encoded operator | Collected Pauli sum | Does JW have 15 nonzero terms and the expected labelled matrix elements? |
+| Reference matrix | Occupation-space Hamiltonian | Does the intended sector reproduce its eigenvalues and states? |
+| Product formula | Ordered rotation list | Are its angles $c_k\Delta t$, with identity handled separately? |
+| Circuit | Ordered gate array | Does it implement that list, rather than merely contain plausible gates? |
+| Reference energy | HF/FCI output | Is the reported value electronic or total, and from which solver? |
+
+```mermaid
+flowchart TD
+    SPEC["H2; R=0.74 Å; STO-3G; 2 electrons"] --> INT["Raw physicist integrals"]
+    INT --> DIRECT["Independent fermion matrix"]
+    INT --> FM["FockMap Pauli sum"]
+    FM --> MATRIX["JW matrix in occupation rows"]
+    DIRECT --> COMP["Compare elements, labels and sector spectrum"]
+    MATRIX --> COMP
+    FM --> ROT["Ordered Pauli rotations"]
+    ROT --> GATES["Untapered logical gates"]
+    SPEC --> PY["PySCF RHF / FCI"]
+    PY --> ENERGY["Reference energies and Vnn"]
+    COMP --> ENERGY
+```
+
+The arrows into the comparison mean a check, not that the check
+computes the PySCF result. The circuit branch ends at a gate
+description. Chapter 20 supplies the missing algorithmic reasoning
+between gates, prepared states and energy estimates.
+
 ---
 
 ## The Script
+
+The following **contextual excerpt** shows the main construction loop.
+The complete entry point, including input and sentinel checks, is
+`dotnet fsi code/ch18-pipeline.fsx`; do not substitute this shorter
+listing for those checks.
 
 ```fsharp
 #load "code/ch03-spin-orbitals.fsx"
@@ -91,13 +161,15 @@ for (name, encoder) in encoders do
         stats.TotalGates
 ```
 
-That's it. One loop, six encodings, each going from integrals all the way to a quantum circuit.
+One loop constructs six logical circuits from the same integral
+factory. The common input matters more than the shortness of the loop.
 
 ---
 
 ## What Each Line Does
 
-If you've read the preceding chapters, every line should be familiar. But let's trace through one iteration — Jordan–Wigner — to see the full pipeline in action:
+Let's trace one iteration — Jordan–Wigner — including the types
+that connect one call to the next:
 
 **`computeHamiltonianWith encoder rawPhysicistFactory 4u`** — Takes the encoder
 and the raw single-bar physicist integrals, applies the documented prefactor and
@@ -121,9 +193,54 @@ $\theta=2c_k\Delta t$.
 
 **`decomposeTrotterStep step`** — Converts each Pauli rotation into concrete gates via the CNOT staircase (Chapter 16). A weight-$w$ rotation becomes $2(w-1)$ CNOTs plus single-qubit gates.
 
-**`toOpenQasm defaultOpenQasmOptions numQubits gates`** — Writes the gate sequence as a valid OpenQASM 3.0 program (Chapter 21 will explore this in detail).
+**`toOpenQasm defaultOpenQasmOptions numQubits gates`** — Serialises the
+gate sequence using OpenQASM 3.0 syntax. Importer version, supported
+subset and numerical angle precision are separate checks in Chapter 21.
 
 **`trotterStepStats step`** — Counts everything: rotations, CNOTs, single-qubit gates, total gates (Chapter 17).
+
+The main values are not interchangeable:
+
+| F# value | Meaning | What it does not contain |
+|:---|:---|:---|
+| `rawPhysicistFactory` | A key-to-optional-complex-integral function | A prepared quantum state |
+| `ham` | A `PauliRegisterSequence` with combined coefficients | A ground-state energy result |
+| `step.Rotations` | Ordered exponent-angle/operator records | A measurement schedule |
+| `gates` | Elementary logical `Gate` values | A device placement or noise model |
+| `qasm` | Text describing the gate sequence | Evidence of execution |
+
+`pruneZeroTerms` first distributes and combines coefficients through
+the Hamiltonian representation, then keeps terms whose complex
+magnitude exceeds $10^{-12}$. Pruning individual contributions
+before collection can destroy cancellation or keep duplicate terms.
+Conversely, a threshold appropriate for this small H₂ example is
+not automatically an acceptable energy error for a large model.
+Chapter 15 gives a coefficient-sum bound for that decision.
+
+### The electronic and total energy ledger
+
+At the canonical geometry the independent reference gives:
+
+| Quantity | Value (Ha) | Source/interpretation |
+|:---|---:|:---|
+| Identity coefficient $c_I$ | -0.8121706072 | Trace of the electronic matrix divided by 16 |
+| HF electronic energy | -1.8318636465 | Matrix element at occupation row 3 |
+| FCI electronic energy | -1.8523881736 | Lowest eigenvalue in the physical two-electron sector |
+| Nuclear repulsion $V_{nn}$ | 0.7151043391 | Classical nuclear geometry |
+| HF total energy | -1.1167593074 | HF electronic + $V_{nn}$ |
+| FCI total energy | -1.1372838345 | FCI electronic + $V_{nn}$ |
+
+The identity coefficient is an average over the full Fock-space
+matrix, not an eigenvalue. Adding nuclear repulsion to it gives
+neither HF nor FCI. Likewise, running the time-evolution circuit
+on the HF determinant does not lower its energy: exact evolution
+preserves the input state's expectation.
+
+The correlation energy is $E_{\rm FCI}-E_{\rm HF}=-0.0205245271$
+Ha. It is the same difference whether we use electronic or total
+energies, because the same nuclear offset cancels. Across *different*
+geometries, however, $V_{nn}$ changes and must not be discarded
+from a potential energy curve.
 
 ---
 
@@ -137,8 +254,10 @@ symmetry generators, method, and physical sector and match that untapered
 sector's spectrum.
 
 Only then should the script generate a table of qubits, nonzero terms, CNOTs,
-and total gates. A six-row table is evidence only when it is generated by the
-pinned package and accompanied by those matrix and sector tests.
+and total gates. A six-row table is evidence of generated counts, not by itself
+evidence of matrix or physical-sector correctness. Chapter 17
+gives the scoped untapered ledger; the matrix and sector checks
+remain separately identified.
 
 ---
 
@@ -159,7 +278,7 @@ let qasm = toOpenQasm defaultOpenQasmOptions 4 jwGates
 printfn "%s" qasm
 ```
 
-The output is a valid QASM 3.0 program — qubit declarations followed by `h`,
+The output uses QASM 3.0 syntax — qubit declarations followed by `h`,
 `cx`, `rz`, `s`, and `sdg` instructions. On a simulator, verify that its
 statevector or unitary matches the intended ordered product of Pauli
 exponentials. Time evolution alone does not prepare the ground state or produce
@@ -181,8 +300,8 @@ by PySCF FCI.
 
 At every bond length, the mode count and encoding are fixed while coefficients
 and numerical zero patterns can change. FockMap's skeleton API precomputes the
-operator expansions, then applies each raw tensor through the explicit
-operator-coefficient adapter:
+operator expansions, then applies each raw tensor through the pinned
+raw-coefficient interface:
 
 ```fsharp
 // Precompute the Pauli structure once
@@ -203,6 +322,26 @@ these derived term and CNOT counts to ignored
 `_build/data/h2_circuit_costs.csv`. Any speedup must be measured for the pinned
 implementation rather than assumed to equal the number of geometries.
 
+There is a useful equivalence to check at every scan point:
+
+$$H_{\rm direct}(R)=H_{\rm skeleton}(R).$$
+
+The left side encodes the raw tensor afresh. The right side
+reuses symbolic operator expansions and supplies the coefficients
+for that geometry. Compare their *collected coefficient maps*,
+not just their term counts. Two wrong maps can both have fifteen
+entries. The skeleton avoids repeated algebra; it neither solves
+the Schrödinger equation nor licenses reusing old coefficients.
+
+Reusing a mode ordering requires care. Orbital phases can change
+between independent SCF calculations, and orbitals can exchange
+order near crossings. The corresponding integrals and operator
+labels must describe a coherent convention at each geometry.
+An energy curve may remain smooth even when a sign-sensitive
+matrix comparison does not, because spectra ignore basis phases.
+That is a reason to record the representation, not a reason to
+discard the matrix comparison.
+
 ### The Scan
 
 Regenerate both evidence tracks from the repository root:
@@ -218,6 +357,13 @@ The integral generator writes `h2_dissociation_integrals.json`; the F# script
 reads that file for circuit construction. The PySCF scan separately writes
 `h2_dissociation.csv` and the plot. Keeping distinct output paths prevents a
 circuit-cost script from overwriting the trusted energy reference.
+
+The canonical 0.74 Å fixture is an acceptance target, not a file
+for the circuit-cost program to "refresh". Generated scans and
+derived cost CSVs have their own destinations. When new reference
+chemistry is intentionally generated, record its software versions
+and hashes and compare the overlapping geometry with the canonical
+checkpoint before accepting the new dataset.
 
 ### The Result
 
@@ -236,7 +382,9 @@ the STO-3G potential energy surface:
 | 0.90 | −1.120560 | | 4.00 | −0.933171 |
 | 1.00 | −1.101150 | | 5.00 | −0.933164 |
 
-The energy drops steeply as the atoms approach from infinity, reaches a minimum at **0.74 Å**, then rises sharply as nuclear repulsion takes over at close range. This is the classic Morse-like dissociation curve. At large separations the energy converges to **−0.933 Ha** — two isolated hydrogen atoms, each at −0.4666 Ha in the STO-3G basis.
+The energy drops steeply as the atoms approach from infinity, reaches its
+lowest sampled value at **0.74 Å**, then rises sharply as nuclear repulsion
+takes over at close range. This is the classic Morse-like dissociation curve. At large separations the energy converges to **−0.933 Ha** — two isolated hydrogen atoms, each at −0.4666 Ha in the STO-3G basis.
 
 Notice how Hartree–Fock and FCI agree near equilibrium but diverge at large $R$: HF wrongly forces the two electrons to stay paired (giving −0.599 Ha at $R = 5$ Å, far too high), while FCI correctly dissociates into two independent atoms. This is the **static correlation** problem that motivated quantum simulation in the first place.
 
@@ -254,7 +402,7 @@ is demonstrated.
 The dissociation curve encodes several physical observables:
 
 - **Equilibrium bond length** ($R_e$): the location of the minimum
-- **Dissociation energy** ($D_e$): the depth of the well (minimum energy minus the asymptotic value)
+- **Dissociation energy** ($D_e$): the positive well depth (asymptotic energy minus minimum energy)
 - **Vibrational frequency** ($\omega_e$): proportional to the square root of the curvature at the minimum
 
 All three are experimentally measurable, but this coarse grid directly
@@ -263,6 +411,20 @@ point is 0.74 Å, close to the experimental 0.741 Å. A fitted minimum and
 curvature would be needed for a precise $R_e$ or vibrational frequency. The
 sampled well depth is about $0.204$ Ha (5.6 eV), compared with an experimental
 dissociation energy around 4.75 eV; the minimal basis overbinds.
+
+Here $D_e$ measures from the bottom of the electronic potential well.
+The dissociation energy $D_0$ measured from the lowest vibrational
+level is smaller by that level's zero-point energy. A coarse
+electronic curve supplies neither a vibrational solution nor its
+zero-point correction. Do not compare the calculated $D_e$
+with an experimental $D_0$ as if they were the same observable.
+
+The STO-3G asymptote matters too. Two hydrogen atoms in this basis
+approach approximately $2(-0.4666)=-0.9332$ Ha, rather than
+the complete-basis nonrelativistic value of $-1$ Ha. FCI is
+exact within its chosen orbital space, not independent of that
+choice. An accurate electronic eigensolver cannot manufacture
+radial flexibility missing from the basis.
 
 ---
 
@@ -275,7 +437,9 @@ algorithm. Larger molecules also require explicit active spaces, physical
 sector selection, state preparation, and resource models; changing only the
 integrals and qubit count is not enough.
 
-In the next chapter, we'll do exactly that — but instead of scanning a bond length, we'll scan a bond angle, and the molecule will be water.
+In the next chapter, we carry the reference-chemistry track to water:
+we scan an angle with PySCF, not a completed per-geometry quantum
+energy-estimation workflow.
 
 ---
 
@@ -289,6 +453,21 @@ In the next chapter, we'll do exactly that — but instead of scanning a bond le
   direct-matrix and sector-spectrum check.
 - Larger systems require active-space, sector, state-preparation, algorithm, and
   resource decisions beyond swapping integrals.
+
+## Exercises
+
+1. **An energy ledger.** Using the six values in this chapter's energy
+   table, recover the FCI total energy and the correlation energy.
+   Explain why the identity coefficient plus $V_{nn}$ is not a
+   ground-state energy.
+2. **Protect the reference.** A proposed circuit-cost script overwrites
+   `code/h2_dissociation.csv` with the identity coefficient at each
+   geometry. Identify both mistakes and name the correct derived
+   circuit-cost destination and energy-generating companion.
+3. **Well depth.** Using the sampled FCI values at 0.74 Å and
+   5.00 Å, calculate an approximate positive $D_e$ in Ha.
+   State why this is not a fitted equilibrium result or a value of
+   $D_0$.
 
 ## Further Reading
 
