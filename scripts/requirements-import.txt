@@ -1,0 +1,8 @@
+# Optional, isolated real-importer validation environment for Chapter 21.
+# python3 -m venv .venv-import
+# .venv-import/bin/python -m pip install -r scripts/requirements-import.txt
+numpy==2.0.2
+scipy==1.13.1
+qiskit==2.2.3
+qiskit-qasm3-import==0.6.0
+qsharp==1.22.0

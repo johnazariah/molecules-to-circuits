@@ -17,7 +17,7 @@ import json
 from pathlib import Path
 
 import numpy as np
-from numerical_integrity import configure_solver, converged, finite, output_batch, solver_settings, write_json
+from numerical_integrity import configure_solver, converged, finite, output_batch, solver_settings
 
 try:
     import pyscf
@@ -106,7 +106,7 @@ def load_canonical_fixture():
 def compute_integrals(R_angstrom):
     """
     Compute STO-3G integrals for H₂ at bond length R (Å).
-    Returns (Vnn, one_body_dict, two_body_dict) in spin-orbital
+    Returns (Vnn, integral_map, provenance, E_HF) in spin-orbital
     physicist's convention with interleaved spin indexing.
     """
     mol = gto.M(

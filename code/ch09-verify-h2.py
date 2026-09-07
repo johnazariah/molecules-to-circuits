@@ -10,7 +10,8 @@ from pathlib import Path
 import numpy as np
 import pyscf
 from pyscf import ao2mo, fci, gto, scf
-from numerical_integrity import compare_document, converged, finite, output_batch, write_json
+from numerical_integrity import compare_document, configure_solver, converged, finite, output_batch, write_json
+from quantum_reference import pauli_matrix
 
 
 TOLERANCE = 5e-10
@@ -34,12 +35,6 @@ REFERENCE_DOCUMENT = json.loads(REFERENCE_PATH.read_text())
 REFERENCE_METADATA = REFERENCE_DOCUMENT["_metadata"]
 REFERENCE_RECORD = REFERENCE_DOCUMENT["0.74"]
 BOND_LENGTH = float(REFERENCE_RECORD["bond_length_angstrom"])
-
-I = np.eye(2, dtype=complex)
-X = np.array([[0, 1], [1, 0]], dtype=complex)
-Y = np.array([[0, -1j], [1j, 0]], dtype=complex)
-Z = np.diag([1, -1]).astype(complex)
-PAULIS = {"I": I, "X": X, "Y": Y, "Z": Z}
 
 def require(condition, message):
     if not condition:
@@ -110,7 +105,7 @@ def make_molecule():
         symmetry=False,
         verbose=0,
     )
-    mean_field = scf.RHF(mol).run()
+    mean_field = configure_solver(scf.RHF(mol), "SCF").run()
     converged(mean_field, "H2 RHF", mean_field.e_tot, mean_field.mo_coeff, mean_field.mo_energy)
     return mol, mean_field
 
@@ -205,15 +200,6 @@ def build_fermionic_matrix(integrals, num_qubits=4):
             matrix[index_of[result], column] += scale * phase
 
     return matrix, states
-
-
-def pauli_matrix(signature):
-    result = np.array([[1]], dtype=complex)
-    # FockMap displays P0 P1 ... left-to-right. Reverse the factors so the
-    # conventional matrix row index uses mode j at integer place value 2^j.
-    for symbol in reversed(signature):
-        result = np.kron(result, PAULIS[symbol])
-    return result
 
 
 def occupation_integer(state):
@@ -454,7 +440,7 @@ def main(argv=None):
         if signature != "IIII"
     )
     nuclear_repulsion = float(mol.energy_nuc())
-    cisolver = fci.FCI(mean_field)
+    cisolver = configure_solver(fci.FCI(mean_field), "FCI")
     fci_total, fci_vector = cisolver.kernel()
     converged(cisolver, "H2 FCI", fci_total, fci_vector)
     fci_electronic = float(fci_total - nuclear_repulsion)
