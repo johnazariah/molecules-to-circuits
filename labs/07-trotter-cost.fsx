@@ -141,23 +141,23 @@ for (name, encode) in encoders do
 printfn "╚══════════════════════════════════════════════════════════════════════════╝"
 
 (**
-## Surprise: JW Wins at Small $n$!
+## JW Has the Lowest Count for This H2 Hamiltonian
 
 For H₂ (4 qubits), Jordan–Wigner has the **lowest** CNOT count. Why? Because
 JW's $O(n)$ weight only becomes a problem at larger $n$. At $n = 4$, the
 maximum weight of any JW operator is just 4 — and most Hamiltonian terms
 have even lower weight.
 
-The sub-linear encodings pay overhead in rearranging qubits that isn't
-recovered until the system is large enough for their logarithmic scaling
-to dominate.
+This does not establish a molecular-size crossover. Products of ladder
+operators can cancel parity strings, and simplification changes term weights.
 
-## Scaling: Where the Crossover Happens
+## An Operator-Level Scaling Illustration
 
-To see the crossover, we measure the **maximum Pauli weight** of any single
-encoded operator at various system sizes. Since each such operator would
-become a Hamiltonian term requiring $2(w-1)$ CNOTs, this weight directly
-determines per-rotation circuit depth:
+We measure the **maximum Pauli-component weight** in an encoded ladder
+operator at several sizes. We also display the illustrative $2(w-1)$ CNOT
+count for exponentiating a Pauli string of that weight. A ladder operator
+is not itself a Hermitian Hamiltonian term; this is not a measured molecular
+step cost, a depth estimate, or evidence of a crossover.
 *)
 
 let maxWeightForEncoding (encode : LadderOperatorUnit -> uint32 -> uint32 -> PauliRegisterSequence) n =
@@ -186,6 +186,12 @@ for (name, encode) in encoders do
         name data.[0] data.[1] data.[2] data.[3]
 
 printfn "╚════════════════════════════════════════════════════════════════════════════════╝"
+
+let jw64 = cnotsPerRotation (maxWeightForEncoding jordanWignerTerms 64u)
+let ternary64 = cnotsPerRotation (maxWeightForEncoding ternaryTreeTerms 64u)
+printfn "n=64 illustrative maximum-component staircase counts: JW=%d, ternary=%d (ratio %.2f)"
+    jw64 ternary64 (float jw64 / float ternary64)
+if jw64 <> 126 || ternary64 <> 10 then failwith "Pinned n=64 ladder-component cost changed"
 
 (**
 ## The Scaling Story

@@ -2,7 +2,7 @@
 // Chapter 7 Companion: Six Encodings, One Interface
 // ══════════════════════════════════════════════════════════════
 // Run with: dotnet fsi code/ch07-six-encodings.fsx
-// Prereq:   dotnet build --configuration Release
+// Prereq:   .NET 10 SDK; FSI restores pinned FockMap from NuGet.
 
 #r "nuget: FockMap, 0.9.0"
 #load "ch03-spin-orbitals.fsx"

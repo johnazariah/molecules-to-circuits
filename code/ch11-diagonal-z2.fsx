@@ -2,7 +2,7 @@
 // Chapter 11 Companion: Diagonal Z₂ Symmetries
 // ══════════════════════════════════════════════════════════════
 // Run with: dotnet fsi code/ch11-diagonal-z2.fsx
-// Prereq:   dotnet build --configuration Release
+// Prereq:   .NET 10 SDK; FSI restores pinned FockMap from NuGet.
 
 #r "nuget: FockMap, 0.9.0"
 
@@ -36,6 +36,14 @@ let sectorMinus = [ (1, -1); (3, 1) ]
 
 let taperedPlus = taperDiagonalZ2 sectorPlus h
 let taperedMinus = taperDiagonalZ2 sectorMinus h
+let chapterSector = taperDiagonalZ2 [(1, 1); (3, -1)] h
+let chapterTerms =
+    chapterSector.Hamiltonian.DistributeCoefficient.SummandTerms
+    |> Array.map (fun term -> term.Signature, term.Coefficient)
+    |> Map.ofArray
+let expectedChapterTerms = Map.ofList ["ZZ", Complex(0.8,0.0); "ZI", Complex(-0.4,0.0); "IZ", Complex(-0.3,0.0); "II", Complex(-0.2,0.0)]
+if chapterTerms <> expectedChapterTerms then failwithf "Chapter (+1,-1) toy sector mismatch: %A" chapterTerms
+printfn "Chapter (+1,-1) sector: %s" (chapterSector.Hamiltonian.ToString())
 
 printfn "(+1,+1) sector:"
 printfn "  %d → %d qubits" taperedPlus.OriginalQubitCount taperedPlus.TaperedQubitCount

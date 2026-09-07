@@ -2,7 +2,7 @@
 // Chapter 12 Companion: General Clifford Tapering
 // ══════════════════════════════════════════════════════════════
 // Run with: dotnet fsi code/ch12-clifford-tapering.fsx
-// Prereq:   dotnet build --configuration Release
+// Prereq:   .NET 10 SDK; FSI restores pinned FockMap from NuGet.
 
 #r "nuget: FockMap, 0.9.0"
 

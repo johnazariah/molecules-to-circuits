@@ -104,7 +104,8 @@ printfn "╚══════════════════════�
 (**
 ## Theoretical vs Measured Comparison
 
-Let's verify the scaling matches theoretical predictions:
+Finite tables illustrate ladder-component weights; they do not prove an
+asymptotic theorem or measure a compiled circuit's depth.
 *)
 
 printfn "\n=== Theoretical Analysis ==="
@@ -119,18 +120,18 @@ for n in systemSizes do
 
 The difference becomes dramatic at scale:
 
-| n       | Linear | Binary depth | Ternary depth |
+| n       | n | ceil(log2 n) | ceil(log3 n) |
 |---------|--------|--------------|---------------|
 | 100     | 100    | 7         | 5         |
 | 1,000   | 1,000  | 10        | 7         |
 | 10,000  | 10,000 | 14        | 9         |
 
-For quantum chemistry with hundreds of orbitals, logarithmic scaling
-can reduce circuit depth by orders of magnitude.
+These are reference growth functions, not measured encoding weights or circuit
+depths. The actual tree construction and Hamiltonian products matter.
 *)
 
 printfn "\n=== Projected Scaling for Large Systems ==="
-printfn "%-10s  %8s  %12s  %12s" "n" "linear" "binary depth" "ternary depth"
+printfn "%-10s  %8s  %12s  %12s" "n" "n" "ceil(log2 n)" "ceil(log3 n)"
 printfn "%s" (String.replicate 46 "-")
 
 for n in [100; 1000; 10000] do
@@ -144,17 +145,11 @@ for n in [100; 1000; 10000] do
 
 Key takeaways:
 
-1. **Jordan-Wigner and Parity** scale linearly—fine for small systems
-   but impractical for large molecules.
+The measured object is the largest Pauli-component weight of a single ladder
+operator. It is not a molecular Hamiltonian term or a simulation circuit.
 
-2. **Bravyi-Kitaev and Binary Tree** achieve Θ(log n) scaling,
-   reducing 1000-mode circuits from depth 1000 to depth ~10.
-
-3. **Ternary Tree (Bonsai)** is also Θ(log n), with a smaller idealized
-   tree-depth constant than a binary tree.
-
-Choose your encoding based on your specific constraints:
-- Small systems (n < 20): Jordan-Wigner for simplicity
-- Medium systems (20 < n < 100): Bravyi-Kitaev for balance
-- Large systems (n > 100): Ternary Tree for minimal depth
+Choose an encoding by constructing and simplifying the actual Hamiltonian,
+then comparing gate counts, routing, depth and simulation error separately.
+Lab 07 performs the first of those cost comparisons for H2. This table alone
+cannot recommend an encoding by molecule size.
 *)
