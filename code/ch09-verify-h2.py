@@ -2,6 +2,7 @@
 """Independently verify the canonical H2/STO-3G reference at 0.74 Angstrom."""
 
 import itertools
+import argparse
 import hashlib
 import json
 from pathlib import Path
@@ -9,6 +10,7 @@ from pathlib import Path
 import numpy as np
 import pyscf
 from pyscf import ao2mo, fci, gto, scf
+from numerical_integrity import compare_document, converged, finite, output_batch, write_json
 
 
 TOLERANCE = 5e-10
@@ -109,6 +111,7 @@ def make_molecule():
         verbose=0,
     )
     mean_field = scf.RHF(mol).run()
+    converged(mean_field, "H2 RHF", mean_field.e_tot, mean_field.mo_coeff, mean_field.mo_energy)
     return mol, mean_field
 
 
@@ -117,6 +120,8 @@ def generate_spin_integrals(mol, mean_field):
     h1 = mean_field.mo_coeff.T @ mean_field.get_hcore() @ mean_field.mo_coeff
     eri = ao2mo.full(mol, mean_field.mo_coeff)
     eri = ao2mo.restore(1, eri, nao)
+    finite(h1, "H2 one-body tensor")
+    finite(eri, "H2 two-body tensor")
 
     integrals = {}
     for p in range(nao):
@@ -289,6 +294,8 @@ def commutator_sum(coefficients):
 
 def compare_maps(actual, expected, label):
     require(actual.keys() == expected.keys(), f"{label} keys differ")
+    finite(list(actual.values()), label)
+    finite(list(expected.values()), label)
     maximum_error = max(abs(actual[key] - expected[key]) for key in actual)
     require(maximum_error < TOLERANCE, f"{label} max error: {maximum_error}")
     return maximum_error
@@ -302,7 +309,13 @@ def reconstruct_pauli_matrix(coefficients):
     return result
 
 
-def main():
+def main(argv=None):
+    parser = argparse.ArgumentParser(description=__doc__)
+    modes = parser.add_mutually_exclusive_group()
+    modes.add_argument("--write", action="store_true", help="explicitly replace the committed oracle")
+    modes.add_argument("--output", type=Path, help="write a regenerated oracle to this path")
+    parser.add_argument("--archival", action="store_true", help="also require the original PySCF version and bit-identical local tensor")
+    args = parser.parse_args(argv)
     metadata = REFERENCE_METADATA
     committed_record = REFERENCE_RECORD
     committed_integrals = committed_record["integrals"]
@@ -349,11 +362,13 @@ def main():
     )
     generated_semantic_hash = semantic_map_sha256(generated_integrals)
     require(
+        not args.archival or
         committed_record["provenance"]["local_pyscf_spin_integrals_sha256"]
         == generated_semantic_hash,
         "Local PySCF semantic tensor checksum differs",
     )
     require(
+        not args.archival or
         abs(
             committed_record["provenance"][
                 "canonical_max_abs_error_vs_local_pyscf"
@@ -364,6 +379,7 @@ def main():
         "Recorded canonical/PySCF maximum error differs",
     )
     require(
+        not args.archival or
         metadata["pyscf_version"] == pyscf.__version__,
         "Committed PySCF version does not match the verification environment",
     )
@@ -384,6 +400,7 @@ def main():
     )
 
     hamiltonian, states = build_fermionic_matrix(committed_integrals)
+    finite(hamiltonian, "Fermionic Hamiltonian")
     verify_number_operators(states)
     require(
         np.max(np.abs(hamiltonian - hamiltonian.conj().T)) < TOLERANCE,
@@ -437,7 +454,9 @@ def main():
         if signature != "IIII"
     )
     nuclear_repulsion = float(mol.energy_nuc())
-    fci_total, _ = fci.FCI(mean_field).kernel()
+    cisolver = fci.FCI(mean_field)
+    fci_total, fci_vector = cisolver.kernel()
+    converged(cisolver, "H2 FCI", fci_total, fci_vector)
     fci_electronic = float(fci_total - nuclear_repulsion)
     computed_electronic = float(spectra[2][0])
     hf_state = (1, 1, 0, 0)
@@ -567,8 +586,16 @@ def main():
             "external_a2_dagger_labels": ["IXZZ", "IYZZ"],
         },
     }
-    ORACLE_PATH.write_text(json.dumps(oracle, indent=2) + "\n")
-    print(f"  oracle:                {ORACLE_PATH.name}")
+    if args.write or args.output is not None:
+        destination = (args.output or ORACLE_PATH).resolve()
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        with output_batch(destination.parent, [destination.name]) as stage:
+            write_json(stage / destination.name, oracle)
+        print(f"  regenerated oracle:    {destination}")
+    else:
+        require(ORACLE_PATH.exists(), "Missing committed oracle; restore it or use explicit --write/--output regeneration")
+        compare_document(json.loads(ORACLE_PATH.read_text()), oracle, TOLERANCE, archival=args.archival)
+        print(f"  oracle verified:       {ORACLE_PATH.name} (read-only)")
     print()
     print("JW coefficients (FockMap signature order q0,q1,q2,q3):")
     for signature, coefficient in coefficients.items():

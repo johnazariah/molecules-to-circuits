@@ -45,13 +45,13 @@ let private kronecker (left: Complex[,]) (right: Complex[,]) =
             left[row / rightRows, col / rightCols]
             * right[row % rightRows, col % rightCols])
 
-let private signatureMatrix (signature: string) =
+let signatureMatrix (signature: string) =
     signature
     |> Seq.rev
     |> Seq.map singlePauli
     |> Seq.reduce kronecker
 
-let private multiply (left: Complex[,]) (right: Complex[,]) =
+let multiply (left: Complex[,]) (right: Complex[,]) =
     let rows = Array2D.length1 left
     let inner = Array2D.length2 left
     let cols = Array2D.length2 right
@@ -65,7 +65,7 @@ let private multiply (left: Complex[,]) (right: Complex[,]) =
             value <- value + left[row, index] * right[index, col]
         value)
 
-let private identity dimension =
+let identity dimension =
     Array2D.init dimension dimension (fun row col ->
         if row = col then Complex.One else Complex.Zero)
 
@@ -74,6 +74,9 @@ let private trace (value: Complex[,]) =
     |> Array.fold (+) Complex.Zero
 
 let hamiltonianMatrix (hamiltonian: PauliRegisterSequence) =
+    for term in hamiltonian.DistributeCoefficient.SummandTerms do
+        if not (Double.IsFinite term.Coefficient.Real && Double.IsFinite term.Coefficient.Imaginary) then
+            invalidArg "hamiltonian" "Nonfinite Pauli coefficient"
     let terms =
         hamiltonian.DistributeCoefficient.SummandTerms
         |> Array.filter (fun term -> Complex.Abs term.Coefficient > 1e-12)
@@ -85,6 +88,8 @@ let hamiltonianMatrix (hamiltonian: PauliRegisterSequence) =
     let result = Array2D.zeroCreate<Complex> dimension dimension
 
     for term in terms do
+        if term.Signature.Length <> terms[0].Signature.Length then
+            invalidArg "hamiltonian" "Inconsistent Pauli dimensions"
         let pauli = signatureMatrix term.Signature
         for row in 0 .. dimension - 1 do
             for col in 0 .. dimension - 1 do
@@ -92,7 +97,7 @@ let hamiltonianMatrix (hamiltonian: PauliRegisterSequence) =
 
     result
 
-let private spectralMoments (value: Complex[,]) =
+let spectralMoments (value: Complex[,]) =
     let dimension = Array2D.length1 value
     let mutable power = identity dimension
 
@@ -102,11 +107,77 @@ let private spectralMoments (value: Complex[,]) =
             yield trace power
     |]
 
+let hermitianEigenvalues (value: Complex[,]) =
+    let n = Array2D.length1 value
+    if n = 0 || Array2D.length2 value <> n then
+        invalidArg "value" "Expected a nonempty square matrix"
+    for z in value |> Seq.cast<Complex> do
+        if not (Double.IsFinite z.Real && Double.IsFinite z.Imaginary) then
+            invalidArg "value" "Matrix contains a nonfinite entry"
+    let scale = max 1.0 (value |> Seq.cast<Complex> |> Seq.map Complex.Abs |> Seq.max)
+    for i in 0 .. n - 1 do
+        for j in 0 .. n - 1 do
+            if Complex.Abs(value[i,j] - Complex.Conjugate(value[j,i])) > 1e-12 * scale then
+                invalidArg "value" "Matrix is not Hermitian"
+
+    // Realification preserves the COMPLETE complex operator; every eigenvalue
+    // occurs twice. This is not diagonalisation of the real part of H.
+    let size = 2 * n
+    let a = Array2D.init size size (fun i j ->
+        let z = value[i % n, j % n]
+        if (i < n) = (j < n) then z.Real
+        elif i < n then -z.Imaginary else z.Imaginary)
+    let mutable residual = Double.PositiveInfinity
+    let mutable sweeps = 0
+    while residual > 1e-14 * scale && sweeps < 100 do
+        for p in 0 .. size - 2 do
+            for q in p + 1 .. size - 1 do
+                let apq = a[p,q]
+                if abs apq > 1e-16 * scale then
+                    let tau = (a[q,q] - a[p,p]) / (2.0 * apq)
+                    let t = (if tau >= 0.0 then 1.0 else -1.0) / (abs tau + sqrt (1.0 + tau*tau))
+                    let c = 1.0 / sqrt (1.0 + t*t)
+                    let s = t*c
+                    a[p,p] <- a[p,p] - t*apq
+                    a[q,q] <- a[q,q] + t*apq
+                    a[p,q] <- 0.0
+                    a[q,p] <- 0.0
+                    for k in 0 .. size - 1 do
+                        if k <> p && k <> q then
+                            let kp, kq = a[k,p], a[k,q]
+                            a[k,p] <- c*kp - s*kq
+                            a[p,k] <- a[k,p]
+                            a[k,q] <- s*kp + c*kq
+                            a[q,k] <- a[k,q]
+        residual <-
+            [| for i in 0 .. size - 1 ->
+                [| for j in 0 .. size - 1 do if i <> j then yield abs a[i,j] |] |> Array.sum |]
+            |> Array.max
+        sweeps <- sweeps + 1
+    if not (Double.IsFinite residual) || residual > 1e-14 * scale then
+        failwithf "Hermitian eigensolver failed to converge: off-diagonal row-sum %.3e" residual
+    let duplicated = [| for i in 0 .. size - 1 -> a[i,i] |] |> Array.sort
+    Array.init n (fun i ->
+        if abs (duplicated[2*i] - duplicated[2*i+1]) > 1e-11 * scale then
+            failwith "Realified Hermitian eigenvalue pairing failed"
+        (duplicated[2*i] + duplicated[2*i+1]) / 2.0)
+
+let assertSpectrumMatrix name tolerance (expected: float[]) (value: Complex[,]) =
+    if not (Double.IsFinite tolerance) || tolerance <= 0.0 then
+        invalidArg "tolerance" "Expected a positive finite eigenvalue tolerance"
+    if expected.Length <> Array2D.length1 value || expected |> Array.exists (Double.IsFinite >> not) then
+        invalidArg "expected" "Spectrum dimension or finiteness mismatch"
+    let actual = hermitianEigenvalues value
+    let maximumError = Array.map2 (fun x y -> abs (x-y)) actual (Array.sort expected) |> Array.max
+    if maximumError > tolerance then
+        failwithf "%s eigenvalue mismatch: max sorted error %.3e Ha exceeds %.3e Ha" name maximumError tolerance
+    printfn "  %-25s eigenvalues pass (max absolute error %.3e Ha)" name maximumError
+
 let private oraclePath =
     Path.Combine(__SOURCE_DIRECTORY__, "..", "code", "h2_0.74_oracle.json")
 
 if not (File.Exists(oraclePath)) then
-    failwith "Missing H2 oracle. Run: make verify-data"
+    failwith "Missing committed H2 oracle. Restore it, or explicitly regenerate with python3 code/ch09-verify-h2.py --write"
 
 let private oracleDocument = JsonDocument.Parse(File.ReadAllText(oraclePath))
 let private oracleRoot = oracleDocument.RootElement
@@ -136,6 +207,9 @@ let h2ElectronicSpectrum =
 
 let assertH2JwMatrix name tolerance hamiltonian =
     let actual = hamiltonianMatrix hamiltonian
+    hermitianEigenvalues actual |> ignore
+    if Array2D.length1 actual <> 16 then
+        invalidArg "hamiltonian" "H2 oracle requires a 16x16 matrix"
     let mutable maximumError = 0.0
 
     for row in 0 .. 15 do
@@ -160,7 +234,9 @@ let assertH2JwMatrix name tolerance hamiltonian =
     printfn "  %-25s dense matrix passes (max error %.3e)" name maximumError
 
 let assertH2Spectrum name tolerance hamiltonian =
-    let actual = hamiltonian |> hamiltonianMatrix |> spectralMoments
+    let value = hamiltonianMatrix hamiltonian
+    assertSpectrumMatrix name tolerance h2ElectronicSpectrum value
+    let actual = spectralMoments value
     let expected =
         [|
             for exponent in 1 .. h2ElectronicSpectrum.Length ->
@@ -175,12 +251,4 @@ let assertH2Spectrum name tolerance hamiltonian =
             Complex.Abs(actual[index] - Complex(expected[index], 0.0)) / scale
         maximumRelativeError <- max maximumRelativeError relativeError
 
-        if relativeError > tolerance then
-            failwithf
-                "%s spectrum moment %d mismatch: relative error %.3e exceeds %.3e"
-                name
-                (index + 1)
-                relativeError
-                tolerance
-
-    printfn "  %-25s spectral moments pass (max relative error %.3e)" name maximumRelativeError
+    printfn "  %-25s moment diagnostic only (max relative error %.3e)" name maximumRelativeError
