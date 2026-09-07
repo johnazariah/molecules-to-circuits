@@ -5,7 +5,7 @@ language: en
 has_sample: true
 cover_image: cover.png
 about: |
-  **From Molecules to Quantum Circuits** is a self-contained computational
+  **From Molecules to Quantum Circuits** is a computational
   guide to the translation layer from molecular electronic structure
   to logical quantum circuits.
 
@@ -27,8 +27,12 @@ about: |
   who know some quantum mechanics and linear algebra but have not
   previously worked with fermion-to-qubit encodings.
 
+  The 23 chapters are supported by a practical code-reading bridge,
+  selected API and mathematical references, and selected worked solutions.
+  No previous chemistry, F# or measurement-statistics background is assumed.
+
   Companion software: https://github.com/johnazariah/encodings
-  Web version: https://johnazariah.github.io/encodings/
+  Book web version: https://johnazariah.github.io/molecules-to-circuits/
 
 categories:
   - Quantum Computing

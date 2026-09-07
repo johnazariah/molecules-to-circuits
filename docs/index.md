@@ -7,17 +7,26 @@ Centre for Quantum Software and Information, University of Technology Sydney
 
 ---
 
-[📥 Download PDF](https://github.com/johnazariah/molecules-to-circuits/releases/latest) · [💻 FockMap Library](https://github.com/johnazariah/encodings)
+[Earlier book releases](https://github.com/johnazariah/molecules-to-circuits/releases) · [FockMap Library](https://github.com/johnazariah/encodings)
+
+This source tree is the expanded working manuscript. The existing May book
+downloads are earlier editions, not automatically rebuilt copies of this source.
 
 ---
 
 ## About This Book
 
-This is a self-contained, 23-chapter computational tutorial covering the complete pipeline from molecular electronic structure to quantum circuit compilation for quantum simulation.
+This 23-chapter computational guide teaches the translation from molecular
+electronic structure to encoded Hamiltonians and logical circuits. It assumes
+linear algebra and introductory quantum mechanics, not chemistry, F#, Pauli
+algebra or measurement statistics.
 
 Starting from the one-body and two-body integrals of hydrogen (H₂), we construct the qubit Hamiltonian explicitly under six fermion-to-qubit encodings, verify spectral equivalence, reduce qubit count via Z₂ symmetry tapering, decompose the tapered Hamiltonian into Trotter circuits with explicit CNOT gate counts, and export the result to OpenQASM 3.0 and Q#.
 
-Every formula has a corresponding executable computation in the companion [FockMap](https://github.com/johnazariah/encodings) library.
+Core transformations have executable FockMap companions. State preparation
+and energy estimation remain separate algorithmic tasks. Water supplies a
+classical PySCF FCI angular scan at fixed experimental O–H length, not a
+water energy obtained from a quantum circuit or a full geometry optimisation.
 
 ---
 
@@ -25,6 +34,7 @@ Every formula has a corresponding executable computation in the companion [FockM
 
 ### Part I — The Molecule
 1. [The Electronic Structure Problem](01-electronic-structure)
+- [Reading and Running the Code](code-reading)
 2. [The Notation Minefield](02-notation)
 3. [From Spatial to Spin-Orbital Integrals](03-spin-orbitals)
 
@@ -61,8 +71,9 @@ Every formula has a corresponding executable computation in the companion [FockM
 23. [What Comes Next](23-whats-next)
 
 ### Appendices
-- [Library Cookbook Reference](appendix-cookbook)
-- [Mathematical Background](appendix-theory)
+- [Selected FockMap API Reference](appendix-cookbook)
+- [Notation and Convention Reference](appendix-theory)
+- [Selected Worked Solutions](selected-solutions)
 - [References](references)
 
 ---

@@ -8,15 +8,15 @@ Edit only the bootstrap block below when copying this file into another book rep
 
 ## Bootstrap Block
 
-- Book title: `[REPLACE WITH TITLE]`
-- Short thesis: `[ONE OR TWO SENTENCES ON WHAT THE BOOK IS FOR]`
-- Intended reader: `[WHO THE BOOK IS WRITTEN FOR]`
-- Primary artifact: `[WEB-FIRST / PDF-FIRST / BOTH]`
-- Notebook policy: `[FAITHFUL IMPLEMENTATIONS / PEDAGOGICAL DEMOS / MIXED]`
-- Reference policy: `[ADD CENTRAL PDFs TO .references / NO LOCAL PDF ARCHIVE / MIXED]`
-- Authoritative audit file: `.review/[CHOOSE-OR-REUSE-A-FILE].md`
+- Book title: `From Molecules to Quantum Circuits`
+- Short thesis: `Make the translation from molecular integrals to encoded Hamiltonians and logical circuits inspectable. Distinguish H2 construction from the separate fixed-bond PySCF water reference.`
+- Intended reader: `Readers with linear algebra and introductory QM, not assumed chemistry, F#, Pauli algebra or measurement statistics.`
+- Primary artifact: `BOTH: ordered print/EPUB sources and MyST HTML`
+- Notebook policy: `Executable F# scripts and Python references, not notebooks; faithful companions with explicitly labelled toy demonstrations.`
+- Reference policy: `Central bibliography in manuscript/references.md with primary metadata and accessible links; no local PDF archive currently maintained.`
+- Authoritative audit file: `.review/CORRECTNESS-AUDIT.md`
 - Authoritative action-plan file: `.review/ACTION-PLAN.md`
-- Default operating mode: `review-only unless the user explicitly switches to implementation`
+- Default operating mode: `Review-only for a new review request. Current September book implementation is explicitly authorised; publication, rights and submissions are not. Respect coordinator file ownership.`
 
 Everything below this line should usually stay unchanged across repos.
 

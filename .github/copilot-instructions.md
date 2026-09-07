@@ -1,117 +1,80 @@
-# What Quantum Computers Are Actually For — Agent Handoff
+# From Molecules to Quantum Circuits
 
-> **Project:** What Quantum Computers Are Actually For
-> **Subtitle:** Eight problems from logistics to climate — and the algorithms that could solve them
-> **Owner:** John Azariah (johnazariah)
-> **Repo:** https://github.com/johnazariah/quantum-bottleneck (private)
-> **Status:** All 8 units drafted, pre-publication
+**Subtitle:** A Computational Guide to Fermion-to-Qubit Encodings
 
----
+**Author:** John S Azariah
 
-## What this project is
+**Repository:** https://github.com/johnazariah/molecules-to-circuits
 
-A book (blog-first, then expanded to print) that teaches quantum computing **application-first**. Eight units, each built around a real industry problem:
+This is the 23-chapter encodings book, not the eight-unit Quantum Bottleneck
+project. Read `README.md`, `manuscript/Book.txt`, and the current September
+sections of `.review/ACTION-PLAN.md` and `.review/CORRECTNESS-AUDIT.md`.
+Older audit addenda are historical evidence, not present whole-book approval.
 
-| # | Unit | Hook | Quantum Angle |
-|---|------|------|---------------|
-| 1 | Logistics | UPS saves $50M/year shaving 1 mile off routes (TSP/VRP) | QAOA on graph problems |
-| 2 | Cryptography | RSA trapdoor that quantum can kick open | Shor's / period-finding |
-| 3 | Drug Discovery | $2B and 12 years per new drug | VQE / molecular simulation |
-| 4 | Machine Learning | 10⁸ features in a recommender | Quantum kernels / sampling |
-| 5 | Finance | Monte Carlo pricing of derivatives | Quantum amplitude estimation |
-| 6 | Supply Chains | Scheduling 10,000 nurses across 50 hospitals | QUBO / quantum annealing |
-| 7 | Materials Science | Room-temp superconductivity prediction | QPE / Hubbard models |
-| 8 | Climate & Energy | Catalyst design for carbon capture | Quantum simulation / embedding |
+## Authorised work and boundaries
 
-The core thesis: **start with a problem people already care about, then pull in only the quantum machinery needed to solve it.** No qubit-first pedagogy.
+John authorised local book expansion and correction on 7 September 2026.
+The approximate 300-page target is a content budget: 242 chapter pages and
+58 supporting pages, not an agreed Apress trim/layout specification.
+Do not change fonts, margins or blank-page policy merely to hit the target.
+Public releases, publisher submissions, rights changes and blog approvals
+require separate authorisation.
 
-## Current state
+In coordinated sessions, respect the explicit file ownership assigned by
+the coordinator. Do not edit peer-owned chapters, data or evidence scripts.
+Do not create more agents, sessions or factories unless authorised.
 
-- **SPEC.md** — Complete and detailed. Contains unit breakdowns, pedagogical principles, format strategy, and open questions. **Read this first.**
-- **README.md** — Project overview with unit table and repo structure.
-- **manuscript/** — All 8 units drafted (~15,500 words total, ~2,000 words per unit). First drafts — each needs expansion to ~5,000 words.
-- **notebooks/** — 3 companion notebooks (Units 1–3). All run on cloud Quokka via HTTP POST.
-- **figures/** — Empty.
+Preserve the actual dedication, acknowledgements, biography, credentials
+and permission statements. Use John's voice for authored prose without
+inventing author facts or publication history.
 
-This project is in the **first draft review phase**. Next steps: expand units, create remaining notebooks (4–8), set up Jupyter Book for publishing.
+## Reader and scientific contract
 
-## The spec (SPEC.md) — key decisions
+Assume linear algebra and introductory quantum mechanics. Introduce
+chemistry, Pauli algebra, second quantisation, F# and measurement statistics
+before substantive use. The code-reading bridge precedes Chapter 2;
+later local definitions must not be outsourced to the appendices.
 
-### Unit template (every chapter follows this)
+- H2/STO-3G at 0.74 angstrom supplies the checked integral-to-JW matrix
+  and logical-circuit construction. Nuclear repulsion is separate.
+- Water is a PySCF FCI angular scan at fixed experimental O-H length
+  0.9584 angstrom. It is not a quantum-energy calculation or full
+  geometry optimisation.
+- Displayed labels put q0 leftmost. Occupation integer is sum(n_j * 2^j);
+  dense tensor factors run in reverse display order.
+- FockMap 0.9.0 primary builders consume raw physicist spin integrals;
+  `FromWeighted` functions consume full operator coefficients.
+- Choose tapering signs from the intended physical sector. A default
+  all-positive sector or an energy-minimising sweep is not that derivation.
+- Keep measurement circuits, Hamiltonian evolution and ansatz preparation
+  distinct. Logical gate counts are not hardware runtime or advantage.
+- Spectra alone do not establish labelled-state or matrix correctness.
 
-1. **The Hook** (~800 words) — Industry problem. Real numbers, real stakes. No quantum yet.
-2. **The Bottleneck** (~1000 words) — Mathematical structure that makes it hard classically.
-3. **The Quantum Angle** (~1500 words) — The algorithm that addresses this bottleneck. Quantum concepts introduced only as needed.
-4. **Worked Example** (~1000 words) — Toy-sized but complete. Runnable Jupyter notebook.
-5. **Reality Check** (~500 words) — Honest: what works on NISQ today vs. what needs fault tolerance. Cite resource estimates.
-6. **Chef's Notes** (~500 words) — Connections to other units, deeper references, open problems.
+## Immutable evidence
 
-Target: ~5,000–5,500 words per unit + 1 companion notebook.
+FockMap package: `0.9.0`; source:
+`96320a56786393269fd681c67c66df88058a8b8f`.
+Public net10.0 DLL SHA-256:
+`0ba8ae967ea65d4945a336c1217f8939e41feb63b6f04af617b66537717d25c3`.
+Research fixture source: `66ebdfe255c0cc6ba25a6d1b76b58401aee3ab06`;
+fixture SHA-256:
+`6539afb30a1c03ec89202a2960a06c6580a91afaebf13a6cadbcfd32c2d71812`.
+Do not version-bump or relax fail-closed guards to get a successful run.
+Final format regeneration follows RG-01 in the current action plan.
 
-### Concept introduction policy
+## Assembly and evidence
 
-No concept is introduced before needed. The order matters:
+`Book.txt` is the ordered source inventory. MyST's flattened TOC must
+match it. `Sample.txt` selects bodies from that inventory, not a second
+full chapter manifest. The sample keeps the full TOC without blank
+omitted-chapter pages. PDF/EPUB come from Makefile; HTML from Jupyter Book 2.
+Mermaid failures must fail the build; only validated caches may bypass rendering.
 
-- Qubits as binary variables → Unit 1 (Logistics)
-- Superposition, interference, phase kickback, QFT → Unit 2 (Crypto)
-- Fermions, Hamiltonians, VQE → Unit 3 (Drug Discovery)
-- Hilbert space as feature space → Unit 4 (ML)
-- Grover / amplitude amplification → Unit 5 (Finance)
-- QUBO, annealing, tunnelling → Unit 6 (Supply Chains)
-- QPE, Trotter decomposition → Unit 7 (Materials)
-- Active-space methods, embedding → Unit 8 (Climate)
+Run the narrow relevant commands in `Makefile` and preserve their scientific
+meaning. Regeneration and verification are different operations. Do not
+overwrite canonical data as a way of verifying it. Structural manuscript
+checks do not certify mathematical correctness.
 
-### Honesty policy
-
-Every unit has a **Reality Check** box. Rules:
-1. State the current best classical algorithm
-2. State resource estimates for practical quantum advantage (cite papers)
-3. Acknowledge dequantisation results where they exist
-4. Never use "will" or "soon" — use "could", "in principle", "if error rates improve"
-
-### Publication strategy
-
-- **Phase 1 (months 1–8):** Blog series — one unit/month as a standalone ~5,000-word post with companion notebook
-- **Phase 2 (months 9–12):** Expand to book — add depth, exercises, connective tissue
-- **Phase 3:** Course integration with UTS quantum computing curriculum
-
-### Open questions (from SPEC.md §8)
-
-These are unresolved. Ask John before making decisions on:
-- Unit ordering (current: increasing quantum sophistication; alternative: by closeness to practical advantage)
-- Notebook platform (Qiskit only vs. best-tool-per-unit)
-- Coupling with Quokka Cookbook (shared site? shared repo? independent?)
-- Co-authorship (solo? with Chris Ferrie? with Chris and Simon Devitt?)
-- Whether to keep the ML unit (most contentious application area)
-- Blog hosting platform
-
-## Priority work items
-
-1. **Draft Unit 1 (Logistics/QAOA)** — this is the natural starting point. It introduces qubits, cost Hamiltonians, and variational loops. Write `manuscript/01-logistics.md` following the unit template. Create `notebooks/01-logistics.ipynb` with a MaxCut QAOA worked example.
-
-2. **Draft Unit 2 (Cryptography/Shor)** — introduces superposition, interference, QFT, phase kickback. The heaviest "new machinery" chapter.
-
-3. **Set up the blog infrastructure** — if going with GitHub Pages (likely mkdocs-material, same as Quokka Cookbook), configure `mkdocs.yml`, set up GH Actions for deploy.
-
-## Style guide
-
-- **Tone:** Confident, direct, opinionated about pedagogy. Conversational but never dumbed down.
-- **The zoom-in/zoom-out rhythm:** WIDE (industry) → NARROW (math bottleneck) → QUANTUM (structural advantage) → CODE (worked example) → WIDE (so what?). This is the book's signature.
-- **Math:** KaTeX. Introduce notation in words before using it.
-- **Worked examples:** Must be runnable. Use Jupyter notebooks. Toy-sized (like H₂ in the encodings book) — small enough to execute on a laptop, large enough to show the real algorithm at work.
-- **Figures:** Scaling plots (log-log), circuit diagrams, cost landscape visualisations. Save to `figures/`.
-- **No hype:** See honesty policy above. Every Reality Check must cite specific papers.
-
-## Related projects
-
-- **[quantum-workbooks](https://github.com/johnazariah/quantum-workbooks)** — public umbrella repo for runnable companions and open teaching material. `bottleneck/` is the export surface for this project; `cookbook/` is the former Quokka Cookbook surface for runnable QASM recipes.
-- **[encodings-book](../encodings-book/)** — fermion-to-qubit encodings textbook. Unit 3 (Drug Discovery) bridges to this. Unit 8 (Climate) uses the full pipeline.
-- **[encodings](https://github.com/johnazariah/encodings)** — F# library for fermion-to-qubit encodings (companion code to the encodings book).
-
-## Context about John
-
-- PhD student at UTS, Centre for Quantum Software & Information
-- Supervisor: Dr Christopher Ferrie
-- Research: computational mechanics, quantum emergence, fermion-to-qubit encodings
-- Working style: discusses ideas and writes specs/documents/papers; delegates code implementation to agents
-- Prefers LaTeX for papers, Markdown for blogs, shared bibliography approach
+Maintain one authoritative audit and one action plan at the paths above.
+Append later verification to the audit rather than creating review-file sprawl.
+No standalone review markdown files unless the coordinator explicitly asks.

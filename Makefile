@@ -6,13 +6,15 @@
 #   make              Build molecules-to-circuits.pdf
 #   make sample       Build molecules-to-circuits-sample.pdf (selected chapters)
 #   make arxiv-pdflatex  Build pdflatex arXiv submission (tarball + PDF)
+#   make html         Build the MyST HTML edition
+#   make preview      Build HTML, then serve it locally (fails if build fails)
 #   make clean        Remove generated files
 #   make word-count   Print word counts per chapter
 #   make diagrams     Render mermaid diagrams only
 #   make data         Regenerate H₂ and H₂O data
 #
 # Prerequisites:
-#   pandoc, xelatex, mmdc, python3  (all installed by devcontainer)
+#   pandoc, xelatex, mmdc, python3; Jupyter Book 2 for HTML
 
 SHELL := /bin/bash
 
@@ -25,8 +27,11 @@ SAMPLE_OUT  := $(MS_DIR)/molecules-to-circuits-sample.pdf
 EPUB_OUT    := $(MS_DIR)/molecules-to-circuits.epub
 
 # ── Source files ──
-CHAPTERS     := $(shell cat $(MS_DIR)/Book.txt | sed 's|^|$(MS_DIR)/|')
-SAMPLE_CHAPS := $(shell cat $(MS_DIR)/Sample.txt | sed 's|^|$(MS_DIR)/|')
+CHAPTERS     := $(addprefix $(MS_DIR)/,$(shell sed '/^[[:space:]]*$$/d; /^\#/d' $(MS_DIR)/Book.txt))
+FIGURES      := $(wildcard $(MS_DIR)/figures/*)
+BUILD_SCRIPTS := scripts/render-mermaid.py scripts/check-book-manifests.py
+PYTHON       ?= python3
+PORT         ?= 8000
 
 # ── Pandoc settings ──
 PANDOC      := pandoc
@@ -47,7 +52,7 @@ PANDOC_COMMON := \
   -V title="From Molecules to Quantum Circuits" \
   -V subtitle="A Computational Guide to Fermion-to-Qubit Encodings" \
   -V author="John S Azariah" \
-  -V date="March 2026" \
+  -V date="Expanded working manuscript" \
   --toc \
   --toc-depth=2 \
   --highlight-style=tango \
@@ -60,34 +65,43 @@ PANDOC_OPTS := $(PANDOC_COMMON) \
   --metadata=abstract:"This tutorial develops the translation layer from molecular electronic structure to logical quantum circuits. For H₂/STO-3G at 0.74 Å, generated PySCF integrals feed an independently verified fermionic matrix and Jordan-Wigner Pauli Hamiltonian before encoding, symmetry, product-formula, cost, and export concepts are applied. Separate PySCF scripts provide the H₂ dissociation reference and an H₂O FCI angular scan at fixed experimental O-H length; these chemistry references are not represented as energies produced by circuit construction alone. The tutorial covers six fermion-to-qubit encodings, physical-sector tapering requirements, Trotter decomposition, CNOT accounting, and OpenQASM/Q\# export across 23 chapters, 10 companion scripts, and 10 laboratory sessions. Companion software and source at https://github.com/johnazariah/encodings."
 
 SAMPLE_FILTER := $(MS_DIR)/sample-filter.lua
-SAMPLE_OPTS := $(PANDOC_COMMON) --lua-filter=$(SAMPLE_FILTER)
+SAMPLE_OPTS := --lua-filter=$(SAMPLE_FILTER) $(PANDOC_COMMON)
 
 # ══════════════════════════════════════════════════════════════
 #  Targets
 # ══════════════════════════════════════════════════════════════
 
-.PHONY: all clean word-count diagrams data sample epub verify-data pipeline-check
+.PHONY: all clean word-count diagrams data sample epub verify-data pipeline-check \
+	manifest-check tooling-check support-check html preview
 
 all: $(OUT)
 
-$(OUT): $(CHAPTERS) $(LUA_FILTER) $(PREAMBLE) $(MS_DIR)/Book.txt
+manifest-check:
+	$(PYTHON) scripts/check-book-manifests.py
+
+tooling-check:
+	$(PYTHON) scripts/check-publication-tooling.py
+
+support-check:
+	$(PYTHON) scripts/check-support-examples.py
+
+$(OUT): $(CHAPTERS) $(FIGURES) $(BUILD_SCRIPTS) $(LUA_FILTER) $(PREAMBLE) $(MS_DIR)/Book.txt Makefile | manifest-check
 	@echo "Building manuscript..."
-	@rm -rf $(IMG_DIR)
 	$(PANDOC) $(CHAPTERS) -o $(OUT) $(PANDOC_OPTS)
 	@echo "Done: $$(python3 -c "import pymupdf; d=pymupdf.open('$(OUT)'); print(f'{d.page_count} pages'); d.close()" 2>/dev/null || echo '(install pymupdf for page count)')"
 	@ls -lh $(OUT)
 
 sample: $(SAMPLE_OUT)
 
-$(SAMPLE_OUT): $(SAMPLE_CHAPS) $(LUA_FILTER) $(PREAMBLE) $(MS_DIR)/Sample.txt
+$(SAMPLE_OUT): $(CHAPTERS) $(FIGURES) $(BUILD_SCRIPTS) $(LUA_FILTER) $(SAMPLE_FILTER) $(PREAMBLE) $(MS_DIR)/Book.txt $(MS_DIR)/Sample.txt Makefile | manifest-check
 	@echo "Building sample..."
-	$(PANDOC) $(SAMPLE_CHAPS) -o $(SAMPLE_OUT) $(SAMPLE_OPTS)
+	$(PANDOC) $(CHAPTERS) -o $(SAMPLE_OUT) $(SAMPLE_OPTS)
 	@echo "Done: $$(python3 -c "import pymupdf; d=pymupdf.open('$(SAMPLE_OUT)'); print(f'{d.page_count} pages'); d.close()" 2>/dev/null || echo '(install pymupdf for page count)')"
 	@ls -lh $(SAMPLE_OUT)
 
 epub: $(EPUB_OUT)
 
-$(EPUB_OUT): $(CHAPTERS) $(LUA_FILTER) $(MS_DIR)/Book.txt
+$(EPUB_OUT): $(CHAPTERS) $(FIGURES) $(BUILD_SCRIPTS) $(LUA_FILTER) $(MS_DIR)/Book.txt Makefile | manifest-check
 	@echo "Building EPUB..."
 	$(PANDOC) $(CHAPTERS) \
 	  -o $(EPUB_OUT) \
@@ -106,16 +120,16 @@ $(EPUB_OUT): $(CHAPTERS) $(LUA_FILTER) $(MS_DIR)/Book.txt
 ARXIV_DIR   := arxiv-submission
 ARXIV_TEX   := $(ARXIV_DIR)/manuscript.tex
 
-arxiv: $(CHAPTERS) $(LUA_FILTER) $(PREAMBLE) $(MS_DIR)/Book.txt
+arxiv: $(CHAPTERS) $(FIGURES) $(BUILD_SCRIPTS) $(LUA_FILTER) $(PREAMBLE) $(MS_DIR)/Book.txt | manifest-check
 	@echo "Building arXiv submission package (xelatex)..."
-	@rm -rf $(ARXIV_DIR) $(IMG_DIR)
+	@rm -rf $(ARXIV_DIR)
 	@mkdir -p $(ARXIV_DIR)
 	$(PANDOC) $(CHAPTERS) -o $(ARXIV_TEX) -s $(PANDOC_OPTS)
 	@if [ -d $(IMG_DIR) ] && [ "$$(ls -A $(IMG_DIR))" ]; then \
 	  cp $(IMG_DIR)/*.png $(ARXIV_DIR)/; \
 	fi
-	@cp $(MS_DIR)/figures/*.png $(ARXIV_DIR)/ 2>/dev/null || true
-	@sed -i 's|manuscript/mermaid-images/||g; s|manuscript/figures/||g; s|figures/||g' $(ARXIV_TEX)
+	@cp $(MS_DIR)/figures/*.png $(ARXIV_DIR)/
+	@$(PYTHON) scripts/localise-tex-images.py $(ARXIV_TEX)
 	@cd $(ARXIV_DIR) && tar czf ../arxiv-submission.tar.gz *
 	@echo "Created arxiv-submission.tar.gz with:"
 	@tar tzf arxiv-submission.tar.gz | sed 's/^/  /'
@@ -136,7 +150,7 @@ PANDOC_ARXIV_OPTS := \
   -V title="From Molecules to Quantum Circuits" \
   -V subtitle="A Computational Guide to Fermion-to-Qubit Encodings" \
   -V author="John S Azariah" \
-  -V date="March 2026" \
+  -V date="Expanded working manuscript" \
   --toc \
   --toc-depth=2 \
   --highlight-style=tango \
@@ -145,16 +159,16 @@ PANDOC_ARXIV_OPTS := \
   -V linkcolor=blue \
   -V urlcolor=blue
 
-arxiv-pdflatex: $(CHAPTERS) $(LUA_FILTER) $(PREAMBLE_ARXIV) $(MS_DIR)/Book.txt $(CONVERT_SCRIPT)
+arxiv-pdflatex: $(CHAPTERS) $(FIGURES) $(BUILD_SCRIPTS) $(LUA_FILTER) $(PREAMBLE_ARXIV) $(MS_DIR)/Book.txt $(CONVERT_SCRIPT) | manifest-check
 	@echo "Building arXiv submission package (pdflatex)..."
-	@rm -rf $(ARXIV_DIR) $(IMG_DIR)
+	@rm -rf $(ARXIV_DIR)
 	@mkdir -p $(ARXIV_DIR)
 	$(PANDOC) $(CHAPTERS) -o $(ARXIV_TEX) -s $(PANDOC_ARXIV_OPTS)
 	@if [ -d $(IMG_DIR) ] && [ "$$(ls -A $(IMG_DIR))" ]; then \
 	  cp $(IMG_DIR)/*.png $(ARXIV_DIR)/; \
 	fi
-	@cp $(MS_DIR)/figures/*.png $(ARXIV_DIR)/ 2>/dev/null || true
-	@sed -i 's|manuscript/mermaid-images/||g; s|manuscript/figures/||g; s|figures/||g' $(ARXIV_TEX)
+	@cp $(MS_DIR)/figures/*.png $(ARXIV_DIR)/
+	@$(PYTHON) scripts/localise-tex-images.py $(ARXIV_TEX)
 	@python3 $(CONVERT_SCRIPT) $(ARXIV_TEX)
 	@echo "Compiling PDF (two passes)..."
 	@cd $(ARXIV_DIR) && pdflatex -interaction=nonstopmode manuscript.tex > /dev/null 2>&1
@@ -183,10 +197,9 @@ word-count:
 	@echo "  ────────────────────────────────────────────────"
 	@printf "  %-40s %5d\n" "TOTAL" "$$(cat $(CHAPTERS) | wc -w)"
 
-diagrams:
+diagrams: manifest-check
 	@echo "Rendering mermaid diagrams..."
-	@rm -rf $(IMG_DIR) && mkdir -p $(IMG_DIR)
-	@$(PANDOC) $(CHAPTERS) -t native --lua-filter=$(LUA_FILTER) > /dev/null 2>&1
+	@$(PANDOC) $(CHAPTERS) -t native --lua-filter=$(LUA_FILTER) > /dev/null
 	@echo "Rendered $$(ls $(IMG_DIR)/*.png 2>/dev/null | wc -l) diagrams"
 
 # ── Data generation (requires requirements-data.txt) ──
@@ -199,6 +212,9 @@ data:
 verify-data:
 	python3 $(CODE_DIR)/ch09-verify-h2.py
 	dotnet fsi labs/03-compare-encodings.fsx
+
+.PHONY: data-reproduction-check
+data-reproduction-check:
 	bash scripts/check-data-idempotence.sh
 
 pipeline-check:
@@ -214,7 +230,8 @@ lab-check:
 	  dotnet fsi "$$f"; \
 	done
 
-leanpub-status: leanpub-check
-	@curl -s \
-	  "https://leanpub.com/$(LEANPUB_SLUG)/job_status.json?api_key=$(LEANPUB_API_KEY)" \
-	  | python3 -c "import sys,json; r=json.load(sys.stdin); print(json.dumps(r, indent=2))"
+html:
+	PYTHON="$(PYTHON)" bash scripts/build-site.sh
+
+preview: html
+	$(PYTHON) -m http.server $(PORT) --bind 127.0.0.1 --directory _build/html

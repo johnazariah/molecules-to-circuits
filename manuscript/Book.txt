@@ -1,5 +1,6 @@
 foreword.md
 01-electronic-structure.md
+code-reading.md
 02-notation.md
 03-spin-orbitals.md
 04-qubits-gates-circuits.md
@@ -24,4 +25,5 @@ foreword.md
 23-whats-next.md
 appendix-cookbook.md
 appendix-theory.md
+selected-solutions.md
 references.md
