@@ -1,5 +1,16 @@
 # CORRECTNESS AUDIT — From Molecules to Quantum Circuits
 
+> **Current review:** See the [2026-09-07 comprehensive review](#comprehensive-review--2026-09-07)
+> below and the current dated section of `ACTION-PLAN.md`. The July finding count
+> and findings immediately below are historical, not a count of defects still
+> present in the current manuscript. Preserve their dated closure evidence.
+> The later [Apress expansion review](#apress-expansion-and-definition-order-review--2026-09-07)
+> adds the author's approximately 300-page planning target and a
+> clarity-first teaching plan; it does not close the correctness findings.
+> **Later authority:** John authorised full book implementation on 2026-09-07.
+> The dated reviews below describe the pre-implementation source. Closure
+> requires subsequent evidence, not a change of operating mode.
+
 **Audit date:** 2026-07-22
 **Repository:** `johnazariah/molecules-to-circuits`
 **Branch:** `johnazariah-encodings-book-review`
@@ -1688,3 +1699,1403 @@ commit: `code/physicist_spin_integrals.provenance.json`,
 `code/h2_dissociation_integrals.json`, `code/h2_0.74_fixture.json`,
 `code/h2_0.74_oracle.json`, and the `.review/ACTION-PLAN.md` canonical
 upstream-fixture note.
+
+---
+
+# Comprehensive review — 2026-09-07
+
+**Book baseline:** `c5cf9dfc4543d35c9936fa1b39307e782016fe11`.
+**Mode:** Review and coordinated correction plan only, explicitly selected by
+the author. No manuscript, companion, blog, publishing configuration, approval,
+or publication-date changes are authorised by this review.
+**Authority:** The corrected book source at this commit, not the old downloadable
+book, and not the similarly numbered FockMap package release.
+
+## Full-book correctness findings
+
+**Primary scope:** Foreword, every one of the 23 chapters, both appendices,
+references, and their executable companions. The blog and publication sections
+below are secondary. This is a new full-book assessment, not a review limited
+to changed lines or a repetition of the July audit.
+
+The current manuscript has **five high-priority source findings**, followed
+by the mathematical, algorithmic, consistency and completeness findings below.
+They are grouped by the correction needed, not counted as one defect per
+sentence. They do not invalidate the independently reproduced canonical
+chemistry artifacts.
+
+### BM-H01 — Restricting both two-electron index pairs requires antisymmetrised coefficients
+
+**Severity:** High. **Classification:** Newly identified current algebraic error.
+**Evidence:** `manuscript/02-notation.md:135-145`, especially line 143, says
+restricting to `p < q` and `r < s` removes the prefactor without changing the
+raw-integral convention. Combining the permutations also changes the
+coefficient to the antisymmetrised integral:
+
+$$
+\begin{aligned}
+\langle pq\Vert rs\rangle
+  &=\langle pq\mid rs\rangle-\langle pq\mid sr\rangle,\\
+H_2
+  &=\frac12\sum_{pqrs}\langle pq\mid rs\rangle
+       a_p^\dagger a_q^\dagger a_s a_r\\
+  &=\frac14\sum_{pqrs}\langle pq\Vert rs\rangle
+       a_p^\dagger a_q^\dagger a_s a_r\\
+  &=\sum_{p<q,\ r<s}\langle pq\Vert rs\rangle
+       a_p^\dagger a_q^\dagger a_s a_r .
+\end{aligned}
+$$
+
+The coordinator reproduced a two-mode example with Coulomb coefficient
+`J=0.7` and exchange `K=0.2`: unrestricted raw input gives occupied-pair
+energy `0.5`, restricted raw input incorrectly gives `0.7`, and restricted
+antisymmetrised input gives `0.5`. The correct matrices agree to rounding.
+
+**Impact:** A reader following this convention advice can construct the wrong
+Hamiltonian even with a correct encoder.
+**Correction and acceptance:** Present all three conventions together and
+distinguish raw integrals from already-weighted operator coefficients.
+Preserve FockMap's accepted raw-primary contract. Require equivalent matrices
+for a nonzero-exchange example; reject the restricted raw-only alternative.
+
+### BM-H02 — Earlier examples still supply different H2 inputs from the canonical worked example
+
+**Severity:** High. **Classification:** Residual source inconsistency associated
+with CA-H001/CA-H003; the repaired central tables remain correct.
+**Evidence:** `01-electronic-structure.md:184-200` gives spatial one-body values
+`-1.2563` and `-0.4719`, then calls them the input to everything that follows.
+`03-spin-orbitals.md:168-184` correctly gives the canonical 0.74-Angstrom
+values `-1.2533097866` and `-0.4750688488`. The cross-spin example at
+`03-spin-orbitals.md:140` still uses `0.6636`; Chapter 2's exercise at
+`02-notation.md:248-252` combines old illustrative values with an asserted
+"correct" electronic energy of `-1.89` Ha rather than the canonical
+`-1.8523881736` Ha.
+
+**Impact:** The book teaches one set of inputs and derives its accepted output
+from another. The mismatches are not all legitimate rounding.
+**Correction and acceptance:** Reconcile every canonical numerical example
+with a named geometry, basis, convention and electronic/total energy label.
+Explicitly mark hypothetical data as hypothetical. Replace the exercise that
+tries to diagnose a unique convention error from one energy discrepancy with
+distinguishable candidate tensors or matrices. Searching only for July's
+previously flagged strings is not a complete numerical consistency check.
+
+### BM-H03 — The matrix recipe contradicts the declared bit order and overstates spectrum checks
+
+**Severity:** High. **Classification:** Residual of the ordering correction.
+**Evidence:** `09-verification.md:35-37` constructs a matrix in displayed
+signature order; lines 41-54 correctly reverse it for occupation-integer rows.
+The unreversed tensor example in `04-qubits-gates-circuits.md:166` does not
+name a different basis convention. Chapter 9 lines 9 and 20 claim eigenvalue
+comparison catches all such errors, while its later paragraph correctly
+explains that a basis permutation leaves eigenvalues unchanged.
+
+**Correction and acceptance:** Whenever matrix rows are
+$b=\sum_j n_j2^j$, use
+$P_0P_1\cdots P_{n-1}\mapsto P_{n-1}\otimes\cdots\otimes P_0$.
+An alternative abstract tensor basis is valid only if explicitly identified.
+Require matrix elements, labelled occupations and spectra as complementary
+checks: `ZIII` is negative on occupation-integer row 1, and displayed HF
+`1100` remains integer/row 3. Delete "catches them all"/"only way" claims.
+EC-M01 separately addresses the numerical weakness of the moment-based test.
+
+### BM-H04 — The time-evolution chapter teaches the wrong primitive for ordinary VQE measurement
+
+**Severity:** High. **Classification:** Newly identified algorithmic error.
+**Evidence:** `14-time-evolution.md:51,81-86` says every VQE Pauli measurement
+involves $e^{-i\theta P_k}$ and makes this the common primitive of VQE and QPE.
+Measuring `XXYY`, for example, can use local basis changes, computational-basis
+measurement and multiplication of outcomes. It does not require the
+entangling evolution staircase. Evolution generated by $P$ commutes with $P$;
+it is not itself the required change of measurement basis.
+
+**Correction and acceptance:** Separate ansatz preparation, observable
+measurement and Hamiltonian simulation. Show `XXYY` measurement beside
+`XXYY` evolution, with separate gate counts. VQE may use Pauli rotations in
+its ansatz; that does not make them mandatory for every observable
+measurement. Keep QPE's controlled-simulation requirements distinct.
+
+### BM-H05 — The opening and conclusion restore the water-pipeline claim that Chapter 19 disclaims
+
+**Severity:** High. **Classification:** Residual source inconsistency associated
+with CA-H004/CA-H007, not a wrong regenerated water dataset.
+**Evidence:** Chapter 19 correctly identifies its classical PySCF backend
+(`19-bond-angle.md:46-58`), but line 150 attributes its cheap fine pass to a
+precomputed skeleton. `23-whats-next.md:29` says every pipeline arrow is a
+FockMap call and every box has been applied to H2O; line 74 calls the angular
+cut an equilibrium geometry. `01-electronic-structure.md:87` promises repeated
+quantum-computer execution for the water scan, and `foreword.md:96-104`
+attributes all computations to FockMap.
+
+**Correction and acceptance:** Maintain two explicit tracks throughout:
+FockMap constructs operators/circuits; PySCF supplies the demonstrated
+reference energies. The water calculation reruns RHF/FCI at each angle,
+uses all-electron STO-3G and fixed experimental O-H length 0.9584 Angstrom,
+and finds its lowest sampled FCI angle at 99 degrees. It is not a full
+geometry optimisation or a demonstrated per-geometry FockMap energy pipeline.
+Correct the opening, objectives and closing inventory, not just the central
+disclaimer. Implementing a larger capstone is an optional scope decision,
+not necessary to make the existing reference calculation honest.
+
+### Further mathematical and algorithmic findings
+
+Each row is an actionable finding with its own acceptance boundary.
+Paths are relative to `manuscript/`.
+
+| ID / severity | Evidence | Finding | Correction and acceptance |
+|---|---|---|---|
+| **BM-M01 / Medium** | `02-notation.md:113-131,238,248` | Real physicist integrals inherit eightfold symmetry under different permutations; relabelling the tensor does not reduce it to fourfold. The real-chemist list also duplicates its final permutation. The conversion exercise's claimed inequality is false under its real-orbital assumptions. | Translate the full eight permutations; distinguish real- from complex-orbital assumptions. For the stated example, both queried physicist integrals equal the supplied real chemist integral. |
+| **BM-M02 / Medium** | `03-spin-orbitals.md:36,59,111,128,247`; `05-visual-encodings.md:379` | Doubling four tensor axes creates 16 times the slots, not four; four spin-allowed blocks are a different count. Missing floors in spatial indices and wrong nonzero-count guidance compound this. Missing cross-spin blocks or fermion signs do not simply produce Hartree-Fock or forbid entanglement. | Use floor division for interleaved spin indices. For seven spatial orbitals, distinguish 196/38416 dense slots from at most 98/9604 spin-allowed entries. Evaluate the HF determinant with and without its cross-spin Coulomb term; describe changed physics, not "HF by omission". |
+| **BM-M03 / Medium** | `04-qubits-gates-circuits.md:74,111-121,166` | Same-basis Bell correlations alone admit shared classical randomness; Pauli gates plus CNOT are not universal; the product-state box is not a formula for a general multiqubit state. | Compare a Bell state with its incoherent mixture across appropriate bases. State universality for arbitrary single-qubit rotations plus CNOT. Write a general state as a sum of computational-basis products, not one product. |
+| **BM-M04 / Medium** | `05-visual-encodings.md:213-249,273` | The diagram puts node 6 below node 5 despite the latter storing only parity 4 XOR 5. Prefix queries are confused with update-ancestor paths. An eight-mode Fenwick root has three children, contradicting "at most two". | Repair the edge to parent 7; separate storage intervals, update traversal and prefix decomposition. Verify all displayed parities against all eight one-hot occupation inputs. This concerns the explanation, not evidence of a broken BK implementation. |
+| **BM-M05 / Medium** | `05-visual-encodings.md:281-305`; `07-six-encodings.md:119-129,189`; `08-building-vlasov.md:67,90-100,218-233` | The ideal ternary maximum gives 4/5 at n=32/64, but the displayed tested helper gives 5/6 without explaining the construction difference. Tree nodes/leaves/modes and the Majorana pairing are insufficiently distinguished. | Separate literature bounds from measured helper weights; account for the root and every mode; derive one ladder operator from its Majorana pair. Explain the difference rather than declaring the package wrong or changing the common logarithmic class. |
+| **BM-M06 / Medium** | `04-qubits-gates-circuits.md:172`; `07-six-encodings.md:129`; `12-clifford-tapering.md:86,112`; `15-trotter-formulas.md:207`; `20-algorithms.md:22`; `23-whats-next.md:46` | Categorical resource statements defeat the corrected cost model: only CNOTs matter, all terms inherit worst-case savings, an unsupported H2O total and 20-40% compiler saving, unconditional complexity dominance, and exaggerated classical-memory impossibility. | Use generated, model-specific costs. Explain variables in complexity comparisons. For 14 electrons in 20 spin-orbitals, fixed Ms=0 has 14400 determinants; full dense Fock-space storage is not the only classical method. Remove universal feasibility claims and unsupported percentages. |
+| **BM-M07 / Medium** | `20-algorithms.md:73,80-94,141-142,223,272-274` | The shot derivation converts a worst-case variance inequality to equality; the independent-shot derivation is extended to grouped measurements without covariance. Fewer groups need not mean fewer shots. Summaries overstate the pending package-grouping evidence. | Keep the bound as an inequality; distinguish coefficient-only worst-case allocation from variance-informed allocation. Derive group-estimator covariance explicitly. The independent H2 bound is about 1.391 million shots for 1.6 mHa; this is not a universal grouped-measurement count. |
+| **BM-M08 / Medium** | `20-algorithms.md:30,158-222`; `15-trotter-formulas.md:40-44,211` | The repaired QPE relation is sound, but depth is still dismissed as a fault-tolerant bottleneck, QFT is listed under classical cost, and an identity-phase warning loses the controlled-evolution qualification. A worked shifted H2 phase decode is missing. | Align all summaries; give one stated interval, shift, phase, 12-bit estimate and decoded electronic energy. Track offset, overlap, confidence and simulation error separately. Do not close CA-H008's exporter/resource-helper gate from this arithmetic. |
+| **BM-M09 / Medium** | `14-time-evolution.md:154-173` | A query-complexity expression appears in the "Error scaling" column; the prose says error scales linearly in query count. Resource cost and approximation error are different quantities. | Compare error at a stated budget, or cost at fixed error. Define normalisation and source hypotheses; do not call a complexity expression an error or assert optimality without the precise theorem. |
+| **BM-M10 / Medium** | `10-why-tapering.md:35-41,119-125`; `11-diagonal-z2.md:99-110,202-208`; `appendix-theory.md:17-19` | A single-qubit Z detector is described using the broader term "diagonal Z2 symmetry"; parity can be confused with fixed particle number/spin. An n-qubit lower bound is missing its full-CAR/Fock-space hypothesis. | Distinguish single-qubit Z candidates from multi-qubit diagonal Z strings, and N, Ms, total spin, parity and point-group labels. Give an example of different particle numbers sharing parity; scope the dimension bound so it does not appear to forbid tapering. |
+| **BM-M11 / Medium** | `23-whats-next.md:59-65,100-116` | ADAPT-VQE is misdescribed as selecting Hamiltonian terms, qubit-ADAPT as only one/two-qubit operators, and lighter strings as necessarily better directions. Offline tapering is incorrectly said to measure syndromes. The "nobody has yet" claim is too broad. | Distinguish excitation/operator pools, gradient selection and completeness; use the primary ADAPT definitions. An adaptive example needs a useful nonzero gradient, not merely a light string. Tapering and QEC share stabilizer algebra, not identical physical operations. |
+| **BM-M12 / Medium** | `21-circuit-export.md:19-25,39,95,130,236-250` | Universal OpenQASM 3 portability contradicts later version restrictions; Q# is said both to allocate qubits and receive them from its caller; resource estimation is conflated with hardware lowering. | Name each importer/version/subset and caller wrapper; correct ownership; separate estimation from compilation. Successful serialization or parsing is not imported-unitary equality. |
+| **BM-M13 / Medium** | `19-bond-angle.md:240`; `23-whats-next.md:74` | A fixed-bond angular curvature is treated as sufficient for molecular normal-mode frequencies. | State coordinate constraints and kinetic/mass metric. A full harmonic normal-mode claim requires a suitable stationary geometry and mass-weighted Hessian; a one-coordinate cut is not that calculation. |
+| **BM-M14 / Medium** | `appendix-theory.md:93-103`; `23-whats-next.md:78` | Finite bosonic truncation omits its commutator boundary defect, and d alternates between maximum occupation and number of levels. | Choose one level convention; state the finite-space boundary term and limits of the represented subspace. Update unary/binary/Gray qubit counts consistently. |
+| **BM-M15 / Medium** | `02-notation.md:179`; `14-time-evolution.md:197`; `15-trotter-formulas.md:228`; `appendix-theory.md`; `references.md` | A nonexistent-in-preface JOSS citation, conflicting Suzuki titles for one journal record, missing foundational Further Reading entries and unexplained external "Theory Ch." references prevent a unified bibliography. | Consolidate the actual cited works and unambiguous destinations. Crossref resolves JMP 32,400-407 (1991), DOI `10.1063/1.529425`, to *General theory of fractal path integrals with applications to many-body theories and statistical physics*. Metadata resolution alone does not establish support for every claim. |
+| **BM-M16 / Medium** | `07-six-encodings.md:146-147,166-167,199-203`; `appendix-theory.md:90-91` | Compressed "stars only" summaries do not distinguish finite census evidence, an enforced API restriction and an all-size theorem. | Retain the n=3 through 6 census range, identify tested shapes, and verify any separate API restriction. The central book correctly avoids the blog's SRL blame and universal path-tree claim. No supplied all-size proof should be assumed; narrow empirical/API scope is sufficient if that is the book's claim. |
+| **BM-M17 / Medium** | `01-electronic-structure.md:19,161-163` | The opening makes ground-state energy determine whether a reaction happens and the boiling point without naming finite-temperature free energies, phase equilibrium or kinetic barriers. Its H2 "99% / remaining 1%" also lacks an electronic-versus-total energy convention. | Describe electronic energies as essential inputs, not a complete thermodynamic/kinetic prediction. Qualify the percentage using the canonical energy convention, or prefer the unambiguous correlation energy in Ha. Preserve the motivation without suggesting that one electronic ground-state calculation settles these additional problems. |
+| **BM-L01 / Low** | `16-cnot-staircase.md:102`; `18-complete-pipeline.md:257-267`; `19-bond-angle.md:144` | Two CNOTs plus one single-qubit gate is called five gates; the verbal dissociation well-depth subtraction has the wrong sign; energy is said to drop on both sides of a minimum. | Use three gates; positive well depth is asymptote minus minimum, with De distinguished from zero-point-corrected D0; energy rises away from the minimum. |
+
+**BM-M05, representation-invariant clarification from the final specialist
+report:** `05-visual-encodings.md:383` says all encodings preserve Hamiltonian
+term count, while `07-six-encodings.md:242` warns against assuming that
+invariance. State the class being discussed. Clifford conjugation permutes
+Pauli strings and preserves the exact simplified nonzero term count;
+arbitrary valid encodings need not. Do not resolve the inconsistency by
+insisting that the six supplied mappings must have different counts. Their
+common H2 count is compatible with the narrower invariant.
+
+## Completeness, consistency and readability
+
+### BE-M01 — The promised F# novice route is incomplete
+
+**Severity:** Medium. `foreword.md:63-73` assumes no F# or functional
+programming, but `02-notation.md:175,203-220`, `03-spin-orbitals.md:190-211`
+and `08-building-vlasov.md:71-100` require pipelines, partial application,
+maps/options, pattern matching, arrays/lists, unsigned literals, recursion,
+records and script/module conventions before teaching them. Reading `let`
+as "define" does not supply that background.
+
+Add a compact code-reading/running bridge before the first substantial
+example. Label complete scripts, contextual excerpts and pseudocode. A
+novice should be able to explain the first coefficient factory and execute
+its named entry point without an unrelated language tutorial. Passing FSI
+execution is not evidence that the novice route is sufficiently explained.
+
+### BE-M02 — The missing worked bridges are at the book's most important transformations
+
+**Severity:** Medium. `03-spin-orbitals.md:217` promises a step-by-step
+15-term derivation, but `06-building-hamiltonian.md:114-149` jumps from the
+correct coupling monomials to their collected Pauli expression.
+`08-building-vlasov.md:90-100,182-205` delegates the Majorana construction
+and leaves parts of CAR verification as comments.
+`12-clifford-tapering.md:153-166` calls a literal sector explicitly derived
+without showing the physical quantum numbers-to-generator calculation.
+Chapter 18's objectives promise integration of every concept but its actual
+capstone deliberately remains untapered.
+
+The remedy is a small number of decisive demonstrations, not more general
+exposition: one full coupling expansion, one tree-to-Majorana-to-ladder
+construction, one H2 physical-sector-to-tapered-matrix example, and one
+worked energy-estimation/phase-decoding example. The existing closed-shell
+two-by-two H2 block is an economical bridge from the Pauli table to
+correlation energy. Where a demonstration is deliberately excluded, narrow
+the corresponding objective instead of implying it exists.
+
+### BE-M03 — Eleven chapters lack the promised exercises, and some existing questions have wrong answers
+
+**Severity:** Medium. The foreword promises exercises at every chapter's end.
+They exist in Chapters **1-10, 15 and 17**, but not **11-14, 16 or 18-23**.
+There is no accompanying answer bank adequate for the stated self-study and
+lecturer use.
+
+Specific defective exercises include the "two-electron" question about
+ten-electron water (`01-electronic-structure.md:224`), the convention hint
+and energy diagnosis in Chapter 2, the spin-allowed counts in Chapter 3,
+and removing terms 12-15 rather than coupling terms 8-11
+(`06-building-hamiltonian.md:300`). Chapter 7's frozen-core water exercise
+requires a transformation/input artifact not supplied by that point.
+Chapter 9's HF exercise mixes spatial and spin-orbital index notation.
+
+Either supply the promised exercises or revise the chapter contract
+deliberately. Each retained question needs checked inputs, a valid answer
+or rubric, an attainable endpoint and selected worked solutions. Label
+open-ended projects as projects; do not present missing-data tasks as
+routine exercises with an obvious answer.
+
+### BE-M04 — Revision-history language competes with the explanation
+
+**Severity:** Medium. Examples include "The operator previously used here"
+(`06-building-hamiltonian.md:116`), tables waiting for a fixed release
+(`09-verification.md:122`; `17-cost-analysis.md:52-55`), the removed-table
+story (`13-tapering-benchmarks.md:117-130`), "repaired workflow" and
+"90%, not 85%" in Chapter 19, "12, not 10" in Chapter 20, and pending
+"post-fix audit" language in Chapter 21.
+
+Move historical corrections to this audit. Teach the current result and its
+current limitation. Preserve actual safety conditions, especially tensor
+conventions, sectors and controlled phases; remove only the demand that a
+first-time reader understand an earlier draft. Package publication is
+already closed, while particular export/grouping/theorem gates remain open.
+Those are different facts and should not be compressed into "awaiting a fix".
+
+### BE-M05 — The appendices are useful summaries, not the complete references they promise
+
+**Severity:** Medium. Appendix A's "every public type and function" promise
+exceeds its selected API tables; even Trotter/export surfaces used by the
+book are absent. Appendix B promises formal derivations and proofs but mainly
+summarises notation and results, with unexplained external theory references.
+Either expand these artifacts or describe them as a selected API index and
+mathematical/conventions summary. Essential conventions must remain
+self-contained; external detail should have precise versioned destinations.
+
+### BE-M06 — Figure context needs to survive reuse, and the early conceptual bridge needs visual support
+
+**Severity:** Medium for standalone scientific interpretation; lower priority
+than the incorrect Fenwick diagram.
+The H2 source correctly explains the STO-3G atomic asymptote near
+`-0.933164` Ha (`18-complete-pipeline.md:239`), but the plot also shows
+`-1.0` Ha without identifying it as the complete-basis nonrelativistic
+two-H limit. Label FCI "exact within STO-3G" and explain the difference as
+basis error, not missing correlation. Prefer "restricted Hartree-Fock" for
+the displayed dissociation comparison.
+
+The water caption is already substantially correct. Add fixed
+`r_OH=0.9584 Angstrom`, PySCF FCI/STO-3G and "lowest sampled angle" to the
+portable figure context so reuse cannot turn it into a full geometry
+optimisation.
+
+The book has 25 Mermaid diagrams and two data plots, with no diagrams in
+Chapters 1-4 and seven in Chapter 5. Add only visuals that solve a specific
+comprehension problem: spatial orbitals to spin-orbitals/configurations,
+the chemist/physicist index permutation, and Bell coherence versus classical
+correlation. Repair the incorrect Fenwick visual before adding decorative
+figures.
+
+### Whole-book editorial judgement
+
+The book has a coherent, recognisable voice. Concrete physical questions,
+inspectable intermediate objects and direct explanations work well. The
+personal notation discussion, Chapter 6's configuration-coupling explanation
+and Chapter 12's corrected Heisenberg derivation are strengths.
+
+The main readability problem is not polish. Introductory shortcuts, carefully
+qualified derivations, audit-history caveats and emphatic conclusions
+sometimes teach different versions of the same claim. A reader should not
+have to decide whether the opening sentence or its later correction is the
+rule to remember.
+
+Keep the voice. Correct the first explanation, centralise stable conventions,
+and use warnings at genuine risk boundaries. The chemistry-to-encoding
+progression is strong; the tapering sequence needs a molecular worked bridge,
+Chapter 17 needs a deliverable proportionate to its comparative title, and the
+closing chapters must distinguish what has been built from what future
+state-preparation and energy-estimation work still requires.
+
+## Full-book coverage matrix
+
+Every chapter and appendix received the integrated correctness, consistency,
+readability and completeness pass. "Sound core" means the cited central
+derivation survived this review; it is not a claim that the whole chapter is
+free of the listed residuals.
+
+| Source | Correctness / consistency | Readability / completeness judgement |
+|---|---|---|
+| Foreword | BM-H05 backend/promise residuals | Strong framing; F# and exercise promises exceed delivery |
+| Ch 1 — Electronic structure | BM-H02 stale inputs; BM-H05 forward claim | Effective physical opening; repair data labels and water exercise |
+| Ch 2 — Notation | BM-H01/H02, BM-M01 | Memorable motivation; antisymmetrisation and code bridge are essential |
+| Ch 3 — Spin orbitals | Canonical table sound; BM-M02 | Good selection-rule progression; repair counts, floors and diagnoses |
+| Ch 4 — Qubits/gates | BM-H03, BM-M03/M06 | Accessible but foundational explanations are overcompressed |
+| Ch 5 — Visual encodings | JW example sound; BM-M02/M04/M05 | Repair the Fenwick visual; supply the Majorana/construction bridge |
+| Ch 6 — Hamiltonian | Central coefficients/signs sound | Strong explanation; show the coupling expansion and fix exercise indices |
+| Ch 7 — Six encodings | CAR principle and attribution repair sound; BM-M05/M06/M16 | Clear interface story; separate ideal/helper/census results and supply project inputs |
+| Ch 8 — Tree encoding | Path-scope restraint sound; BM-M05 | Good shape-to-code intention; account for modes and show a checked operator |
+| Ch 9 — Verification | Canonical spectrum sound; BM-H03 | Strong motivation, contradictory matrix/check recipes; EC-M01 affects companion guarantee |
+| Ch 10 — Why tapering | Core sector exactness sound; BM-M10 | Good motivation; distinguish detector limitations from mathematical symmetries |
+| Ch 11 — Diagonal symmetries | Toy substitution sound; BM-M10 | Clear toy; physical-sector bridge and exercises missing |
+| Ch 12 — Clifford tapering | Subgroup/Heisenberg core sound; BM-M06/M10 | Strong worked derivation; molecular sector derivation and exercises missing |
+| Ch 13 — Tapering benchmarks | Toy counts consistent; large unsupported tables remain removed | Opening promises real Hamiltonians more broadly than delivered; label toy scope |
+| Ch 14 — Time evolution | BM-H04, BM-M09 | Good energy/time introduction; measurement and simulation must be separated |
+| Ch 15 — Trotter formulas | H2 logical counts/bound sound; BM-M06/M08 | Useful quantitative sequence; repair phase takeaway and bibliography |
+| Ch 16 — CNOT staircase | Decomposition sound; BM-L01 | Concrete and approachable; reconcile abstract/emitted gate counts; no exercises |
+| Ch 17 — Cost comparison | JW statistics sound | Too thin for opening promise; replace historical withholding with actual accepted evidence |
+| Ch 18 — Pipeline | Honest central two-track framing; BM-L01 | Capstone momentum; objectives must admit untapered/circuit-only scope |
+| Ch 19 — Water angle | Accepted fixed-bond result sound; BM-H05/M13/L01 | Strong interpretation; remove skeleton claim and qualify vibrational extension |
+| Ch 20 — Algorithms | Central QPE and QWC partition sound; BM-M06/M07/M08 | Useful split, inconsistent estimator/summary claims; worked phase example and exercises missing |
+| Ch 21 — Export | Intended round-trip contract sound; BM-M12 | Practical structure; named importers/wrappers and actual parity evidence remain necessary |
+| Ch 22 — Scaling | Scoped operator and FeMo active-space facts sound | Honest but brief; a roadmap, not a generated molecular benchmark |
+| Ch 23 — Extensions | BM-H05, BM-M06/M11/M13/M14 | Closing claims exceed demonstrated scope and repeat incorrect shortcuts |
+| Appendix A — Cookbook | Raw/weighted distinction sound in prose | Selected reference rather than complete API manual |
+| Appendix B — Theory | Pauli basis/group repair sound; BM-M10/M14/M16 | Useful summary, not full proofs; external theory references need destinations |
+| References | BM-M15 | Central list exists, but cited works and metadata are not fully reconciled |
+
+### Evidence scope and limitations
+
+The manuscript specialist traversed the complete chapter/appendix source
+ranges and checked the displayed algebra and arithmetic. To close its
+long-line display limitation, the coordinator extracted, wrapped and read all
+76 manuscript paragraphs longer than 350 characters, in addition to directly
+rereading the high-priority passages and the foundational, Fenwick,
+shot-allocation and concluding sections. The restricted-integral and counting
+counterexamples were reproduced numerically. This is a full-source technical
+and editorial review, not a line-by-line copyediting rewrite. The separate
+full companion review and fresh execution are described next.
+
+Bibliography integration was reviewed across the book. The coordinator
+resolved the conflicting Suzuki metadata and retrieved the title records for
+qubitization and the two ADAPT papers. This is not a new full-text verification
+of all 21 bibliography entries, every primary theorem, experimental constant
+or vendor importer. Those limits must remain explicit. The audit establishes
+internal mathematical and explanatory defects without pretending that a
+resolved DOI certifies its surrounding claims.
+
+### Overall assessment of the book
+
+**Retain and correct; do not rewrite from scratch.** The central H2
+tensor-to-Hamiltonian calculation, accepted numerical anchors, corrected
+Heisenberg reduction, explicit cost model and independent reference chemistry
+give the book a substantial foundation. The source is nevertheless not ready
+as a consistently reliable teaching text: foundational errors, contradictory
+summaries and missing learning steps remain.
+
+Its defensible demonstrated scope is canonical H2 data to checked operators
+and untapered logical product-formula circuits, supported by independent
+classical chemistry references. Water is an instructive conditional reference
+calculation, not a second completed quantum-energy pipeline. Either teach that
+scope consistently or explicitly approve the work required for a larger
+capstone. The book's readability improves most by correcting its first
+explanations and completing a few decisive derivations, not by smoothing away
+its author's voice.
+
+## Executable evidence, correctness and chapter consistency
+
+The companion specialist read every executable, shared helper and numerical
+artifact listed below. Its tool context did not support execution; the
+coordinator therefore performed the runtime part independently in an isolated
+`git archive` copy of the reviewed commit. **All ten labs, all six F#
+companions, `make pipeline-check` and `make verify-data` passed**, including
+byte-identical regeneration of the committed H2/H2O data and plots.
+The available environment was .NET SDK 10.0.302, PySCF 2.13.0, NumPy 2.0.2
+and SciPy 1.13.1; chemistry was run with thread limits and a wall-time bound.
+No canonical data in the book worktree were overwritten.
+
+This is fresh evidence for the corrected numerical foundation. It is not
+proof that every test establishes the stronger conclusion its prose claims.
+The two negative controls below demonstrate that distinction.
+
+### EC-M01 — Approximate spectral moments do not certify eigenvalues to the same tolerance
+
+**Severity:** Medium. **Classification:** Reproduced verification-mathematics
+defect, not evidence that the current six encoders produce wrong spectra.
+**Evidence:** `labs/03-compare-encodings.fsx:150-168` claims agreement of
+16 power sums fixes the eigenvalue multiset "to the stated numerical
+tolerance". `labs/PauliMatrix.fsx:94-102,162-187` compares normalised moments
+at `1e-7`; it does not calculate eigenvalues or bound the inversion's
+conditioning.
+
+For a concrete counterexample, take the committed spectrum and split its
+repeated eigenvalue `-0.4750688487721783` into values displaced by `+1e-4`
+and `-1e-4`. The coordinator's numerical reproduction gives a maximum
+normalised moment discrepancy of `1.4094784656596758e-9`, which passes the
+existing `1e-7` criterion, while the maximum sorted-eigenvalue discrepancy is
+`1e-4`. Exact power-sum uniqueness is not the disputed fact; transferring a
+finite numerical tolerance through that inverse problem is.
+
+**Correction and acceptance:** Retain moment checks as diagnostics, but use
+a dimension-, finiteness- and Hermiticity-checked eigensolver for a claimed
+eigenvalue tolerance. Compare sorted eigenvalues with the independent oracle;
+keep labelled state/sector checks separate. The split-degeneracy negative
+control must be rejected by any gate claiming `1e-7` eigenvalue agreement.
+
+### EC-M02 — The verification command repairs a corrupted oracle instead of detecting it
+
+**Severity:** Medium. **Classification:** Reproduced evidence-integrity defect.
+**Evidence:** `code/ch09-verify-h2.py:516-571` writes
+`h2_0.74_oracle.json` without first comparing the existing oracle.
+`Makefile:199-202` runs this writer before the downstream consumer checks.
+In the isolated copy, the coordinator changed the oracle's `IIII`
+coefficient to `123.0`. The verifier exited successfully and silently replaced
+it with `-0.8121706072487134`.
+
+**Impact:** The numerical derivation is useful, but a successful run does not
+establish that the oracle originally supplied to the reader was correct.
+It also makes a supposedly diagnostic command write accepted evidence.
+**Correction and acceptance:** Default verification must be read-only and
+reject corrupt coefficients, spectra, metadata and ordering anchors.
+Put regeneration behind an explicit mode and output path. Demonstrate
+nonmutation on success and failure, then prove deliberately corrupted
+references are rejected.
+
+### EC-M03 — The chemistry generators do not fail closed on solver nonconvergence
+
+**Severity:** Medium. **Classification:** Source-confirmed robustness gap;
+no unconverged result was observed in the accepted data or the fresh run.
+**Evidence:** `code/ch18-generate-h2-integrals.py:111-120,213-223`,
+`code/ch18-dissociation-scan.py:42-57`, and
+`code/ch19-bond-angle-scan.py:30-49` accept RHF/FCI results without explicit
+convergence and finite-result gates. The water generator promotes its coarse
+CSV before completing the fine pass.
+**Correction and acceptance:** Check solver convergence and finite
+energies/tensors, record convergence settings, and promote a complete
+validated output batch. A deliberately nonconvergent run must fail without
+replacing accepted artifacts. This is not a request for an expensive new
+basis-set study.
+
+### EC-M04 — Standalone capstone input guards are weaker than the full verification suite
+
+**Severity:** Medium. **Classification:** Input and parity coverage gap.
+**Evidence:** `code/ch03-spin-orbitals.fsx:25-39` loads canonical-looking data
+without binding it to provenance/checksums.
+`code/ch18-pipeline.fsx:63-81,134-181,208-236` checks term count and two
+coefficient sentinels, and parses scan records with regexes rather than
+validating the complete expected grid. The wrapper's row-count check is
+stronger than the standalone entry point.
+
+Changing the equilibrium one-body coefficients `h00` and `h11` by opposite
+amounts preserves the two named sentinels and term count while changing the
+Hamiltonian. This is a source-level coverage counterexample, not an observed
+corruption of the current fixture. Similarly, term and cost counts alone do
+not establish direct-versus-skeleton operator equality across the scan.
+**Correction and acceptance:** Reuse `System.Text.Json`, validate the exact
+required geometry keys and metadata, and compare complete operators/matrices
+where "verified" is claimed. Keep cost smoke tests and numerical parity
+tests separately labelled. Extend output-isolation protection to the
+canonical physicist tensor and its provenance file.
+
+### EC-M05 — Scaling labs contradict the book's operator-versus-circuit distinction
+
+**Severity:** Medium. **Classification:** Current companion/prose inconsistency.
+**Evidence:** `labs/06-scaling.fsx:124-159` turns ladder-weight logarithms into
+"1000-mode circuits from depth 1000 to depth ~10", and supplies generic
+small/medium/large-molecule encoding recommendations.
+`labs/07-trotter-cost.fsx:156-160` conflates individual encoded creation
+operators with molecular Hamiltonian terms.
+The source book correctly limits this inference
+(`17-cost-analysis.md:59-74,84-94`).
+**Correction and acceptance:** Call the measured quantity ladder-component
+weight or illustrative single-Pauli staircase cost. Compute molecular costs
+from the actual simplified Hamiltonian and separate count, depth, routing and
+simulation error. Generate narrative comparisons from the measured table;
+Lab 07's reference to `n=64` also needs reconciling with its displayed loop
+ending at 32.
+
+### EC-M06 — The allowed dependency range is wider than the archival verification contract
+
+**Severity:** Medium. **Classification:** Reproducibility-contract gap.
+**Evidence:** `requirements-data.txt:2-4` permits broad dependency ranges;
+`code/ch09-verify-h2.py:350-373` requires an exact PySCF version and exact
+regenerated floating-point semantic hash.
+`scripts/check-data-idempotence.sh:23-44` requires byte-identical JSON, CSV
+and PNG outputs. The fixture names PySCF 2.13.0 and NumPy 2.0.2.
+**Impact:** A permitted installation can perform a numerically valid
+calculation without meeting the archival byte contract. The current matching
+environment passes; that does not establish portability across all allowed
+versions or numerical backends.
+**Correction and acceptance:** Separate tolerance-based scientific parity from
+archival byte reproduction. Provide a tested lock/container and documented
+platform assumptions for the latter, including plotting dependencies.
+
+### EC-L01 — The water lab validates selected values but not its complete provenance
+
+**Severity:** Low. **Classification:** Coverage gap, not a wrong water result.
+**Evidence:** `labs/08-h2o-workshop.fsx:70-85,124-137` checks bond length,
+counts, minima and a bending-energy ratio, but not the declared CSV hashes or
+exact unique grids in `h2o_bond_angle_metadata.json`.
+**Correction and acceptance:** Check metadata binding, finite values, the
+complete grids and their overlapping rows before claiming validated
+provenance. Retain its honest role as an analysis of precomputed PySCF data.
+
+### EC-L02 — Several executable entry points retain misleading prerequisites or exercises
+
+**Severity:** Low. **Classification:** Reader friction.
+**Evidence:** The Chapter 06, 07, 11, 12 and 18 F# companions' line-5
+prerequisite says `dotnet build --configuration Release`, although their
+actual dependency path is pinned NuGet/FSI. Lab 02's bond-length exercise
+(`labs/02-h2-molecule.fsx:165-168`) points readers towards changes to an
+equilibrium-specific fixture/loader. The diagonal toys do not include the
+exact `(+1,-1)` sector used in Chapter 11's worked example.
+**Correction and acceptance:** Give runnable SDK/FSI instructions; supply a
+parameterised extension without altering the canonical fixture; include the
+chapter's exact toy-sector result as an assertion. Different example sectors
+are not themselves mathematically incorrect.
+
+### Complete companion coverage and disposition
+
+All files below were source-reviewed. All runnable F# entries and the
+generation/check paths were exercised in the coordinator's isolated run.
+"Repair" means repair the identified scope or validation boundary, not
+discard the working numerical foundation.
+
+| Companion | Actual scope | Disposition |
+|---|---|---|
+| `code/ch03-spin-orbitals.fsx` | Loads generated canonical spin integrals | Keep; strengthen input/provenance binding |
+| `code/ch06-building-hamiltonian.fsx` | Live JW construction and six-map counts | Keep; distinguish sentinels from full matrix parity |
+| `code/ch07-six-encodings.fsx` | Ladder-weight/cost examples | Keep; state which maps the displayed experiment exercises |
+| `code/ch11-diagonal-z2.fsx` | Explicit-sector diagonal toy | Keep; add expected-output assertions |
+| `code/ch12-clifford-tapering.fsx` | Symplectic representation and symmetry detection, not completed tapering | Relabel/repair; add the worked Clifford reduction if promised |
+| `code/ch18-pipeline.fsx` | Untapered construction, logical costs, JW QASM serialization, skeleton scan | Retain; repair guards and qualify untested export/taper stages |
+| `code/ch09-verify-h2.py` | Independent numerical verifier and oracle writer | Retain derivation; split verification from generation |
+| `code/ch18-generate-h2-integrals.py` | RHF/MO integral generation | Retain; enforce solver and output contracts |
+| `code/ch18-dissociation-scan.py` | PySCF RHF/FCI dissociation reference | Retain; enforce solver contract |
+| `code/ch19-bond-angle-scan.py` | Fixed-bond STO-3G PySCF RHF/FCI scan | Retain; enforce convergence and complete-batch promotion |
+| `labs/01-first-encoding.fsx` | JW operator demonstration | Keep; assert pedagogical checkpoints |
+| `labs/02-h2-molecule.fsx` | Canonical H2 Hamiltonian | Keep; repair parameter-extension instructions |
+| `labs/03-compare-encodings.fsx` | Six maps, JW matrix, spectral moments | Repair the claimed eigenvalue-tolerance guarantee |
+| `labs/04-custom-encoding.fsx` | Explicitly unvalidated candidate maps | Keep; a negative CAR example would help |
+| `labs/05-custom-tree.fsx` | Weight-only custom-tree exploration | Keep; not a theorem/census certificate |
+| `labs/06-scaling.fsx` | Ladder-weight census | Repair whole-circuit extrapolations |
+| `labs/07-trotter-cost.fsx` | Logical gate-cost illustration | Repair scope and narrative/data consistency |
+| `labs/08-h2o-workshop.fsx` | Analysis of committed classical reference data | Keep; strengthen metadata binding |
+| `labs/09-qubit-tapering.fsx` | Diagonal symbolic toy | Keep; add chapter-matched assertions |
+| `labs/10-vlasov-tree.fsx` | Built-in tree/string/weight comparisons | Keep; inherit repaired spectrum gate |
+| `labs/PauliMatrix.fsx` | Matrix construction and moment diagnostics | Keep matrix routines; replace tolerance-controlled spectrum claim |
+| `scripts/check-data-idempotence.sh` | Temporary-copy archival regeneration | Keep; distinguish byte identity from portable numerical parity |
+| `scripts/check-ch18-output-isolation.sh` | Selected-file protection and cost smoke test | Keep; broaden protected inventory and label scope |
+
+The numerical-artifact pass covered the canonical physicist tensor and its
+provenance, the equilibrium fixture and oracle, the 18-point dissociation
+integral/CSV pair, the 25-point coarse and 21-point fine water CSVs, and the
+water metadata. The fresh regeneration reproduces these accepted artifacts;
+there is no September evidence here that the repaired central chemistry
+dataset is wrong.
+
+### Residual gates are not equivalent to broken baseline chemistry
+
+CA-H008 remains a separate export/QPE evidence gate: serialization does not
+establish imported-unitary equality, correct controlled identity phase, or an
+executed energy-estimation algorithm. CA-M011 remains a pinned
+measurement-grouping-output gate; the valid hand-derived five-basis QWC
+partition is not a record of a particular API execution. CA-M010 remains a
+scoped research/theorem gate; the custom-tree labs do not supply a complete
+CAR census or proof. None should be marked closed merely because all current
+lab commands exit successfully.
+
+## Publication and production findings
+
+### BR-H01 — Readers downloading the book still receive the superseded incorrect version
+
+**Severity:** High. **Classification:** Current distribution defect; not a
+regression of the repaired source mathematics.
+**Evidence:** `README.md:11` and `docs/index.md:10` direct readers to
+`https://github.com/johnazariah/molecules-to-circuits/releases/latest`.
+On 7 September this resolves to book `v0.9.0`, published
+`2026-05-12T23:24:16Z`. Its actual `molecules-to-circuits.pdf` has 164 pages and
+SHA-256 `f3ae4ff43300a63fb3d46558b62937e1d58dba392a9eb6037a6fce993be6a4da`.
+Text extraction confirms the impossible `0.6975782469` integral, the obsolete
+`-1.1422` total / `-1.8573` electronic H2 energies (physical PDF pages 77-78,
+80 and 151), and the water calculation's "No empirical parameters" claim.
+The tracked `manuscript/from molecules to quantum circuits.pdf` is another
+stale, 161-page artifact containing the same superseded errors.
+
+The book's HTML deployment at the reviewed commit succeeded on 24 July
+(GitHub Actions run `30075578467`), and the live preface contains the corrected
+PySCF/FockMap distinction. Fixing the Markdown therefore did not fix what a
+reader receives through the download route.
+
+**Impact:** A blog can agree with current source yet contradict the PDF it
+recommends. The most consequential July corrections have not reached the
+downloadable edition.
+**Correction and acceptance:** Deliberately replace or mark the tracked PDF as
+historical; publish a new, corrected book edition from one accepted source
+commit, with matching PDF, EPUB and companion archive. Preserve historical
+release provenance and add an explicit supersession/errata route rather than
+silently treating the old release as current. Download the resulting public
+artifacts and check their contents, not merely the release job's status.
+Do not confuse **book v0.9.0 (May)** with **FockMap 0.9.0 (July)**.
+
+### BR-H02 — The previously recorded Zenodo rights gate remains open
+
+**Severity:** High. **Classification:** Existing owner/release blocker, confirmed
+still live; not a new finding about mathematical correctness.
+**Evidence:** The public API for record `20148795` on 7 September reports
+`resource_type.type=software`, `license.id=mit-license`, version `v0.9.0`,
+publication date `2026-05-13`, and a combined repository ZIP. `CITATION.cff`
+points to that version and concept DOI. Current `MANUSCRIPT-RIGHTS` and the
+book preface reserve rights in the manuscript, cover and figures while
+`LICENSE-CODE` licenses code separately.
+
+**Impact:** Citation and redistribution metadata describe a different rights
+arrangement from the current book. This also affects which book material can
+be exported into the public workbook/blog ecosystem.
+**Correction and acceptance:** The owner must choose accurately represented
+mixed records or separate book/code records and reconcile the public landing
+pages, files, description, rights and version relationships. Do not imply that
+changing present metadata retroactively revokes any valid earlier licence.
+This review makes no legal-status change and does not claim the gate closed.
+
+### BR-M01 — A successful PDF build can contain raw Mermaid instead of the teaching diagrams
+
+**Severity:** Medium. **Classification:** Reproduced output-integrity defect.
+**Evidence:** `manuscript/mermaid.lua:99-114` returns `nil` on a failed rendering
+command, leaving the original code block. A negative control with `MMDC=false`
+returned a Mermaid `CodeBlock` and exit status zero. More importantly, the
+existing `make sample` command, run with an output path in session storage,
+reported 25 `mmdc: command not found` failures and nevertheless exited
+successfully with a 54-page PDF. Its only raster figure was the water plot;
+the selected chapter's encoding diagrams were not rendered.
+
+**Impact:** The visual explanation is part of the argument, especially in
+Chapter 5. A green publishing job is insufficient evidence that readers
+received it.
+**Correction and acceptance:** Required diagram failures must fail publication.
+Add an existing-build-compatible negative control and expected-figure check;
+ensure PDF and EPUB cannot pass by retaining Mermaid source or silently
+omitting a diagram. This does not assert that the currently deployed HTML is
+broken: the live Chapter 5 rendered all seven diagrams and had no detected
+KaTeX errors in the inspected page.
+
+### BR-M02 — Auxiliary publishing descriptions have not all adopted the corrected reader contract
+
+**Severity:** Medium. **Classification:** Current production-copy drift.
+**Evidence:** `docs/index.md:20`, `springer/book-information-form.md:58,75-80`,
+and `jose/paper.md:53-61,119-124` retain universal "every formula"/"every result"
+execution claims. The JOSE packet also describes 15 labs and a Jekyll site
+(`jose/paper.md:59-61,135-150`), versus ten numbered labs and the current MyST
+site. The Springer form answers "Previously published electronically: No"
+(`springer/book-information-form.md:95`) despite the public site, releases and
+Zenodo archive. `manuscript/Leanpub.yml:31` labels the library documentation
+URL as the book's web version.
+
+**Impact:** A correct capstone qualification is ineffective if outreach,
+landing pages or a proposal restore the old claim. Electronic availability
+and publication by an academic publisher are not the same question.
+**Correction and acceptance:** Use one canonical description of deliverables,
+inventory and software boundaries. Update material intended for reuse, or
+explicitly archive obsolete packets. Obtain the owner's accurate electronic
+publication disclosure; do not infer publisher status, permissions or personal
+credentials. `docs/` and `jose/` are excluded by the current MyST configuration:
+these findings concern reusable auxiliary material, not a claim that its
+Jekyll template is the active website.
+
+### BR-M03 — Publication automation does not enforce the full existing evidence boundary
+
+**Severity:** Medium. **Classification:** Regression-protection gap.
+**Evidence:** `.github/workflows/build.yml` builds PDFs and runs `make lab-check`
+but does not run `make verify-data`, `make pipeline-check`, or the six
+`code/ch*.fsx` companions as an explicit suite. The release workflow builds and
+packages without a semantic verification job. The MyST workflow deploys on
+main, with no pull-request build in that workflow.
+
+**Impact:** The project already has independent checks designed to catch shared
+bad inputs and capstone/output drift, but a routine successful publishing run
+does not establish that they ran.
+**Correction and acceptance:** Wire the bounded oracle, package-parity,
+companion and output-isolation checks into the relevant CI/release dependency
+chain. Keep expensive chemistry regeneration a separately bounded,
+reproducible stage. Release artifacts must identify the source commit and
+corresponding evidence; adding more unconnected green jobs is not sufficient.
+
+### BR-M04 — Updating a data figure does not invalidate the cached book outputs
+
+**Severity:** Medium. **Classification:** Reproduced build-dependency gap.
+**Evidence:** `Makefile:73-90` lists chapters, filters, preambles and manifests
+as PDF/EPUB prerequisites, but not source figures. After producing a sample,
+`make -n -W manuscript/figures/h2o_bond_angle.png sample` with that existing
+sample's output path reported "Nothing to be done".
+
+**Impact:** A regenerated plot can be correct on disk while the locally rebuilt
+book still contains the previous plot.
+**Correction and acceptance:** Declare figure dependencies for every affected
+output. A figure-only change must rebuild those outputs; an unchanged source
+tree should still avoid unnecessary work.
+
+### BR-L01 — The repository's agent handoff describes a different book
+
+**Severity:** Low. **Classification:** Production-governance defect.
+**Evidence:** `.github/copilot-instructions.md` describes *What Quantum Computers
+Are Actually For*, its eight units and a nonexistent local `SPEC.md`.
+`.github/instructions/book-review-bootstrap.instructions.md` still contains
+unfilled title, reader, artifact and audit-path placeholders.
+**Correction and acceptance:** When implementation is authorised, populate the
+encodings-book contract and authoritative paths, preserving explicitly
+unresolved policy decisions. Do not invent a local PDF-archive policy.
+
+### BR-L02 — Sample contents and descriptive counts are stale
+
+**Severity:** Low. **Classification:** Reader-navigation/inventory friction.
+**Evidence:** `manuscript/sample-filter.lua:1-3` promises a full table of contents,
+but `manuscript/Sample.txt` omits `appendix-theory.md`; the current sample lists
+Appendix A and References but not Appendix B. `README.md:67,76-77` retains
+approximately 45,960 words and 175 pages. The current `make word-count` reports
+46,313 whitespace-delimited source words, while the July accepted full PDF was
+176 pages. Neither source-word counts nor historical page counts should be
+presented as a new edition's measured pagination.
+**Correction and acceptance:** Derive sample contents from the canonical
+manifest, then select which chapters have full text. Generate or explicitly
+date edition statistics. This does not reopen the repaired full-book
+Appendix B omission: `Book.txt` and `myst.yml` include both appendices.
+
+## Encodings-series findings and book crosswalk
+
+**Reviewed series:** `johnazariah/quantum-workbooks`, existing *Encodings series*
+session, branch `johnazariah-encodings-blog-series`, clean commit
+`7e613cde70f5cf86890bb4e7817d8a86b31d0fe2`. The report identifies exactly five
+branch-diff files: four draft posts and `social/encodings-hooks.md`. The series
+branch is not merged into `origin/main`. Draft dates are placeholders, not
+permission to publish.
+
+In the following findings, post paths are relative to
+`quantum-workbooks/docs/blog/posts/`, not to this book repository.
+
+| Post | Draft path | Book crosswalk | Present judgement |
+|---|---|---|---|
+| 1 | `2026-10-06-the-antisymmetry-problem.md` | Chapters 3, 5, 22; Appendix B | Sound introductory argument after its previous revisions; favourable review is not formal author approval |
+| 2 | `2026-10-13-fenwick-trees-and-bravyi-kitaev.md` | Chapters 5, 7; Appendix B | Reconstruct the indexing and occupation sets before further editorial approval |
+| 3 | `2026-10-20-three-constructions-in-a-trenchcoat.md` | Chapter 7, constructor distinctions | Reframe as our proposed generalisation, not a defect in canonical BK/SRL |
+| 4 | `2026-10-27-the-star-tree-theorem.md` | Chapters 7-8; remaining CA-M010 gate | Require a precisely scoped theorem and auditable evidence; no blanket framework conclusion |
+
+### BS-H01 — Post 2's occupation set is incorrect
+
+**Severity:** High. **Classification:** Confirmed existing draft blocker.
+**Evidence:** Post 2, lines 165-173, defines `Occ(j)` as a contiguous
+responsibility interval and gives `Occ(3)={0,1,2,3}`. The reviewed canonical
+Fenwick construction instead gives `Occ(3)={1,2,3}` and
+`Occ(7)={3,5,6,7}`. The wrong set feeds `R(j)=P(j)\setminus Occ(j)`
+(lines 183-191), so this changes the constructed Majoranas rather than merely
+the explanation. The book separates canonical BK's corrected `j+1` Fenwick
+construction from generic custom trees (`07-six-encodings.md:173-175`;
+`appendix-theory.md:75-78`).
+**Correction and acceptance:** Regenerate the n=4/n=8 sets, strings and CAR
+results from one named canonical implementation. Teach prefix queries and
+point updates as their distinct least-significant-bit operations, with an
+explicit conversion between zero-based mode indices and one-based Fenwick
+indices. Correct tables, derivation and hooks together.
+
+### BS-H02 — Posts 3-4 misattribute our proposed construction to established literature
+
+**Severity:** High. **Classification:** Previously identified attribution and
+scope blocker; still present in the frozen drafts.
+**Evidence:** Post 3, lines 32,44-58,76, assigns "choose any labelled rooted
+tree", its descendant-based sets and a conflation of recipes to SRL. Post 4,
+lines 48,211-213, carries that attribution into its theorem and critique.
+The current book instead restricts the claim to FockMap's custom
+tree-to-index-set construction and treats canonical JW/BK/Parity separately
+(`07-six-encodings.md:166-184`).
+
+The existing series session's author-decision record, corroborated by local
+session history on 20 August, explicitly says that **we** proposed the
+arbitrary-rooted-tree/all-descendants generalisation with the
+symmetric-difference ansatz; canonical BK/SRL are correct.
+**Correction and acceptance:** Apply that existing decision, not a new
+editorial invention: eventually retitle Post 3 *We Put Three Constructions in
+a Trenchcoat* and Post 4 *One Grandchild Breaks Our Recipe*. State the exact
+object being tested before the counterexample or theorem. No indictment of
+SRL, canonical BK, or the entire literature follows from failure of our
+extension.
+
+### BS-H03 — The draft's path-based alternative is falsely universal
+
+**Severity:** High. **Classification:** Current scope overclaim.
+**Evidence:** Post 3, lines 231-237, says its alternative accepts any rooted
+tree and produces all known encodings. Post 4, lines 52,204-215,255-261,
+extends this to "no other encodings", necessary literature migration and a
+settled framework question. The book explicitly limits its path-based API
+to validated labelled trees with at most three children per node
+(`07-six-encodings.md:189-203`; `08-building-vlasov.md:13-16,90,242`).
+**Correction and acceptance:** State the actual domain and distinguish
+literature results from tested implementation contracts. Remove universal
+path, historical migration and framework-settled claims unless new primary
+evidence supports precisely those statements.
+
+### BS-M01 — Posts 2-4 lack primary references and executable provenance for their counts
+
+**Severity:** Medium. **Classification:** Evidence/completeness gap.
+**Evidence:** Unlike Post 1's reference section, Posts 2-4 have no outbound
+references or References heading in the reviewed branch. Claims about
+120 CAR checks, a 701-tree census, citation counts and a migration of the
+field have no runnable series artifact. This series contains no notebooks,
+executable companions or dependency pins.
+**Correction and acceptance:** Cite Fenwick, original BK, SRL and only the
+later tree constructions actually used; link immutable research artifacts
+for the exact set/string generation and census. Either supply the evidence
+for numerical and historical claims or remove them. Do not promote finite
+census evidence into an unrestricted theorem.
+
+There is **no identified supplied theorem blueprint**. The August decision
+mentions using one later, but the series reviewer could not identify a
+worktree artifact or supplied proof that fulfils that instruction. Treat it
+as missing evidence, not as an approved report supposedly waiting elsewhere.
+
+### BS-M02 — Post 2 converts operator weight into circuit feasibility
+
+**Severity:** Medium. **Classification:** Misleading scaling interpretation.
+**Evidence:** Post 2, lines 239,249, treats `256 -> 9` as the difference between
+a feasible and impossible circuit. Its Fenwick/competitive-programming history
+also needs the more precise cumulative-frequency-table provenance already
+used in Post 1. The book explicitly fences the census as operator-level
+evidence (`22-scaling.md:49-51,109-115`).
+**Correction and acceptance:** Retain a measured worst-case Majorana/ladder
+weight statement, not a molecular CNOT, runtime or feasibility conclusion.
+State the effects not measured: Hamiltonian term distribution, cancellations,
+tapering, compilation, connectivity and the algorithm itself.
+
+### BS-M03 — The social mirror and complete publication payloads disagree
+
+**Severity:** Medium. **Classification:** Draft integration defect.
+**Evidence:** The series reviewer parsed both front matter and
+`social/encodings-hooks.md`. Post 1 matches; Posts 2-4 each differ by a newline
+in the LinkedIn text after YAML parsing. With the canonical URL appended,
+the simple hook-plus-URL lengths are 288, 318, 329 and 297 characters.
+The pipeline reviewer reports the actual emitted Post 2/3 payloads as 319/330
+once its separator is included. Posts 2-3 exceed 300 under the actual
+inline-URL delivery either way; the delivered string is the acceptance target.
+**Correction and acceptance:** Choose one canonical hook source and generate
+the mirror; compare parsed values, not raw YAML formatting. Validate the
+actual delivery payload, including URL if sent inline. Regenerate titles,
+slugs, next-post links and hooks together after the authorised narrative
+repairs. A link-card-only policy is an alternative only if the publisher
+actually implements it.
+
+### Series approachability and boundaries
+
+Post 1 supplies a useful standalone chain from fermionic antisymmetry through
+CAR to parity-aware encoding. It now distinguishes the 16-state full H2 Fock
+space from the six-state two-electron sector and keeps JW scaling at the
+operator level. Do not flatten this successful introduction into a compressed
+book abstract.
+
+Post 2 asks a cold reader to reconcile zero/one indexing, `U/P/Occ/R`,
+Majoranas and strings at once. Rebuild it around one labelled n=8 example:
+query, update, recover occupation, then construct the operators. The code
+artifact should establish the table, not be written later to agree with it.
+
+Posts 3-4 currently offer a confident critique before identifying the limited
+object being criticised. Their repaired sequence should introduce our
+proposed extension, show a depth-two counterexample, state the exact rule and
+its hypotheses, and only then explain what a theorem or census establishes.
+Own the unsuccessful experiment; do not make the literature carry it.
+
+The author has already required Post 1 approval, then corrected Post 2
+approval, before Posts 3-4 are edited. This review preserves that order and
+does not change any approval or scheduled date.
+
+## Secondary website and publishing-pipeline review
+
+The existing *Blog publishing pipeline* session supplied a separate review,
+without editing or publishing. Its workflow evidence is tied to the clean
+Encodings worktree at `7e613cde70f5cf86890bb4e7817d8a86b31d0fe2`; the reported
+Quantum production `origin/main` was
+`416f64c5229b666fd7c015bf7d0cb74c69981b30`. The series branch was seven commits
+ahead and two behind that production baseline, with no PR.
+
+The live Quantum root and sitemap were healthy. No Encodings post route or
+landing page was yet published; the planned October URLs correctly returned
+404. These are draft-state facts, not broken-live-post findings. The main
+Jekyll site's home layout links generically to `/quantum/`
+(`_layouts/home.html:51-55`); it does not automatically synchronise book
+source into the four posts.
+
+### BP-M01 — The publisher has no explicit author-approval gate
+
+**Severity:** Medium. **Evidence:** In `quantum-workbooks`,
+`.github/workflows/social-syndicate.yml:27-29,61-73,89-111` selects eligible
+posts by date after a successful deployment or manual dispatch. It does not
+test an author-approved/draft/status field.
+**Impact:** Once drafts are integrated and become date-eligible, this mechanism
+cannot enforce the owner's separate editorial approvals. The unmerged
+October drafts are not claimed to have been published.
+**Acceptance:** Explicit author approval, actual deployment readiness and
+date eligibility must all be required for distribution, including
+announcements. Preserve the existing URL/readiness logic.
+
+### BP-M02 — A normal strict build does not exercise the future-dated series
+
+**Severity:** Medium. **Evidence:** `mkdocs.yml:43-48` sets
+`draft_if_future_date: true`; `.github/workflows/deploy.yml:31-35` runs ordinary
+`mkdocs build --strict`. The review's successful strict run produced no output
+for any of the four October posts.
+**Acceptance:** Use a future-inclusive preview validation path that checks
+these exact drafts, their links, maths, metadata and assets without publishing
+them. A strict production build that excludes them cannot count as their
+editorial/output acceptance.
+
+### BP-M03 — Publication must validate the actual emitted social payload
+
+**Severity:** Medium; overlaps BS-M03 rather than a separate prose defect.
+**Evidence:** `.github/workflows/social-syndicate.yml:373-392` constructs
+`hook + "\n\n" + url` for posts and submits it without the length check
+used for announcements at lines 457-472. Post 2 is `231+2+86=319`
+characters and Post 3 is `238+2+90=330`.
+**Acceptance:** Validate the exact payload, not the hook in isolation or a
+mirror joined with a different separator. Keep one executable hook source
+(currently post front matter) and a generated review mirror.
+
+The pipeline report additionally recommends binding syndication to the
+deployed commit, serialising competing runs, retaining per-platform durable
+IDs and visible partial-failure state, and using a stable series identifier
+rather than `categories[0]` for threading. These are secondary hardening
+recommendations for a separately scoped pipeline change, not newly proven
+mathematical defects in the book.
+
+The adjacent Circuit Bench 08 explicitly identifies itself as a reduced
+two-qubit demonstration, not a full chemistry pipeline
+(`docs/circuit-bench/08-vqe-h2/README.md:3-5`). No book-synchronisation rewrite
+of that correctly labelled material is justified by this review.
+
+**Harmonisation rule:** Correct the book first where its explanations are
+wrong; derive both book and blog Fenwick material from the canonical
+construction rather than making two erroneous explanations agree. Only
+after approved titles and slugs are final should the series landing page,
+navigation, mirrors and publication payloads be generated. No review verdict
+in this file grants editorial approval or authorises publication.
+
+---
+
+# Apress expansion and definition-order review — 2026-09-07
+
+**Author direction, later the same day:** Plan for an Apress book in the
+approximately 300-page range; review opportunities to explain concepts more
+fully, define material before use and avoid sacrificing clarity for brevity.
+**Mode:** Additional review and planning only. No manuscript expansion,
+chapter reordering, publisher submission or revised edition has been
+implemented.
+**Baseline:** Same 23-chapter source at `c5cf9df`, approximately 46,313
+whitespace-delimited source words. The previous full-book correctness and
+consistency findings remain open.
+
+## Expansion findings: where the explanation needs more room
+
+The additional pass covered the foreword, all 23 chapters and both
+appendices, including code, diagrams, summaries and exercises. The specialist
+had a long-line display limitation; the coordinator's earlier wrapped read
+of all 76 paragraphs over 350 characters covers those same unchanged source
+passages. Targeted searches and direct rereads confirmed the key late/missing
+definitions below. This pass did not rerun code or verify additional external
+theorems.
+
+**Principal finding:** The book often explains the input and displays the
+output, but leaves the operation between them to a helper. The extra space
+is best spent turning that pattern into:
+**define the objects; predict one result; work one instance; call the helper;
+compare; transfer the method to a second instance.**
+
+These are pedagogical priorities, not twelve additional claims of wrong
+physics. Related correctness findings retain their original IDs and must
+be resolved before the corresponding explanation is expanded.
+
+| Priority | First substantive use / present gap | Expansion that earns its space | Observable acceptance |
+|---|---|---|---|
+| **XP01 — Chemical objects and units** | Ch 1 uses coordinates/pair sums at `01-electronic-structure.md:43-57`, Bohr/Ha at line 83, overlap normalisation at 129-133 and integral values at 187-200 before a sufficient units/matrix-element foundation | One symbol-and-unit card; one distance-to-nuclear-energy calculation; one orbital normalisation; atomic orbital to molecular orbital to spin-orbital to determinant; distinguish an integral from an HF orbital eigenvalue | Reader can identify and reproduce the units and meaning of every Chapter 1 input rather than recognise only its name |
+| **XP02 — Fermionic action before operator-order arguments** | Ch 1 explicitly previews second quantisation, but Ch 2 requires operator ordering and CAR to reason at `02-notation.md:89-103,135-145`; full action/vacuum construction is missing or deferred | A minimal dagger/rightmost-first/CAR inset before Ch 2's reasoning; complete vacuum, occupation-state and signed ladder-action construction in Ch 5 | Reader calculates a permitted creation, a forbidden creation, an annihilation and a signed product without guessing |
+| **XP03 — Actual code literacy** | First factory at `02-notation.md:203-220` uses pipelines, parsing, options, maps and pattern matching; line 175's "read let as define" does not prepare the reader | Trace a real two-index and four-index key through every intermediate value; explain missing versus zero; label excerpt dependencies and give a complete entry point | An F# novice predicts the function's output and runs the example without supplying unexplained variables |
+| **XP04 — Pauli and representation foundations** | Pauli products, tensors and weight enter Ch 4 before the closing glossary; matrices are in Ch 9, multiplication in Appendix B, general JW in Appendix B | Move matrix/product/tensor definitions forward; work one labelled operator action; define support/weight; use a small label/integer/vector-row conversion card | Reader multiplies Pauli factors, calculates weight and locates the state in the declared basis before seeing a cost or matrix claim |
+| **XP05 — Complete coupling calculation** | `06-building-hamiltonian.md:18-29` starts with density matrices; at 114-149 the decisive Pauli collection is asserted rather than shown | Start with a two-configuration pure-state energy; compare its mixture; introduce trace/density notation; expand one monomial and collect all four contributions; diagonalise the closed-shell block | Reader reconstructs a positive and negative coupling sign and the energy lowering, not just the library call |
+| **XP06 — A working Fenwick lesson** | `05-visual-encodings.md:193-249` needs XOR, prefix queries, storage intervals, update ancestry, recovery and complexity together; BM-M04 identifies wrong steps | Use one eight-mode occupation vector throughout; teach XOR/lowbit, zero/one indexing, stored bits, query, update and inverse recovery as different operations | Reader computes the entire stored vector, answers a prefix query, updates one occupation and recovers occupations; diagram and code agree |
+| **XP07 — Tree to Majoranas to ladders** | Majorana bounds at `05-visual-encodings.md:281-283` precede any operational Majorana definition; `08-building-vlasov.md:90-100` delegates construction to the helper | Define Majoranas and inverse pairing before a quantitative bound; enumerate one tree's qubit nodes, labelled terminal paths, selected strings, pairing and phase convention; complete the CAR calculation | Reader derives one encoded ladder without calling the encoder and accounts for every qubit, mode and selected path |
+| **XP08 — Uninterrupted molecular tapering** | Chs 10-12 explain deletion after a sign is chosen, but `12-clifford-tapering.md:153-166` labels literal signs as derived without showing the derivation | Carry one H2 number/spin-parity ledger through generator action, binary row reduction, independent commuting selection, signed Clifford conjugation and sector matrix comparison | Reader justifies each sign without choosing the lowest sector energy and states what the parities leave undetermined |
+| **XP09 — Quantities, units and meaning of error bounds** | Local/global errors and a commutator norm precede an operator-norm definition; the rotation exponential appears after earlier angle calculations | Define the norm and atomic time; work a two-term refinement example; derive local-to-global scaling and the Rz factor of two; separate model, pruning, simulation, sampling and phase-resolution budgets | Reader knows what each tolerance bounds, in what units, and what it cannot establish |
+| **XP10 — VQE before optimisation jargon** | `20-algorithms.md:40-57` uses ansatz; the explicit gloss is at line 260. Lines 78-94 use variance/allocation without elementary statistics | One normalised, sector-appropriate trial family and energy curve; a small record of measurement outcomes; mean/variance/standard error; independent allocation and a grouped covariance counterexample | Reader calculates an estimate and uncertainty and separates ansatz bias, optimiser stopping and sampling error |
+| **XP11 — Phase decoding and actual import** | QPE uses controlled powers/inverse QFT at `20-algorithms.md:166-207`; Ch 18 exports before Ch 21's interchange explanation | One-control phase kickback; a two-bit exactly representable QFT example; shifted H2 energy-to-phase-to-integer-to-energy decode; one named/versioned import round trip with a negative control | Reader explains the phase sign/branch and distinguishes parsing, circuit equality, simulation error and energy validation |
+| **XP12 — Fulfil the teaching route** | Missing exercise sets, delayed definitions in appendices, and capstone claims that exceed the deliberately untapered/reference split | Input/output checkpoints; bounded exercises and selected worked answers; retrieval-oriented appendices; accurate objectives and final inventory | Reader can locate the provenance and scope of every reported energy/circuit/result and complete the chapter's stated learning task |
+
+## Define-before-use register
+
+**Reading key:** **Keep** means the introduction already does useful work;
+**preview** is a legitimate destination, not an illicit use; **bridge** means
+a definition exists but needs an operational example or local prerequisite;
+**move** means useful material arrives too late; **missing** means no adequate
+operational definition was located. An assumed-QM or linear-algebra fact may
+need a short recap, not a new foundations chapter.
+
+Locations below are relative to `manuscript/`. The proposed home is where
+the definition should support the first operation, not where a glossary
+could list the word.
+
+### Chemistry, states and units
+
+| Concept | First substantive use | Current explanation | Treatment / proposed home |
+|---|---|---|---|
+| Coordinates, particle counts and pair sums | `01-electronic-structure.md:43-57` | Interaction table, incomplete symbol legend | **Bridge / Ch 1:** distinguish nuclear/electronic indices, positions, masses and sums over unordered pairs |
+| Atomic units, Bohr and hartree | `01-electronic-structure.md:83` | Atomic units named later at `03-spin-orbitals.md:155`; hbar=1 at `14-time-evolution.md:45` | **Missing operational convention / Ch 1 before calculation:** identify length/energy units and Coulomb convention, then work the conversion |
+| Atomic time and dimensionless exponent | `15-trotter-formulas.md:46-64` | hbar=1 earlier; atomic-time description later in Ch 20 | **Bridge / Ch 14:** time unit is hbar divided by hartree; energy-times-time divided by hbar is dimensionless |
+| Basis functions and STO-3G | `01-electronic-structure.md:95-117` | Defined there | **Keep:** add AO/MO labels, not another general basis-set essay |
+| Molecular orbital and overlap | `01-electronic-structure.md:127-135` | Overlap S named at line 133 | **Bridge / Ch 1:** normalise one sum explicitly, stating normalisation of constituent orbitals |
+| Spin-orbital | `01-electronic-structure.md:137-145`; spin integration in Ch 3 | Early table; fuller definition `03-spin-orbitals.md:15-36` | **Keep and bridge / Ch 3:** display spatial-times-spin function before integrating spin overlaps |
+| Configuration and occupation vector | `01-electronic-structure.md:150-159` | Defined with concrete table | **Keep:** identify the antisymmetric many-electron state represented by the label |
+| Slater determinant | Needed by configuration/HF discussion; explicit determinant language in `06-building-hamiltonian.md:33` | Single-determinant gloss later in `19-bond-angle.md:202`; no construction found | **Missing / Ch 1:** one normalised two-electron determinant, with determinant algebra only as far as needed |
+| HF, RHF and FCI | `01-electronic-structure.md:154-173`; RHF provenance `03-spin-orbitals.md:162` | HF single-configuration gloss and finite-basis FCI scope early; restricted HF explanation at `18-complete-pipeline.md:173-175` | **Bridge / Ch 1 and before Ch 3 provenance:** distinguish orbital optimisation from configuration coefficients; define closed-shell restriction |
+| One-body integral | `01-electronic-structure.md:187-200` | Numeric physical labels, no adequate one-electron matrix-element definition found | **Missing / Ch 1:** write the one-electron operator and its matrix element; distinguish orbital energy from integral |
+| Chemist/physicist two-electron integrals | `02-notation.md:25-49` | Definitions and coordinate grouping there | **Keep:** add electron separation and local spatial-index legend |
+| Raw, weighted and antisymmetrised coefficients | `02-notation.md:135-145,187-201` | Raw/weighted API contract is present; restricted-sum explanation is wrong | **Correct then bridge / Ch 2:** three equivalent representations of one nonzero-exchange example |
+| Interleaved/blocked spin indices | `03-spin-orbitals.md:65-80` | Explicit tables and convention warning | **Keep:** work one odd-index floor/remainder conversion |
+| Delta and spin selection | `03-spin-orbitals.md:88-94,111-126` | Same-spin explanation and allowed blocks | **Bridge / Ch 3:** define the two delta cases and derive the spin overlap |
+| Slots, allowed/nonzero entries and unique values | `03-spin-orbitals.md:36,59,116-128,241-247` | Counts conflated in places | **Correct then bridge / Ch 3:** separate four counts and raw tensor entries from surviving operator monomials |
+| Total spin, spin projection, singlet/triplet | Labels at `01-electronic-structure.md:155,158`; conservation at `03-spin-orbitals.md:46` | No sufficient sector-oriented introduction located | **Bridge / Chs 1/3:** spin projection from alpha/beta counts; equal counts do not alone imply a singlet |
+| Correlation energy | `01-electronic-structure.md:161-163` | Definition early; improved account in Ch 6 | **Keep and work / Ch 6:** two-configuration energy and a consistent electronic/total reference |
+| Active space and frozen core | Exercise `07-six-encodings.md:252` | Explanation later at `19-bond-angle.md:64-69` | **Late dependency:** supply transformed inputs and constant offset first, or move the exercise to a later optional project |
+
+### Fermionic/Pauli algebra, representations and data structures
+
+| Concept | First substantive use | Current explanation | Treatment / proposed home |
+|---|---|---|---|
+| Second-quantised Hamiltonian | `01-electronic-structure.md:171-179` | Explicitly a preview | **Preview — keep:** do not turn Chapter 1 into a full operator-algebra derivation |
+| Dagger and rightmost-first action | `02-notation.md:89-103` | Creation/destruction gloss in Ch 1 | **Prerequisite recap / Ch 2 before ordering:** adjoint, reversed product under adjoint, one action calculation |
+| CAR and anticommutator braces | Operator-order reasoning `02-notation.md:97-145`; displayed CAR `05-visual-encodings.md:62` | Commutation glossary late in Ch 4; consequences in Ch 5 | **Bridge / Ch 2 inset, full Ch 5:** define braces and work equal/distinct-index cases |
+| Fock space and vacuum | Sector/ladder reasoning in Ch 5; vacuum first named in `09-verification.md:187` exercise | Occupation summary in Appendix B | **Missing operational construction / Ch 5, minimal Ch 2 inset:** sectors of different particle number; vacuum is not the zero vector |
+| Full signed ladder action | Needed for Ch 2 ordering and `06-building-hamiltonian.md:86-109` | Particular JW action in Ch 5; general formula in `appendix-theory.md:58-68` | **Move/derive in Ch 5:** both signs and forbidden-occupation zero cases before Hamiltonian expansion |
+| Pauli matrices and multiplication phases | `04-qubits-gates-circuits.md:49` | Actions there; matrices `09-verification.md:33`; phase rules in Appendix B | **Move / Ch 4:** matrix/action link and a short multiplication table before products |
+| Tensor action and general states | Bell construction `04-qubits-gates-circuits.md:86` | Closing box at line 166, with BM-M03 error | **Move and repair / Ch 4:** product basis versus general superposition; one two-qubit action |
+| Commutator brackets | Pauli/encoding reasoning; later explicit binary tests | Closing Ch 4 glossary provides definitions | **Keep fact, move support earlier:** one XY/YX calculation before algebraic reliance on commutation |
+| Pauli string, support and weight | `04-qubits-gates-circuits.md:123-149` cost inference | String glossary at 166; operational weight in `05-visual-encodings.md:153-162` | **Move / Ch 4 before cost:** count nonidentity positions; distinguish a sum of strings from one string |
+| Displayed label, occupation integer and matrix order | Occupation labels in Ch 1; tensors in Ch 4 | Full convention box `05-visual-encodings.md:15-28`; matrix rule in Ch 9 | **Keep contract; stage it:** small worked card in Ch 4, brief reminders in Chs 5/9/21 |
+| Number operator | `05-visual-encodings.md:340-346` | Definition and JW image there | **Keep; finish derivation:** reproduce cancellation using already-taught ladder algebra |
+| Big-O, Theta, worst/average cases | Ch 1 motivational complexity; calculations in Ch 5 | Verbal descriptions without a compact data-structure primer | **Preview early, bridge in Ch 5:** identify what operation is counted, logarithm depth and constant/finite-size distinctions |
+| XOR and prefix parity | `05-visual-encodings.md:212-239` | XOR name and storage picture | **Bridge / Ch 5:** truth table and one occupation parity before tree queries |
+| Fenwick storage/query/update/recovery | `05-visual-encodings.md:239-249` | Qualitative three-question table; j+1 reminder later | **Rebuild / Ch 5:** lowbit and zero/one indexing, different traces for each operation |
+| Cumulative-parity encoding | API selection `07-six-encodings.md:103-110`; physical use in Ch 10 | Short Appendix B gloss | **Bridge / Ch 7:** encode and invert one occupation vector; state where total parity is stored |
+| Unitary equivalence/conjugation | `07-six-encodings.md:78-88` | Described as basis change | **Prerequisite recap / Ch 7:** transform states as well as operators; spectra do not determine the change of basis |
+| Majoranas and inverse pairing | Bound `05-visual-encodings.md:281-283` | Named but not operationally defined in Ch 8/Appendix B | **Missing:** define briefly before bound or defer bound; complete construction at start of Ch 8 |
+| Root, terminal path, node, leaf, depth and breadth-first order | Ch 5 tree preview; `08-building-vlasov.md:35-81` | Pictures and child-index formula | **Bridge / Ch 8:** distinguish qubit nodes, path endpoints, Majoranas and modes; enumerate one tree |
+| Generic custom index sets versus BK versus path maps | `07-six-encodings.md:133-205` | Substantially correct scope notes | **Keep; exemplify:** finite census, enforced input restriction and general theorem are different evidence |
+
+### Symmetry, algorithms, statistics and extensions
+
+| Concept | First substantive use | Current explanation | Treatment / proposed home |
+|---|---|---|---|
+| Z2 generator | `10-why-tapering.md:35-43` | Operational square-to-identity definition later in Ch 12 | **Move / Ch 10:** binary eigenvalues, commutation and conservation before sector inference |
+| Parity sector versus charge/spin sector | `11-diagonal-z2.md:93-110` | Sector list and warnings | **Bridge / Chs 10-11:** enumerate surviving charges/spins and derive the actual molecular signs |
+| Diagonal substitution | `11-diagonal-z2.md:118-147` | Rule and term table | **Keep:** add the original-to-remaining qubit map and matching sector spectrum |
+| GF(2), pivots, rank/nullity and null space | `12-clifford-tapering.md:70-86` | Binary Pauli table and XOR row-reduction analogy | **Bridge / Ch 12:** one complete binary elimination, free variables and phase information kept separately |
+| Centralizer and independent commuting subgroup | `12-clifford-tapering.md:70-76` | Correct distinction | **Keep; demonstrate:** two candidates commute with H but not with one another |
+| Clifford conjugation and S gate | Preview Ch 10; synthesis `12-clifford-tapering.md:92-129` | Conjugation table/example in Ch 12 | **Bridge before synthesis:** signed-Pauli preservation, S matrix and a Y-phase example |
+| Expectation, coherence, mixture, density matrix and trace | `06-building-hamiltonian.md:18-29` | Formula supplied immediately | **Bridge / Ch 6:** pure-state expectation first, matched-population mixture second, compact density notation third |
+| Coefficient 1-norm | `06-building-hamiltonian.md:252-256` | Explicit coefficient sum | **Keep:** do not silently reuse it as an operator or measurement norm |
+| Operator norm, local/global unitary error | Ch 14 formulas; `15-trotter-formulas.md:164-196` bound | Good distinctions, no operational norm definition found | **Bridge / Ch 14:** state the quantity, domain, units and permissible inference before a numerical bound |
+| Rotation-angle convention | Coefficient/angle calculation in Ch 15; staircase Ch 16 | Explicit exponential at `18-complete-pipeline.md:118-122`, again Ch 21 | **Move / Ch 4 rotations and Ch 15 reminder:** derive rather than memorise the factor of two |
+| Global/relative phase and controlled identity | `15-trotter-formulas.md:40-44` | Useful warning; ordinary phase action earlier | **Bridge / Ch 14-15:** show how controlling a global phase makes it relative between control branches |
+| Ansatz and variational principle | `20-algorithms.md:40-57` | Explicit ansatz gloss at line 260 | **Move/work / start of Ch 20 VQE:** one normalised state family, objective and expressivity limit |
+| Shots, mean, variance, standard error and confidence | `20-algorithms.md:78-94` | Shots defined; variance assumed | **Bridge / before allocation:** a binary random variable and a short measurement record; uncertainty is not bias or a stopping condition |
+| Group covariance | Grouping at `20-algorithms.md:61-73`; estimator at 80-94 | No adequate definition found | **Missing / Ch 20:** group estimator and covariance before reusing an independent-shot formula |
+| QWC versus general commutation | `20-algorithms.md:61-71` | Definition and direct five-basis partition | **Keep:** one globally commuting but non-QWC pair clarifies the boundary |
+| Controlled evolution and phase kickback | Preview Ch 14; operational Ch 20 | Shifted eigenphase supplied | **Bridge / Ch 20:** derive one-control action on a superposition before controlled powers |
+| QFT/inverse QFT | `20-algorithms.md:180` | Purpose named, transform not defined | **Missing / Ch 20:** normalised transform and a two-bit example before the phase-decoding algorithm |
+| Eigenstate overlap | Ch 9 amplitude; QPE Ch 20 | Squared amplitude stated | **Keep/bridge:** identify the inner product and distinguish overlap success from resolution/confidence |
+| Native gates, routing and depth | Ch 4 cost caveats/SWAP inference | More operational account late in Ch 21 | **Preview/bridge:** small logical/physical map when used; detailed routing example in Ch 21, not a platform catalogue |
+| QASM 2/3, Q# ownership and JSON | Export calls in Ch 18 | Interchange examples in Ch 21 | **Preview in Ch 18; operational in Ch 21:** versioned importer, schema, caller allocation, angle and phase contract |
+| Bosonic cutoff and CCR boundary | `23-whats-next.md:70-78`; Appendix B | d has conflicting meanings; finite boundary omitted | **Optional topic, mandatory local definitions if retained:** levels, ladder factors, unused states and cutoff error |
+| Normal ordering and mixed species | Appendix A APIs and Appendix B final section | Labels and algorithm instruction only | **Optional bridge:** one CAR/CCR reorder; distinguish different particle species from symmetry sectors |
+
+### Code prerequisites and forward references
+
+| Dependency | Current first use | Required treatment |
+|---|---|---|
+| Coefficient factory; strings/tuples/arrays; pipelines and function application | `02-notation.md:203-220` | Define the mathematical lookup first; trace a concrete key through parsing, permutation and lookup; state the output type |
+| Map lookup, Some/None and zero | Same factory | Explain absence versus present zero; do not imply every missing or malformed key is a physical zero |
+| Package/module/script setup | Ch 2 package note; `03-spin-orbitals.md:193-204` | Explain #r, #load, open, working directory and escaped module name before the first entry point uses them |
+| Unsigned indices, 4u and conversions | `03-spin-orbitals.md:193-204` and later | Briefly identify type versus physical quantity; demonstrate safe index conversion once |
+| The `encoders` value | Loop in `07-six-encodings.md:43-51`, before its list is supplied | Move its definition before the first runnable use or identify the snippet as a contextual excerpt with a named dependency |
+| Tree recursion, options and records | `08-building-vlasov.md:35-81` | Show the base case and one recursive step beside a tree; explain record fields without assuming FP expertise |
+| Tapering record updates and literal sector | `12-clifford-tapering.md:153-166` | Teach the record operation locally, but derive the physical sector before putting its signs into a record |
+| Python/PySCF geometry-to-result snippet | `19-bond-angle.md:75-101` | A small code/object bridge when introduced; identify what `mol`, RHF orbitals and FCI result represent, rather than assuming F# literacy transfers to an unexplained Python API |
+
+### Definition and notation stress cases
+
+The register is a substantial first-use audit, not a claim that a keyword
+list certifies every symbol in a future edition. During implementation,
+attach a local notation contract to each new derivation. In particular:
+
+- Overlap S, total spin S and the S gate must not be inferred to be the same
+  object because the letter is reused.
+- Spin labels alpha/beta and state amplitudes alpha/beta need local context.
+- Electron count, number of spin-orbitals, number of Pauli terms and number
+  of product-formula steps must have stated roles/ranges rather than an
+  unannounced reuse of N or n.
+- An index on a spatial integral is not automatically a spin-orbital index.
+  An output qubit after tapering is not automatically the original orbital.
+- A coefficient-list norm, operator norm, energy uncertainty and unitary
+  error have different meanings and units; define the bounded quantity
+  before substituting a number.
+- "Exact" must identify the object and scope: symbolic Pauli phases,
+  finite-basis FCI, a sector restriction and approximate time evolution are
+  not one kind of exactness.
+
+## The expanded reader contract
+
+The extra space should complete the explanation, not multiply introductory
+claims, repeat warnings or turn API tables into prose. The book should let
+the intended reader answer, before being asked to manipulate a new object:
+
+1. What is it, in the problem we are solving?
+2. What do its symbols, indices, units and conventions mean?
+3. What is one small instance, and how does it behave?
+4. Which operation are we about to perform on it, and why is that operation
+   valid under the stated assumptions?
+
+This is not a demand to re-teach all prerequisite linear algebra or
+introductory quantum mechanics. It is a demand not to smuggle in chemistry,
+second quantisation, Pauli algebra, unfamiliar programming constructs,
+statistics or data structures as though those were already prerequisites.
+
+**Define-before-use means before substantive use.** A hook may name VQE,
+correlation energy or a tree encoding as a destination, provided it gives
+enough ordinary-language context and does not ask the reader to reason with
+its undefined machinery. The full operational definition belongs at the
+first calculation, code call, algorithmic claim or exercise that needs it.
+A late glossary entry is not a substitute. Conversely, spelling out every
+future definition in Chapter 1 would destroy the problem-first progression.
+
+For a reader returning to a later chapter, provide a short local reminder
+and a precise cross-reference to the canonical definition. Keep one meaning
+and one convention, not repeated competing introductions.
+
+## Indicative 300-page allocation, not a pagination prediction
+
+The author's target is not represented as an Apress requirement or accepted
+production specification. The 176-page comparison is the existing full-book
+build, not an Apress layout. The current Makefile uses 11-point type and
+one-inch margins with locally chosen fonts; no Apress trim size, page design,
+code style or treatment of figures has been established here.
+
+Multiplying current words by `300/176` would yield about 78,943 words, but
+that is only a same-density arithmetic extrapolation. It is **not** the
+recommended way to determine what the book needs. Source counts include
+code, tables and markup; explanatory diagrams, displayed equations, worked
+solutions and code listings have very different page costs.
+
+The following is a **content-space budget** for discussion. Chapter numbers
+are retained. Each chapter allocation includes its opening, figures, code,
+worked examples, summaries and exercises; do not add those again. No extra
+chapter-opening or part-divider allowance is hidden outside the total.
+
+| Part | Chapters | Allocated pages |
+|---|---|---:|
+| I — The Molecule | 1-3 | 36 |
+| II — The Machine | 4 | 12 |
+| III — Encoding | 5-9 | 62 |
+| IV — Tapering | 10-13 | 34 |
+| V — Circuits | 14-17 | 38 |
+| VI — The Pipeline | 18-21 | 48 |
+| VII — Horizons | 22-23 | 12 |
+| **Chapter content subtotal** | **23 chapters** | **242** |
+| Front matter | Rights, contents, preface, how to use the book | 10 |
+| Code-reading bridge | Proposed unnumbered material before substantive code use | 8 |
+| Appendix A | Selected practical API/entry-point reference | 8 |
+| Appendix B | Mathematical/convention summary, symbol and term lookup | 10 |
+| Selected worked solutions | Proposed reader-facing back matter | 12 |
+| References | Consolidated cited works | 6 |
+| Index | Proposed production allowance | 4 |
+| **Supporting matter subtotal** | | **58** |
+| **Indicative total** | | **300** |
+
+The code bridge and solutions/index are recommended components, not approved
+new manuscript files or changes to the chapter count. Short explanations
+must still appear where needed in chapters; eight pages of introductory
+code material cannot define every later API in advance. A separate
+instructor solution set can be longer than the printed selected answers,
+but no essential prerequisite explanation should be outsourced to it.
+
+### Chapter-level allocation and intended learning gain
+
+Current word counts are source measurements, not estimates of current
+typeset chapter pages. Target pages are allocations for the **whole revised
+chapter**, not pages to add.
+
+| Ch | Current source words | Target pages | Learning gain that earns the space |
+|---|---:|---:|---|
+| 1 | 3,129 | 12 | Basis functions to molecular orbitals, determinants and declared energy/model conventions |
+| 2 | 2,702 | 14 | Coordinate/index conversion and raw, antisymmetrised and weighted coefficient conventions with checked examples |
+| 3 | 2,596 | 10 | Explicit spin-index maps, selection rules and storage/allowed/unique-entry counting |
+| 4 | 2,208 | 12 | State vectors, coherence, gates and tensor-basis order without false foundational shortcuts |
+| 5 | 3,449 | 16 | Occupation, parity queries and updates on one JW/BK example, with correct diagrams |
+| 6 | 1,811 | 14 | A complete coupling expansion, cancellation and assembly of the canonical H2 operator |
+| 7 | 2,097 | 8 | Like-for-like encoding comparison and clear representation/CAR assumptions |
+| 8 | 1,865 | 14 | Tree nodes, paths, Majoranas and one fully checked ladder operator |
+| 9 | 1,818 | 10 | Matrix, labelled-state, sector and spectrum evidence, with diagnostic counterexamples |
+| 10 | 1,487 | 6 | Conserved quantities and exactly what parity does and does not fix |
+| 11 | 1,523 | 8 | An explicit sector calculation from the original operator to a checked reduction |
+| 12 | 2,200 | 14 | Physical molecular sector, binary linear algebra and Clifford conjugation in one complete path |
+| 13 | 1,232 | 6 | Interpretation of scoped generated comparisons, rather than unsupported benchmark expansion |
+| 14 | 1,727 | 10 | Separate measurement, preparation and simulation, then motivate noncommuting evolution |
+| 15 | 1,611 | 12 | Local/global product-formula error, units, norm definitions and a stated resource budget |
+| 16 | 955 | 8 | Trace basis changes, parity accumulation, phase rotation and uncomputation |
+| 17 | 727 | 8 | A reproducible logical-cost comparison and its explicit limits |
+| 18 | 1,912 | 12 | Trace the implemented pipeline, data provenance and the boundaries of each stage |
+| 19 | 2,017 | 10 | Interpret fixed-coordinate reference chemistry, sampled minima and basis limitations |
+| 20 | 2,372 | 16 | A small VQE estimator with its assumptions and a worked shifted-QPE phase decode |
+| 21 | 1,633 | 10 | One named format/importer route with order, phase and caller-ownership conventions |
+| 22 | 895 | 6 | Read resource assumptions and compare cost categories without inventing a crossover threshold |
+| 23 | 1,618 | 6 | Scoped extensions that build on the taught concepts without promising another textbook |
+| **Total** | **43,584** | **242** | |
+
+The intentionally larger allocations go to the transitions that currently
+hide reasoning: conventions, alternative encodings, coupling expansion,
+physical-sector tapering and algorithmic measurement. The short chapters
+should not all be inflated equally. Some may need better examples rather
+than much more prose.
+
+### Editorial prescription for every chapter
+
+This complements the page allocation: retain successful explanations,
+complete the specific missing operation and move or defer what interrupts
+the prerequisite chain. None of these recommendations changes the manuscript
+structure without implementation approval.
+
+| Source | Keep | Add or work through | Move, defer or narrow |
+|---|---|---|---|
+| Foreword | Personal framing, audience and problem-first intent | Reading/running routes and an honest two-track deliverable | Do not assume chemistry, FP, statistics or data-structure fluency; promise only delivered exercises and computations |
+| Ch 1 | Born-Oppenheimer, finite-basis exactness, occupation table | Units, symbols, orbital normalisation, determinant/HF/FCI comparison and one-body matrix element | Leave second quantisation a scoped preview; do not survey or implement every classical chemistry method |
+| Ch 2 | Coordinate grouping and index-shuffle motivation | Minimal operator-action inset; corrected prefactor example; traced lookup function | Place code bridge before factory; defer builder execution to Ch 6; put migration history in a compatibility note |
+| Ch 3 | Interleaved table and concrete cross-spin lookup | Product spin functions, delta derivation, allowed/forbidden entry and count ledger | Move the Pauli-output exercise after encoding is taught; keep previews recognisable as previews |
+| Ch 4 | Probabilities, CNOT action and Bell preparation | Pauli matrices/products, general tensor states, order card, phase and rotation conventions | Move the closing prerequisite glossary forward; leave staircase derivation to Ch 16 |
+| Ch 5 | Fermion-sign example and three bookkeeping questions | Full ladder/JW action; XOR, lowbit, stored bits/query/update/recovery; light asymptotic primer | Define Majoranas briefly before a bound or defer that bound to Ch 8; trim duplicate decision tables |
+| Ch 6 | Corrected coefficient table and correlation interpretation | Pure-state to mixture/trace bridge; full coupling collection and closed-shell block | Remove repair-history prose; put the all-six comparison exercise after its interface is introduced |
+| Ch 7 | Interface unification and distinct implementation scopes | Explicit basis-map and cumulative-parity example; named function contract | Define `encoders` before using it; defer custom-tree and frozen-core tasks until their inputs/methods exist |
+| Ch 8 | Concrete tree-shape comparison and breadth-first child rule | Tree vocabulary, enumerated paths/Majoranas/pairing, one ladder and complete CAR check | Keep literature correspondence, empirical census and API support separate; avoid an unprovided all-size theorem |
+| Ch 9 | Independent reference, sectors and separate electronic/total energies | Direct occupation matrix, permutation counterexample, labelled-state checks and HF block | Narrow spectrum-only guarantees; do not teach vacuum for the first time in an exercise |
+| Ch 10 | Motivation and exact-within-sector explanation | Z2 before use, conserved generator action, parity/charge/spin counterexample | Leave binary elimination to Ch 12; point-group theory can be an optional preview |
+| Ch 11 | Term-by-term substitution and labelled exploratory helper | Derived physical signs, remaining-qubit label map, matching sector spectrum and exercises | Put sector selection before molecular application; do not let arbitrary toy signs imply a physical selection rule |
+| Ch 12 | Binary Pauli table, centralizer warning and Heisenberg example | Row reduction, rank/nullity, signed conjugation and one H2 sector reduction | Put the literal sector record after its derivation; defer stabilizer-code implementation |
+| Ch 13 | Scoped toy comparisons and metadata requirements | One fully specified before/after record and interpretation exercises | Replace removed-table history with current scope; no invented molecule benchmarks |
+| Ch 14 | Energy-to-unitary progression | Measurement/preparation/evolution comparison, noncommuting example and meaning of error | Keep qubitization a defined, scoped alternative rather than an unearned complexity table or new full pipeline |
+| Ch 15 | Canonical logical count and dimensionless/energy distinction | Operator norm, atomic time, explicit rotation list, refinement and error ledger | Higher nested-commutator theory optional; mark supplied hypothetical exercises honestly |
+| Ch 16 | ZZ then XXYY progression | Basis-state trace, bit XOR versus eigenvalue product, phase accumulation, uncomputation and exercises | Replace extra weight tables with an explanation of why the circuit works |
+| Ch 17 | Logical-only comparison and provenance requirements | Same-width Hamiltonians with different weight distributions; full per-step/total cost ledger | Remove stale release-withholding prose; no blanket inference from ladder maxima |
+| Ch 18 | Two-track implementation and safe untapered baseline | Artifact checkpoints, symbol-to-code types, direct/skeleton comparison and an optional validated taper branch | State the actual scope; export here is a preview until Ch 21; no promise that every earlier concept is integrated |
+| Ch 19 | Fixed bond, named PySCF backend and basis limitations | Geometry diagram, AO/MO/PySCF bridge, sampled versus fitted minimum and constrained curvature | Full normal-mode analysis optional; remove the unrelated skeleton-speed claim |
+| Ch 20 | Direct QWC partition, identity sampling rule and shifted phase relation | One ansatz/energy curve, outcome statistics/covariance, phase kickback, small QFT and complete energy decode | Move ansatz definition forward; defer optimisation and mitigation surveys |
+| Ch 21 | Order boundary and final verification checklist | Named import round trip, Y/rotation/order negative control, phase policy, allocation and small routing example | Replace universal portability with actual versioned compatibility; avoid a vendor catalogue |
+| Ch 22 | Operator/molecule distinction and restrained FeMo active-space context | Resource-category diagram, determinant/dense-memory example and acronym glosses | Do not infer molecular totals or teach full classical solvers merely to reach a page allocation |
+| Ch 23 | Translation layer is necessary but not the whole computation | Short accurate extension cards; local bosonic definitions if quantitative content remains | Defer full ADAPT, mitigation, vibronics and QEC implementations; inventory only what has actually been built |
+| Appendix A | Selected signatures and raw/weighted distinction | Argument/return contracts, taught Trotter/export entry points and complete-example destinations | Drop exhaustive-API claims; do not reproduce the entire library documentation |
+| Appendix B | Phase closure and convention reminders | Retrieval tables for operators, Majoranas, sectors, norms and cutoff; explicit external destinations | Teach essential definitions in their chapters first; do not relabel summaries as proofs |
+
+### Required local moves, not a wholesale restructure
+
+Retain the problem-first progression. Chapters 1-3 establish the chemical
+object, with a short operator-action/CAR inset before Chapter 2's ordering
+reasoning and the code bridge before its factory. Chapter 4 establishes
+Pauli matrices, tensors and angle conventions. Chapter 5 supplies the full
+fermionic action/JW construction and practical Fenwick arithmetic. Chapter 8
+then derives tree encodings from Majoranas rather than introducing the word
+only inside an unexplained helper.
+
+Carry one H2 generator/sign ledger across Chapters 10-12. Carry one
+operator/angle/error ledger across Chapters 14-17. Chapters 18-21 retain
+their current order but explicitly distinguish construction, classical
+reference, algorithm and import evidence. A short algorithm-orientation box
+in Chapter 14 is enough; moving all of Chapter 20 earlier is not necessary
+for these improvements and would require a separate structural decision.
+
+### Exercise dependencies and selected answers
+
+The longer edition should use exercises to consolidate taught operations,
+not make the learner discover an absent prerequisite. Preserve legitimate
+conditional examples: a supplied hypothetical term count/weight in Chapters
+4 or 15 is not an unsupported molecular benchmark if it is labelled as an
+assumption. Similarly, arbitrary-sign diagonal toys, the deliberately
+one-generator Heisenberg example and the fixed-bond water calculation are
+valid within their stated scopes.
+
+The actual dependency failures need action:
+
+| Location | Required repair before assigning it |
+|---|---|
+| Ch 2 conversion/prefactor exercises | Correct the symmetry hint and supply distinguishable data for error diagnosis |
+| Ch 3 Pauli-output question | Move after Ch 6 or explicitly defer it; correct spin-allowed count answers |
+| Ch 6 sign and six-encoding exercises | First show the general JW expansion; fix term indices; supply the encoder list or move the comparison to Ch 7 |
+| Ch 7 custom/frozen-core tasks | Supply a complete CAR harness and transformed frozen-core data/offset, or make them later optional projects |
+| Ch 8 topology/comparison tasks | State a complete topology, mode/pairing convention and stopping range; specify what equality is being tested |
+| Ch 9 vacuum/HF/expectation questions | Define vacuum earlier; resolve spatial/spin notation; supply the state or prior two-by-two derivation |
+| Ch 10 point-group extension | Label as an optional extension with enough source material, not an unstated chemistry prerequisite |
+| Ch 15 hypothetical resource question | State time units and which quantity determines the step count; do not infer it from a coefficient norm alone |
+| Ch 17 benchmark-design question | Supply a metadata schema and define the comparison metric, rather than asking whether an encoding "beats" another in the abstract |
+
+For the eleven currently missing exercise sets, prefer a prediction or
+interpretation and a trace/calculation of the new operation. Add an optional
+project only where useful; identical three-question templates are not a goal.
+Selected answers should prioritise integral conversion, spin counting,
+fermion signs, Pauli collection, Fenwick operations, Majorana pairing,
+molecular sector signs, Trotter units/bounds, staircase phase, VQE covariance,
+QPE unwrapping and export-order failures. Show intermediate states and
+conventions rather than only final numbers or "run the script".
+
+### Visuals with an instructional job
+
+| Visual | Home | Operation made visible |
+|---|---|---|
+| AO to MO to spin-orbital to determinant | Ch 1 | Distinguish functions, orbitals and many-electron states |
+| Electron-coordinate colouring of four indices | Ch 2 | Perform the convention shuffle |
+| Four spin blocks and count ledger | Ch 3 | Separate storage from allowed entries |
+| Label/integer/row card and matched-population states | Chs 4/6, reused 9/21 | Resolve order and distinguish coherence from a mixture |
+| Separate Fenwick storage, query, update and recovery panels | Ch 5 | Execute different operations without conflating tree paths |
+| Coupling collection table | Ch 6 | Account for phase signs and cancellations |
+| Nodes to terminal strings to Majorana pairs | Ch 8 | Explain every tree count and the resulting ladder |
+| Sector decomposition and Clifford label map | Chs 10-12 | Identify which states are retained and how labels change |
+| Measurement versus evolution of the same Pauli string | Chs 14/20 | Use the correct circuit primitive |
+| Compute-rotate-uncompute state trace | Ch 16 | Derive the factor of two and parity action |
+| Two-track artifact/provenance diagram | Chs 18/19 | Separate constructed circuits from calculated reference energies |
+| Phase-kickback circuit and phase-unwrapping scale | Ch 20 | Decode a signed energy |
+| Logical/physical map across a SWAP | Ch 21 | Interpret routing rather than merely count added gates |
+| Truncated bosonic ladder with top boundary | Optional Ch 23/B | Understand what truncation changes |
+
+These are candidate teaching figures, not a requirement to add fourteen
+unrelated illustrations. Combine or reuse panels when they serve the same
+operation. They are included in the page budgets, not an extra page tranche.
+
+### Core expansion versus optional scope
+
+The core additions are the unit/state/code foundations, ladder and Pauli
+action, correct Fenwick arithmetic, one actual tree/Majorana construction,
+full coupling collection, physical-sector tapering, an error ledger, small
+VQE/QPE demonstrations, a named import route and fair exercises/answers.
+Those additions explain the book already promised.
+
+Full PREPARE/SELECT/qubitization implementation, an all-size tree theorem,
+general QEC/syndrome circuits, ADAPT pool design, mitigation algorithms,
+large active-space/frozen-core implementations, full vibrational analysis
+and mixed-species simulation are optional expansions of the remit. Do not
+silently commit to them to make the book longer. If a short extension retains
+a quantitative formula, its local definitions and hypotheses are still
+mandatory.
+
+Do not expand repair history, repeated "pipeline complete" claims,
+near-identical weight tables, unsupported feasibility figures or the entire
+public API. More copy about why a missing step matters is not a replacement
+for showing the step.
+
+### How to calibrate this budget
+
+Before treating any word target as contractual, typeset representative
+revised material using the actual publisher layout: a prose/chemistry section,
+an equation-heavy derivation, a code-and-diagram section, and exercises with
+selected solutions. Measure their actual space and adjust the allocations.
+If clarity requires more than an allocation, first move optional depth,
+duplicate reference material or code output—not definitions or indispensable
+derivation steps. If it requires less, do not pad it.
+
+## Clarity-first editorial acceptance rules
+
+- Before an equation is used, name the objects and the meaning, domain,
+  index ranges and units of newly introduced symbols. Explain a convention
+  change at the point of change; a symbol glossary alone cannot do that job.
+- Before a nontrivial algebraic step, supply the identity, hypothesis or
+  earlier worked step that licenses it. "Clearly", "simply" or an API name
+  cannot replace the missing reasoning.
+- Before an algorithmic example, identify inputs, output, invariant and
+  failure conditions. Separate a theorem, an implementation guarantee and
+  an observed result.
+- Before a code call, explain what object it consumes and returns, its
+  convention and the prerequisite definitions. A runnable opaque call is
+  not an explanation; a beautiful derivation with unrunnable code is not a
+  completed computational example.
+- Before an exercise, ensure all necessary concepts and inputs have appeared.
+  Give the reader an answer, checkable intermediate result or rubric at the
+  appropriate level. Exercises may extend an idea, but must not conceal the
+  first explanation of an essential prerequisite.
+- Prefer one connected worked example and a small counterexample over
+  repeated summaries. Explain why the counterexample fails and what the
+  successful construction preserves.
+- Retain useful plain-language motivation and the author's voice. Do not
+  mistake shorter sentences, fewer equations or fewer words for a lower
+  cognitive burden.
+
+The acceptance target is a reader who can explain and carry out the next
+step, not a manuscript that reaches a particular page count or a keyword
+scan that finds a definition somewhere.

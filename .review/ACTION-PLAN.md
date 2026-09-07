@@ -1,5 +1,383 @@
 # ACTION PLAN — From Molecules to Quantum Circuits
 
+## Current correction plan — 2026-09-07
+
+**Authority:** The full-book review in
+[CORRECTNESS-AUDIT.md](CORRECTNESS-AUDIT.md#comprehensive-review--2026-09-07).
+**Reviewed source:** `c5cf9dfc4543d35c9936fa1b39307e782016fe11`.
+**Scope:** All 23 chapters, foreword, both appendices, references and executable
+companions. Blog harmonisation and publication are secondary workstreams.
+**Mode:** Implementation authorised by John on 2026-09-07: "you have the
+bridge captain. YOLO and for you to make it so." This supersedes the earlier
+review-only restriction for the book, companions, figures and local production
+material. Public releases, publisher submissions, rights changes and the
+blog's existing post-by-post approvals remain outside this authority.
+**Later author direction:** Plan an approximately **300-page Apress edition**,
+using the extra space for define-before-use explanations and complete
+reasoning rather than brevity or padding. See the
+[expansion review](CORRECTNESS-AUDIT.md#apress-expansion-and-definition-order-review--2026-09-07)
+and the expansion-planning section below. This is a planning target, not a
+publisher-confirmed page specification or an implemented expansion.
+**Current judgement:** Strong translation-layer manuscript, but **not ready for
+publication as a fully consistent teaching text**. Five high-priority source
+findings remain, together with foundational, algorithmic and pedagogical
+corrections. The accepted central chemistry and package results should be
+preserved, not discarded.
+
+This dated plan supersedes older readiness statements below. July's detailed
+history remains useful evidence of particular repairs, not a present
+whole-book approval. September found residual contradictions outside the
+previously repaired passages as well as newly identified errors.
+
+### 1. Correct the trust-critical book passages before polishing or exporting them
+
+| Order / IDs | Required manuscript change | Acceptance |
+|---|---|---|
+| **1A — BM-H01, BM-M01** | Repair restricted-pair prefactors, antisymmetrised coefficients and real-integral symmetries in Chapter 2; correct its exercises. | Raw unrestricted, antisymmetrised unrestricted and restricted antisymmetrised formulations produce identical matrices for nonzero exchange. All real-orbital permutations and exercise answers agree. |
+| **1B — BM-H02, BE-M03** | Reconcile Chapter 1 inputs and every other H2 example with the canonical geometry and fixture. Repair invalid numerical/exercise diagnoses. | A complete value inventory identifies geometry, basis, convention, units and electronic/total energy. Hypothetical examples are explicitly hypothetical. |
+| **1C — BM-H03, EC-M01** | Make all displayed-label/matrix-row recipes consistent and remove claims that spectra alone catch every error. Replace the moment-to-eigenvalue tolerance implication. | Labelled number-operator states and matrix elements agree; sorted eigenvalue errors meet the stated tolerance; the split-degeneracy negative control is rejected. |
+| **1D — BM-H04, BM-M07** | Separate VQE measurement, ansatz preparation and Hamiltonian evolution; correct the shot-bound and covariance derivations. | One Pauli string has distinct measurement/evolution circuits and costs; independent and grouped estimator assumptions are explicit. |
+| **1E — BM-H05, BM-M13** | Correct the foreword, Chapter 1 forward promise, water fine-scan sentence and Chapter 23 inventory/geometry claims. | Every summary agrees with the actual fixed-bond PySCF reference and FockMap construction roles. No claim of a completed water quantum-energy or full geometry-optimisation pipeline survives. |
+
+**Dependency:** Complete this batch before adapting any conflicting book
+material into blog posts. Correcting only the central derivation or adding
+another disclaimer is not sufficient; include objectives, common mistakes,
+exercises, diagrams and conclusions in each repair.
+
+### 2. Repair foundational explanations and algorithmic extensions
+
+| IDs | Work | Acceptance |
+|---|---|---|
+| BM-M02, BM-M03 | Correct spin-tensor counts/index floors, missing-block/sign intuitions, Bell correlations, universality and general multiqubit states. | Checked small examples distinguish storage from allowed/nonzero entries, classical correlation from coherence, and altered statistics from Hartree-Fock. |
+| BM-M17 | Qualify the opening ground-state-energy/chemical-prediction claims and numerical percentage convention. | Electronic energies are distinguished from finite-temperature free energies, kinetic barriers and phase equilibrium; H2 percentages have a stated energy convention. |
+| BM-M04, BS-H01 | Rebuild the book's Fenwick diagram/query/update explanation and the blog's occupation-set example from the same canonical definitions. | One n=8 representation reproduces storage, queries, updates and occupation recovery for all one-hot inputs; n=4/n=8 strings and CAR results are generated. |
+| BM-M05, BM-M16; CA-M010 | Distinguish ideal ternary bounds, measured helpers, empirical star census and enforced API restrictions. | Explain the n=32/64 ideal-versus-helper weight difference; account for root/nodes/leaves/modes/Majoranas; every finite-census claim retains its range. |
+| BM-M06, EC-M05 | Remove blanket feasibility, circuit-depth and compiler-percentage claims across chapters and labs. | Every retained molecular resource number names an actual Hamiltonian, sector, compiler/cost model and generated evidence. Operator weights remain operator weights. |
+| BM-M08, BM-M09 | Reconcile QPE summaries/phase treatment and the qubitization error-versus-query-cost comparison. | Work one H2 phase decode with shift, interval and resolution; comparison columns measure the same quantity. |
+| BM-M10, BM-M11, BM-M12, BM-M14, BM-L01 | Repair tapering terminology, ADAPT pools, QEC analogy, format/ownership claims, bosonic cutoff conventions and local arithmetic. | Each extension states its actual domain and operational steps; no unsupported equivalence, physical measurement step or universal importer claim is inferred. |
+
+Do not expand the book into an entire quantum-algorithms or fault-tolerance
+textbook to solve these problems. Correct the necessary concepts and make the
+boundary to advanced material explicit.
+
+Under BM-M05, also reconcile Chapter 5's universal term-count claim with
+Chapter 7's warning: exact simplified Pauli-term count is invariant under
+Clifford conjugation, not under every possible valid encoding. Equal counts
+for the demonstrated mappings are not themselves a defect.
+
+### 3. Make the executable evidence as strong as the claims attached to it
+
+The September isolated run passed all ten numbered labs, all six F#
+companions, the pipeline-isolation gate and the full existing data
+verification/regeneration sequence. Preserve that baseline. Two negative
+controls nevertheless establish inadequate verification semantics:
+moment agreement can hide a much larger eigenvalue difference, and the
+verifier overwrites a corrupted oracle instead of rejecting it.
+
+| IDs / gate | Change or evidence required | Definition of done |
+|---|---|---|
+| EC-M01, EC-M02 | True tolerance-controlled spectrum check; read-only verification with explicit regeneration mode | Corrupt spectra/coefficients/ordering fail without changing accepted data; the valid baseline still passes |
+| EC-M03, EC-M04, EC-L01 | Solver convergence/finiteness, complete structured inputs, provenance/grid binding and direct/skeleton parity | Deliberate nonconvergence, missing grid records and non-sentinel coefficient corruption fail before output promotion |
+| EC-M06 | Separate portable numerical parity from archival byte reproducibility | Tested environment/lock and clear numerical-platform assumptions; permitted installations are not falsely promised identical floating-point/PNG bytes |
+| EC-L02 | Repair run instructions and parameterised exercises | A reader runs the named entry point without an unrelated library build and does not edit the canonical equilibrium fixture to explore another geometry |
+| **CA-H008** | Pinned QASM/Q#/JSON imports and ordered-product unitaries, including basis changes, rotations, labels and controlled identity phase; resource-helper semantics if retained | Parsing, circuit counting and energy estimation are separately checked and labelled; no automatic closure from generic lab success |
+| **CA-M011** | Actual pinned grouping method/output and estimator assumptions | Every nonidentity term occurs once; group compatibility/basis and covariance assumptions are established; the valid direct five-basis partition is preserved |
+| **CA-M010** | Reproducible finite census / verified support policy, or a separately supplied all-size proof if the stronger claim is wanted | Empirical result, API restriction and mathematical theorem are never substituted for one another |
+
+The all-size theorem blueprint mentioned by the earlier blog plan is
+**unprovided**. Do not describe it as an already accepted document awaiting a
+merge. The book can use a properly supported narrow empirical/API account
+without commissioning a universal theorem.
+
+#### RG-01 — Regenerate against the immutable pin before relaxing fail-closed guards
+
+**Owner:** Encodings Book Review coordinator, step 4 of the research-journal
+handoff. **Status:** Required implementation/integration gate; not satisfied
+by package availability, a migrated dependency, or the existing moment tests.
+**Step 3:** The separate *Fockmap book migration* session reported a no-op on
+2026-09-07: fresh main `c5cf9df` already contains the scoped pin/raw-primary
+migration. No migration commit or PR needs integrating.
+
+**Chosen immutable target:**
+
+- Public NuGet `FockMap 0.9.0`.
+- Annotated `v0.9.0` tag's peeled source commit:
+  `96320a56786393269fd681c67c66df88058a8b8f`; the downloaded public nuspec
+  records the same source.
+- Published `net10.0/Encodings.dll` SHA-256:
+  `0ba8ae967ea65d4945a336c1217f8939e41feb63b6f04af617b66537717d25c3`.
+
+The historical 23 July audit at `440540b54f093d7a9f259da7bf18b7df8da74270`
+covered weighted primary APIs and a then-local package. The merged
+`johnazariah/encodings#7` and public July release superseded that compatibility
+policy: primary builders consume raw physicist integrals; `FromWeighted`
+preserves legacy coefficients; obsolete `FromPhysicist` adaptation must not
+be reapplied. More precisely, obsolete `FromPhysicist` builders are identity
+aliases for the raw-primary contract, whereas
+`rawPhysicistToWeightedFactory` remains an obsolete half-and-swap adapter;
+it is not an identity operation and must not feed a raw-primary builder.
+Preserve the historical journal rather than rewriting what it accepted at
+the time. The journal/supersession record landed separately in research main
+merge `12f9e2c8557c5e32478ee234a9bd4d16f8a73626` (`record/JOURNAL.md` only).
+
+**Acceptance before final output regeneration/guard relaxation:**
+
+| Boundary | Required evidence |
+|---|---|
+| Fixture identity | Research source `66ebdfe255c0cc6ba25a6d1b76b58401aee3ab06`, path `papers/results/h2_sto3g/physicist_spin_integrals.json`, SHA-256 `6539afb30a1c03ec89202a2960a06c6580a91afaebf13a6cadbcfd32c2d71812`; pre-merge `1e000bbc9664b8e5cfef48608d07364279c0a54f` is the same-byte historical provenance, not a reason to roll back the current pointer |
+| Raw input and operator | Exactly 4 one-body and 32 raw spin two-body entries, 15 simplified nonzero JW terms, total Pauli weight 32 and coefficient norm 2.699277824145158 Ha; verify the full coefficients/matrix, not only sentinels |
+| Rotation policy and cost | 15 Hamiltonian factors including identity; 14 nonidentity rotations when the identity phase is omitted, with 36 untapered first-order logical staircase CNOTs. State the identity/global-phase policy explicitly; do not turn the handoff's "15 rotations" into an incorrect emitted-Rz assertion |
+| Labelled states and energies | q0-leftmost display, occupation integer as row, reversed dense factors; displayed HF `1100` is row 3 with electronic diagonal -1.831863646477506 Ha; physical electronic ground energy -1.852388173569583 Ha; nuclear repulsion remains separate |
+| True eigenspectrum | Use complex-Hermitian diagonalisation, finite/Hermitian/dimension guards and direct sorted eigenvalue tolerances; test imaginary off-diagonal entries as well as real H2. No real-part projection or moment-to-eigenvalue inference |
+| Physical tapering | Choose generator eigenvalues explicitly from the intended physical state/quantum numbers and compare that sector. Default all-positive JW FullClifford output is not a valid ground-sector selection procedure; a sector sweep's minimum is not a substitute |
+| Negative controls | Reject corrupted coefficients/oracle, wrong state order, raw/weighted double adaptation, false spectral agreement and incorrect physical-sector assumptions without silently rewriting the reference |
+| Book outputs | After these numerical gates, regenerate the revised full PDF, sample, EPUB and HTML plus included tables/figures/companions from the same source and pin; retain actual content/phase/label evidence and append the result to the authoritative audit |
+
+Preserve and compare the **literal electronic sector spectra**, including
+multiplicities, at a stated numerical tolerance:
+
+| Particle number | Electronic eigenvalues in Ha |
+|---|---|
+| 0 | `0.0` |
+| 1 | `-1.2533097866459773, -1.2533097866459773, -0.4750688487721783, -0.4750688487721783` |
+| 2 | `-1.8523881735695826, -1.2458776960825393, -1.2458776960825393, -1.2458776960825390, -0.8834567720521458, -0.23196166596181889` |
+| 3 | `-1.1607201545632546, -1.1607201545632546, -0.3595836390134429, -0.3595836390134429` |
+| 4 | `0.20807484184145802` |
+
+This plan item does not itself trigger regeneration. It specifies the gate
+for the now-authorised book implementation. Guard changes require their
+own evidence; a successful release download or an old passing command is
+not permission to relax them.
+
+### 4. Complete the teaching route and perform the consistency-led editorial pass
+
+| IDs | Required work | Reader-facing acceptance |
+|---|---|---|
+| BE-M01, EC-L02 | Short F# reading/running bridge and complete-script/excerpt/pseudocode labels | A novice can explain and run the first factory/example under the stated prerequisites |
+| BE-M02 | Worked coupling expansion; tree/Majorana/ladder construction; molecular physical-sector reduction; numerical energy/phase bridge | The reader can recover the important sign, sector and energy steps without an unexplained helper |
+| BE-M03 | Repair current exercises; fill the eleven missing chapter sets or deliberately change the promise; selected worked answers/rubrics | Every question has supplied inputs and a valid attainable answer; projects are identified as projects |
+| BE-M04 | Remove revision-history prose; replace outdated release qualifications with current result/limitation statements | First-time readers need no knowledge of old wrong values or withdrawn tables |
+| BE-M05, BM-M15 | Honest appendix descriptions, missing relevant API/theory material, unified references and explicit external destinations | Appendices deliver what their descriptions promise; cited works resolve to a central reference |
+| BE-M06, BM-M04 | Repair the Fenwick figure, make data-plot context portable and add a few necessary early conceptual diagrams | A standalone figure cannot turn finite-basis FCI into complete-basis exactness or a fixed-bond scan into full geometry optimisation |
+
+Preserve John's direct, conversational voice, personal details and useful
+recaps. The editorial problem is conflicting explanations and missing
+bridges, not insufficiently polished sentences. Do not introduce uniform
+chapter padding or replace the book with generic textbook prose.
+
+### 5. Reconcile the book's public and auxiliary editions
+
+This is downstream of source correction, not a substitute for it.
+
+| IDs | Work | Acceptance |
+|---|---|---|
+| BR-H01 | Corrected versioned PDF, EPUB and companion archive; deliberate handling of stale tracked/downloadable PDFs | Actual public downloads agree with one accepted source SHA and contain the corrected content |
+| BR-H02 | Owner decision on truthful mixed/split Zenodo rights and version records | Public metadata, files and current rights notices agree without assuming retroactive licence revocation |
+| BR-M01, BR-M04 | Fail-closed diagram rendering and figure dependencies | A broken renderer fails; a changed figure rebuilds every relevant output |
+| BR-M03 | Wire existing semantic/output gates into appropriate CI/release dependencies | Publishing is tied to the accepted source/evidence, not only successful typesetting |
+| BR-M02, BR-L01, BR-L02 | Current production copy, truthful electronic-publication disclosure, correct agent bootstrap and sample/inventory manifests | Active/retained supporting material describes this book accurately; historical material is clearly marked |
+
+Book `v0.9.0` is the **May book release**. FockMap `0.9.0` is the **July
+package release**. Equality of those version strings is not evidence of
+edition alignment. Live HTML at the July source and the stale May PDF are
+currently different reading experiences.
+
+### 6. Harmonise the blog only from the corrected book and scoped research evidence
+
+The reviewed series baseline is clean
+`7e613cde70f5cf86890bb4e7817d8a86b31d0fe2` on
+`johnazariah/quantum-workbooks` branch `johnazariah-encodings-blog-series`.
+The four-post format is retained. No article, hook, date or approval record
+was changed by this review.
+
+1. Preserve Post 1's successful antisymmetry-to-parity argument. A positive
+   review is not a new author/publication approval.
+2. Reconstruct Post 2 from audited Fenwick sets and generated examples
+   (BS-H01, BS-M01/M02). Coordinate with BM-M04; do not merely copy the
+   current book's incorrect query diagram.
+3. Honour the existing 20 August author decision: **Post 1 approval, then
+   corrected Post 2 approval, before editing Posts 3-4**.
+4. Subsequently retitle Post 3 *We Put Three Constructions in a Trenchcoat*
+   and Post 4 *One Grandchild Breaks Our Recipe*. Explain our proposed
+   construction and its actual domain; remove SRL blame, universal path,
+   literature-migration and framework-settled claims (BS-H02/H03).
+5. Supply the exact proof/census evidence for any retained theorem; otherwise
+   publish a narrower, explicitly evidenced account. The absent blueprint is
+   a genuine gate, not something to fill with confident prose.
+6. Regenerate social mirrors, titles/slugs, next-post links and complete
+   delivery payloads together (BS-M03). Check actual publisher behaviour and
+   author approvals before any scheduling or distribution.
+
+The pipeline review adds three explicit acceptance gates: **BP-M01** requires
+author approval in addition to date eligibility; **BP-M02** requires a
+future-inclusive preview because the normal strict build excludes these
+drafts; **BP-M03** checks the actual hook-plus-two-newlines-plus-URL payload
+(currently 319/330 characters for Posts 2/3). Integrate current production
+main deliberately and create the final metadata-driven series landing only
+after approved titles/slugs are fixed. Correctly absent draft URLs are not
+live-site defects. Deployment-SHA binding, concurrency and durable
+platform-specific publication state belong to a separate pipeline repair.
+
+**Canonical shared contract:** raw physicist integrals and prefactor;
+interleaved spin indices; q0-leftmost displayed labels versus occupation
+integers/reversed dense factors; the 0.74-Angstrom H2 fixture and separate
+nuclear energy; physical-sector tapering; operator-level rather than
+molecular feasibility claims; and water as a fixed-bond PySCF reference.
+Blog pacing may differ from the book; mathematics, provenance and claims
+must not.
+
+### Completion and release criteria
+
+The correction cycle is complete only when every high-priority source
+finding is resolved, the named medium findings have evidence-backed closure
+or an explicit scope decision, exercises and worked bridges fulfil the
+reader contract, and fresh rendered/downloaded artifacts match the accepted
+source. Append closure evidence to the same audit. Do not create separate
+verification reports or declare production readiness while the source
+contradictions remain.
+
+---
+
+## Expansion planning — approximately 300 pages
+
+**Author direction:** Use the additional room to explain concepts, define
+material before substantive use and preserve clarity over brevity.
+**Status:** Implementation authorised on 2026-09-07. The allocations remain
+planning estimates; definition gaps are not closed until the revised
+explanations and complete book have been assessed.
+
+### Teaching policy
+
+Keep the 23-chapter structure as the working baseline. Do not enlarge every
+chapter by the same factor. Spend the space on the transformations the
+reader currently cannot reconstruct: integral conventions, spin expansion,
+Fenwick queries, Majorana construction, Pauli collection, physical-sector
+tapering, error/measurement budgets and phase decoding.
+
+Distinguish four cases when reviewing a first occurrence:
+
+| Case | Required treatment |
+|---|---|
+| Assumed prerequisite | State it in the reader contract; briefly reactivate the relevant fact when needed |
+| Motivational preview | Give an ordinary-language gloss and say what will be taught later; do not require calculations with it yet |
+| First substantive use | Define the object, symbols, conventions and operation before the calculation, algorithm or code needs them |
+| Later reuse | Give a concise reminder and precise link/reference where helpful; preserve the same meaning rather than reintroducing it differently |
+
+The glossary and appendices are retrieval aids, not places to hide a
+prerequisite definition until after its use. Likewise, an exercise or code
+comment must not be the reader's first explanation of an essential step.
+
+### Definition-order and explanatory-depth findings to implement
+
+The expansion audit now contains a first-substantive-use register for
+chemical vocabulary, states/units, fermionic/Pauli algebra, data structures,
+symmetries, norms, statistics, algorithms, code and extensions. Each entry
+records the current use, existing explanation and proposed treatment:
+keep, preview, bridge, move or missing operational definition.
+
+| Priority | Required work | Definition/comprehension gate |
+|---|---|---|
+| XP01 | Ch 1 symbol/unit card, orbital normalisation, determinant/HF/FCI bridge and one-body matrix element | Reader knows why constants disappear and what each energy/length/table entry means before using it |
+| XP02 | Minimal Ch 2 operator-action/CAR inset; full Fock/vacuum/signed ladder action and general JW in Ch 5 | Operator ordering, forbidden occupations and fermionic signs can be calculated before the prefactor and Pauli-expansion tasks |
+| XP03 | First-use F# bridge, real key trace, absence-versus-zero, script setup and local recursion/record/Python introductions | Every listing is labelled complete or contextual, with its dependencies supplied before execution |
+| XP04 | Move Pauli matrices, multiplication, tensor action and weight before Ch 4's uses; stage the label/integer/row conventions | A new reader can perform the Pauli/tensor/weight operation before seeing its cost or verification consequence |
+| XP05 | Pure-state energy to mixture/density notation; full coupling collection and closed-shell block | The reader reconstructs signs, cancellation and energy lowering without an unexplained collection helper |
+| XP06 | One canonical n=8 Fenwick storage/query/update/recovery example with XOR, lowbit and indexing | All four operations are distinct and reproducible; the book/blog repair uses the same accepted construction |
+| XP07 | Define Majoranas before quantitative use; enumerate a tree, terminal strings, pairing and complete CAR test | Every qubit/node/path/mode is accounted for; the tree helper confirms rather than replaces the lesson |
+| XP08 | Carry one H2 physical-sign ledger through Chs 10-12; binary elimination and signed Clifford reduction | Sector signs are derived without a lowest-energy sweep; remaining physical ambiguities are named |
+| XP09 | Define atomic time, operator norm and rotation convention; work local/global error and controlled phase | Every tolerance has a measured object, units and valid conclusion; the Rz parameter is derived |
+| XP10 | Introduce ansatz at first use and work one state/energy curve; outcome statistics then covariance/allocation | Sampling uncertainty, ansatz bias, confidence and optimiser convergence cannot be confused |
+| XP11 | Phase kickback, small QFT, shifted H2 decode and one named/versioned import round trip | No unexplained sign/branch/label choice; parsing, unitary parity, simulation error and energy validation remain distinct |
+| XP12 | Two-track capstone checkpoints, fair exercises, selected answers and honest appendices | Each learning objective is delivered with previously taught prerequisites and supplied inputs |
+
+**Preserve what already works:** Born-Oppenheimer's fixed-nuclei meaning,
+finite-basis exactness, the occupation table, coordinate-grouped integral
+definitions, interleaved indexing, the operational JW sign example,
+diagonal substitution, binary Pauli commutation, the scoped Heisenberg
+reduction, QWC and identity sampling, and fixed-bond reference framing.
+Expansion is not permission to rewrite every successful passage.
+
+### Local moves and exercise dependencies
+
+Retain 23 numbered chapters as the planning baseline. Move late prerequisite
+material earlier rather than adding duplicate definitions: Ch 4's closing
+tensor glossary before Bell/tensor use, Appendix B's general JW into Ch 5,
+the Majorana definition before its weight bound (or defer that bound), the
+rotation exponential before coefficient-to-angle calculations, and the
+ansatz definition before Ch 20's workflow.
+
+Move or explicitly defer exercises that require later material: Ch 3's
+Pauli-output question, Ch 6's all-six comparison without the list, Ch 7's
+custom-tree/frozen-core tasks without harness/data, and Ch 9's vacuum/state
+questions without the preceding definitions. Supplied hypothetical
+term/weight examples remain legitimate when labelled; do not demand new
+molecular research to make a conditional arithmetic question acceptable.
+
+Select worked answers for the twelve hardest transitions identified in the
+audit. Include signs, units, states and intermediate results, not only final
+values. Add operation-level diagrams to support those same transitions,
+instead of more generic pipeline diagrams. Full qubitization, QEC, ADAPT,
+mitigation, vibronic or all-size-theorem treatments remain optional scope
+decisions, not automatic additions needed to reach 300 pages.
+
+### Indicative content budget
+
+| Content | Planned pages |
+|---|---:|
+| Chapters 1-3: chemistry and conventions | 36 |
+| Chapter 4: qubit foundations | 12 |
+| Chapters 5-9: encoding, construction and evidence | 62 |
+| Chapters 10-13: physical-sector tapering | 34 |
+| Chapters 14-17: simulation and logical costs | 38 |
+| Chapters 18-21: pipeline, reference chemistry, algorithms and export | 48 |
+| Chapters 22-23: scaling and scoped extensions | 12 |
+| Front matter | 10 |
+| Proposed code-reading bridge | 8 |
+| Appendices A/B | 18 |
+| Proposed selected worked solutions | 12 |
+| References and index | 10 |
+| **Total** | **300** |
+
+The audit provides the individual chapter allocations and the specific
+learning gain assigned to each. Figures, code, equations and exercises are
+already included within chapter allocations. These are whole revised
+chapter budgets, not pages to add. The book's existing 176-page layout is
+not an Apress template; do not translate it into a binding word target by
+simple proportional scaling.
+
+### Expansion sequence and completion gate
+
+1. Build the concept/symbol/code dependency register and identify the first
+   substantive use, existing definition and proposed definition home.
+   Distinguish missing explanation from a deliberately scoped preview.
+2. Correct each affected technical block, then write its fuller explanation
+   from the accepted formulation. Never expand a known-wrong shortcut.
+3. Add connected worked examples, observable intermediate results and
+   exercises/selected answers. Label precisely what is by hand, generated,
+   measured, or still an API/evidence gate.
+4. Add targeted visuals and the local definitions that make them readable.
+   Keep theorem-level or implementation-reference detail off the main route
+   when it is not needed for the next step.
+5. Re-read chapter handoffs and later recurrences: a correct first definition
+   is insufficient if a later summary changes its meaning.
+6. Calibrate the budget with actual publisher-layout samples representing
+   prose, mathematics, code/diagrams and exercise solutions. Reallocate space
+   before compressing indispensable reasoning.
+
+For each repaired dependency, a reader meeting only the stated prerequisites
+must be able to identify the new object, interpret its notation and perform
+the first requested operation using material already encountered. Definition
+presence alone is not acceptance. No current review can certify that outcome
+before the proposed explanations are written and read as a continuous book.
+
+---
+
+## Historical action plan and acceptance record — through 2026-07-24
+
+The following material is preserved as dated history. Its former
+"book PR may proceed" statement and older pending/publication wording do not
+override the September full-book findings above.
+
 **Updated:** 2026-07-24
 **Authoritative audit:** `.review/CORRECTNESS-AUDIT.md`
 **Baseline HEAD:** `2269f0d3eb87f0d22e1b275e56add2077ad6915d`
