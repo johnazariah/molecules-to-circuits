@@ -18,10 +18,20 @@ arms. VSEPR theory offers a qualitative explanation — two bonding pairs and tw
 lone pairs around oxygen arrange themselves to minimise repulsion — but it
 doesn't predict the actual number.
 
-Quantum mechanics does better. A full equilibrium geometry minimizes the total
+Quantum mechanics does better. A full equilibrium geometry minimises the total
 energy over all internal coordinates. If the O–H distance is held fixed and only
 the angle varies, the minimum gives the best angle **along that one-dimensional
-cut**, not a complete geometry optimization.
+cut**, not a complete geometry optimisation.
+
+Write the constrained energy as $E(\vartheta;r_0,r_0)$, where
+$\vartheta$ is the H–O–H angle and $r_0=0.9584$ Å. Minimising
+with respect to $\vartheta$ holds both bond lengths fixed:
+
+$$\left.\frac{\partial E}{\partial\vartheta}\right|_{r_1=r_2=r_0}=0.$$
+
+A full geometry minimum additionally requires the derivatives with
+respect to both bond lengths to vanish. Nothing in a one-dimensional
+scan tests those two conditions.
 
 The committed calculation fixes $r_{\mathrm{OH}}=0.9584$ Å, the experimental
 bond length, and scans only the H–O–H angle. It therefore contains empirical
@@ -46,22 +56,25 @@ The approach is simple:
 
 `code/ch19-bond-angle-scan.py` computes the energies directly with PySCF. It
 does not export per-geometry FockMap JSON, invoke an encoding, taper qubits, or
-diagonalize a FockMap matrix. That separation is deliberate in the repaired
-workflow:
+diagonalise a FockMap matrix. The two tracks have different outputs:
 
 - **PySCF track:** reproducible RHF/FCI reference energies, CSV files, and plot.
 - **FockMap track:** encoded Hamiltonians and circuit costs, once
   geometry-by-geometry matrix parity and physical-sector selection are tested.
 
-A skeleton API can amortize symbolic encoding when the zero pattern and
-convention are stable, but this chapter does not claim that such a scan produced
-the committed energies.
+Every sampled angle reruns RHF and FCI. No precomputed FockMap
+skeleton contributes to the timing or the energies reported here.
 
 ---
 
 ## The Integrals
 
-For H₂ we had 4 spin-orbitals and 16 integrals. For H₂O in a minimal basis (STO-3G), we have 14 spin-orbitals and hundreds of integrals — too many to type by hand. In practice, you generate them with PySCF:
+The canonical H₂ raw tensor has four nonzero one-body and thirty-two
+two-body spin-orbital entries. Water in STO-3G has seven spatial
+orbitals, or fourteen spin-orbitals. That means $14^2=196$
+one-body tensor slots and $14^4=38416$ two-body slots *before*
+spin selection, symmetry and numerical zeros. Storage slots are
+not a count of nonzero molecular terms.
 
 > **Active space and frozen core:** H₂O has 10 electrons. This STO-3G scan
 > includes all 7 spatial orbitals (14 spin-orbitals). Larger-basis studies often
@@ -69,33 +82,130 @@ For H₂ we had 4 spin-orbitals and 16 integrals. For H₂O in a minimal basis (
 > an approximation whose effect must be checked for the target property. PySCF's
 > `mc.CASCI`/`mc.CASSCF` interfaces can define an explicit active space.
 
-```python
-from pyscf import gto, scf, ao2mo
-import numpy as np
-import json
+The following is a self-contained **single-geometry example** using
+the same PySCF calculation as the scan. It returns energies; it
+does not create FockMap input:
 
-def h2o_integrals(angle_degrees, bond_length=0.9584):
-    """Generate H₂O integrals at a given H-O-H bond angle."""
+```python
+from pyscf import fci, gto, scf
+import numpy as np
+
+def h2o_energy(angle_degrees, bond_length=0.9584):
     angle_rad = np.radians(angle_degrees)
-    # Place O at origin, H atoms symmetric about z-axis
     hx = bond_length * np.sin(angle_rad / 2)
     hz = bond_length * np.cos(angle_rad / 2)
-
     mol = gto.M(
         atom=f'O 0 0 0; H {hx} 0 {hz}; H {-hx} 0 {hz}',
         basis='sto-3g',
+        unit='Angstrom',
+        charge=0,
+        spin=0,
         symmetry=False,
+        verbose=0,
     )
-    mf = scf.RHF(mol).run()
+    mf = scf.RHF(mol)
+    mf.kernel()
+    if not mf.converged:
+        raise RuntimeError("RHF did not converge")
+    solver = fci.FCI(mf)
+    e_fci, _ = solver.kernel()
+    if not solver.converged:
+        raise RuntimeError("FCI did not converge")
+    return mol.energy_nuc(), mf.e_tot, e_fci
 
-    # One-body: kinetic + nuclear attraction in MO basis
-    h1 = mf.mo_coeff.T @ mf.get_hcore() @ mf.mo_coeff
-    # Two-body: electron-electron repulsion in MO basis
-    eri = mol.ao2mo(mf.mo_coeff)
-    h2 = ao2mo.restore(1, eri, mol.nao)
-
-    return mol.energy_nuc(), h1, h2
+vnn, e_hf, e_fci = h2o_energy(99.0)
+print(vnn, e_hf, e_fci)
 ```
+
+### Geometry before objects
+
+The oxygen is at $(0,0,0)$. The hydrogens are at
+
+$$(r_0\sin(\vartheta/2),0,r_0\cos(\vartheta/2)),\qquad
+(-r_0\sin(\vartheta/2),0,r_0\cos(\vartheta/2)).$$
+
+The norm of each O–H vector is $r_0$, and their dot product is
+$r_0^2\cos\vartheta$. These coordinates therefore set exactly the
+angle requested, without moving the molecule's vertex. At
+$\vartheta=180^\circ$, both hydrogens lie on the x axis; decreasing
+the angle brings them towards the positive z direction.
+
+The H–H separation is $2r_0\sin(\vartheta/2)$. It changes even
+though both O–H distances stay fixed. In bohr units, the nuclear
+repulsion is
+
+$$V_{nn}(\vartheta)=\frac{16}{r_0}
++\frac{1}{2r_0\sin(\vartheta/2)}\quad\text{Ha}.$$
+
+The first term is the two O–H nuclear pairs, with charge products
+$8\times1$ each; the second is H–H. The $r_0$ in this expression
+must first be converted from Å to bohr. PySCF does that conversion
+from the declared `unit`. A narrowing angle increases H–H
+nuclear repulsion; the electronic energy must change enough in
+the opposite direction to make bending favourable.
+
+```mermaid
+flowchart LR
+    A["Angle in degrees"] --> RAD["Convert to radians; divide by 2"]
+    RAD --> XY["hx = r sin(angle/2); hz = r cos(angle/2)"]
+    XY --> POS["O=(0,0,0); H=(±hx,0,hz)"]
+    POS --> MOL["gto.M: basis, charges, spin counts"]
+    MOL --> RHF["RHF.kernel: optimise occupied orbitals"]
+    RHF --> FCI["FCI.kernel: optimise configuration coefficients"]
+    FCI --> OUT["Return Vnn, total HF, total FCI"]
+```
+
+### The Python objects are stages of the calculation
+
+`np.radians`, `np.sin` and `np.cos` are numerical functions.
+`mol` is a PySCF molecule object holding the nuclear geometry,
+basis and electronic counts, not a quantum state. With neutral
+water, `spin=0` specifies $N_\alpha-N_\beta=0$, hence five
+alpha and five beta electrons. Equal spin counts are not by
+themselves a proof that every state in the solver's space is a
+singlet.
+
+`scf.RHF(mol)` creates a restricted Hartree–Fock solver.
+Calling `.kernel()` runs its self-consistent-field iteration:
+the molecular orbitals are adjusted until the occupied orbitals
+and the mean-field operator agree. The name `mf` refers to that
+solver and its results. `mf.e_tot` includes nuclear repulsion;
+`mf.mo_coeff` is a matrix whose columns express molecular
+orbitals as combinations of atomic basis functions.
+
+`fci.FCI(mf)` creates an FCI solver using those molecular orbitals.
+Its `.kernel()` returns an energy and a configuration-coefficient
+array. The assignment `e_fci, _` keeps the energy and deliberately
+does not use that array. In this wrapper the returned energy is
+**total** energy: adding `vnn` again would count nuclear repulsion
+twice. The explicit convergence checks distinguish a completed
+calculation from a solver that stopped without meeting its target.
+
+The molecular-orbital matrix also connects this code to the
+integrals used earlier in the book. For real orbitals with
+coefficient matrix $C$,
+$h_{\rm MO}=C^\mathsf{T}h_{\rm AO}C$ transforms the one-electron
+operator from the atomic-orbital basis. PySCF exposes
+$h_{\rm AO}$ as `mf.get_hcore()`. A two-electron transformation
+has four orbital indices and also requires the chemist-to-physicist
+and spin-index conventions from Chapters 2–3 before it can become
+our raw factory. None of those transformations is performed by
+serialising `e_fci`.
+
+### What "all-electron FCI" means here
+
+The seven STO-3G spatial orbitals give
+$\binom75\binom75=441$ determinants with five alpha and five
+beta electrons. The full fourteen-mode Fock space would contain
+$2^{14}=16384$ occupation states, most of them irrelevant to
+neutral water. PySCF works in the specified electron-count
+space; it does not have to store a dense full-Fock-space matrix.
+
+The oxygen core orbital remains part of this calculation.
+Freezing it would remove its allowed excitations and introduce
+effective one-electron terms and a constant offset. That would
+be a different model, not merely a faster way to obtain these
+same all-electron FCI energies.
 
 The companion script `code/ch19-bond-angle-scan.py` constructs each molecule,
 runs RHF and FCI, writes the coarse and fine CSV files, and produces the plot.
@@ -141,13 +251,15 @@ The coarse scan produces FCI energies at each geometry:
 | 100 | −75.0140 | 180 | −74.8882 |
 | 105 | −75.0125 | | |
 
-The minimum is near **100°**, with energy dropping steeply on both sides. The coarse scan tells us *where to look* — but the minimum could be anywhere between 95° and 105°. This is exactly how a computational chemist works: coarse grid first, then refine.
+The minimum is near **100°**, with energy rising away from it on both sides. The coarse scan tells us *where to look* — but the minimum could be anywhere between 95° and 105°. This is exactly how a computational chemist works: coarse grid first, then refine.
 
 ---
 
 ## Zooming In: Fine Scan
 
-We re-run the scan from 95° to 115° in 1° steps. The skeleton is already computed — only the integrals change at each angle — so this second pass costs almost nothing:
+We rerun RHF and FCI from 95° to 115° in 1° steps. The narrower
+grid improves the angular sampling; every point is still a fresh
+electronic-structure calculation:
 
 | Angle (°) | $E$ (Ha) | Angle (°) | $E$ (Ha) |
 |:---:|:---:|:---:|:---:|
@@ -166,6 +278,39 @@ $r_{\mathrm{OH}}=0.9584$ Å. The energy changes by only about 0.00005 Ha
 between 98° and 100°, so a fitted or finer scan would be needed to quote a
 sub-degree minimum.
 
+### A sampled minimum is not a fitted minimum
+
+The CSV gives the three neighbouring FCI totals:
+
+$$E(98^\circ)=-75.0140506756,\quad
+E(99^\circ)=-75.0140865447,\quad
+E(100^\circ)=-75.0140335106\quad\text{Ha}.$$
+
+Relative to 99°, the neighbours are higher by 0.0358691 and
+0.0530341 mHa. This is a very shallow local energy difference.
+An energy tolerance suitable for one task may be too loose to
+locate a minimum in another.
+
+For illustration, fit a parabola to these *three samples only*.
+With $h=1^\circ$, its vertex is at
+
+$$\vartheta_{\rm fit}=99^\circ+
+\frac{h\,[E(98^\circ)-E(100^\circ)]}
+{2[E(98^\circ)-2E(99^\circ)+E(100^\circ)]}
+\simeq98.9035^\circ.$$
+
+That is an interpolation result, not a newly computed geometry.
+It assumes the curve is locally quadratic and does not estimate
+the error from neglected higher powers. The committed numerical
+claim remains: **99° is the lowest sampled FCI angle**.
+
+The second finite difference is
+$8.89032\times10^{-5}$ Ha/degree². To express a derivative
+with respect to radians, multiply by $(180/\pi)^2$, giving
+about 0.29185 Ha/radian². Forgetting this factor would severely
+misstate an angular force constant while leaving the energy
+table itself untouched.
+
 ![H₂O fixed-bond angular scan (STO-3G, FCI): the coarse scan (left) identifies the minimum near 100°; the fine scan (right) has its lowest sampled point at 99°.](figures/h2o_bond_angle.png)
 
 ---
@@ -179,7 +324,17 @@ especially because it lacks polarization functions.
 
 A careful reader will notice something surprising: Hartree–Fock in STO-3G predicts **101°** — *closer* to the experimental 104.52° than our FCI result of 99°. Does this mean correlation makes things worse?
 
-No. It means the basis set is too small for the correlation correction to land in the right place. In STO-3G, both 101° and 99° are wrong because the basis functions cannot describe how the electron cloud deforms as the molecule bends. Correlation shifts the angle by ~2° in a direction that happens to overshoot in this basis — not because correlation is wrong, but because the basis is too inflexible to support the correction properly.
+No. FCI lowers the variational energy at each geometry in the same
+basis. That statement does not require its minimum to be closer
+to the minimum of a *different*, more accurate model. Basis error,
+the fixed-bond constraint and the shape of the correlation-energy
+correction all affect the location. A more accurate eigensolver
+within STO-3G does not make STO-3G a more flexible basis.
+
+This is the same distinction as the H₂ dissociation asymptote:
+minimal-basis FCI approaches two minimal-basis atoms, not two
+complete-basis atoms. Improving configuration coefficients and
+improving orbital space are separate convergence studies.
 
 Larger bases and different correlation spaces can move the conditional minimum,
 but this book does not quote cc-pVDZ/cc-pVTZ HF, MP2, or CASCI minima without a
@@ -199,13 +354,21 @@ optimize both bond lengths and the angle.
 
 The energy curve tells us *that* water bends. But what drives the bend?
 
-The answer is already present at the Hartree–Fock level — no electron correlation required. HF, which by definition uses a single Slater determinant and contains zero correlation energy, predicts a bent water molecule at roughly 101° in STO-3G. The bend is fundamentally a mean-field effect: as the molecule departs from linearity, the oxygen lone-pair orbitals hybridise in a way that lowers the kinetic and electron-nuclear attraction energy. VSEPR theory's "lone pair repulsion" is a qualitative cartoon for this mean-field energy landscape.
+The bend is already present at the Hartree–Fock level. HF uses
+a single Slater determinant and is the reference against which
+correlation energy is defined. Its minimum on this cut is about
+101°. Occupied orbitals can relax as the molecule bends, changing
+kinetic, electron–nuclear, electron–electron and nuclear terms.
+The total mean-field balance already favours a bent geometry.
+The scan alone does not decompose that balance into a unique
+"lone-pair repulsion" contribution.
 
 What correlation adds is a quantitative correction. The FCI minimum occurs at
 99° — shifted by about 2° from the HF minimum. Correlation also deepens the
 energy well (the stated FCI bending energy from 180° to 99° is about 0.126 Ha,
-compared with about 0.113 Ha at HF). On those numbers, HF accounts for about
-90%, not 85%, of the bending energy. It does not *cause* the bend.
+compared with about 0.113 Ha at HF). Thus HF accounts for about
+90% of this particular linear-to-bent energy difference. Correlation
+does not *cause* the bend in this calculation.
 
 This distinction matters: it illustrates what quantum simulation adds and what it doesn't. The *qualitative* prediction (water bends) comes from mean-field theory, which any laptop can compute. The *quantitative* refinement (exactly how much it bends, the precise curvature of the potential energy surface, the vibrational frequencies) is where correlated methods — and ultimately quantum simulation — earn their keep.
 
@@ -237,14 +400,29 @@ climate effect and water-vapour feedback (NASA Earth Observatory). The bond
 angle is therefore one part of the causal chain, not the sole reason Earth has
 a habitable temperature.
 
-The potential energy surface scan we performed is the first step in a vibrational analysis. The *curvature* of the energy curve near the minimum (the second derivative) determines the bending frequency. This is obtained from the **Hessian matrix** of the PES — and computing that Hessian for molecules where classical methods fail is one of the practical applications of quantum simulation.
+The scan supplies a constrained angular curvature, not a molecular
+vibrational frequency. A frequency also needs the kinetic-energy
+or mass metric for the coordinate. A full harmonic calculation
+starts at an appropriate stationary geometry, builds the Cartesian
+**Hessian** (the matrix of second energy derivatives), mass-weights
+it, and separates translations and rotations from internal modes.
+For nonlinear water, three vibrational modes remain.
+
+Allowing the bond lengths to relax couples angle and stretching
+coordinates. The curvature along our fixed-bond line is not
+automatically the bending normal-mode eigenvalue of that full
+problem. Moreover, IR intensities need dipole derivatives and
+Raman intensities need polarisability derivatives; an energy
+Hessian alone does not supply them. These are natural extensions,
+but they are additional calculations rather than results hidden
+inside this plot.
 
 ---
 
 ## Key Takeaways
 
 - The committed result is a **PySCF FCI angular scan at fixed experimental
-  $r_{\mathrm{OH}}=0.9584$ Å**, not a full geometry optimization.
+  $r_{\mathrm{OH}}=0.9584$ Å**, not a full geometry optimisation.
 - The lowest sampled STO-3G point is **99°**; HF gives about 101° on the same
   cut, so bending is already a mean-field effect and correlation shifts the
   conditional minimum.
@@ -252,6 +430,21 @@ The potential energy surface scan we performed is the first step in a vibrationa
   encoding and circuit benchmarks require separate parity artifacts.
 - Bent water has a permanent dipole, while greenhouse absorption follows the
   more general rule that a vibration must change the dipole moment.
+
+## Exercises
+
+1. **Coordinate contract.** Starting from the two hydrogen positions
+   given above, prove that both O–H lengths are $r_0$ and that
+   the H–H distance is $2r_0\sin(\vartheta/2)$. Which nuclear
+   repulsion term varies during this scan?
+2. **Resolve the minimum.** Use the three supplied energies at 98°,
+   99° and 100° to calculate the two energy gaps and the
+   three-point parabolic vertex. Distinguish the sampled result
+   from the interpolation assumption.
+3. **From curvature to frequency.** Calculate the second finite
+   difference in Ha/degree² and convert it to Ha/radian².
+   Identify the additional information needed before reporting
+   a molecular bending frequency.
 
 ## Further Reading
 
