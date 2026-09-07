@@ -20,6 +20,7 @@ open System
 open System.Globalization
 open System.IO
 open System.Text.Json
+open System.Security.Cryptography
 
 type ScanPoint =
     { AngleDegrees: float
@@ -28,7 +29,9 @@ type ScanPoint =
       FullCiHa: float }
 
 let parseFloat (value: string) =
-    Double.Parse(value, NumberStyles.Float, CultureInfo.InvariantCulture)
+    let result = Double.Parse(value, NumberStyles.Float, CultureInfo.InvariantCulture)
+    if not (Double.IsFinite result) then failwith "Nonfinite water scan value"
+    result
 
 let loadScan path =
     if not (File.Exists(path)) then
@@ -73,11 +76,36 @@ let recordedBondLength =
     metadata.GetProperty("fixed_OH_bond_length_angstrom").GetDouble()
 let pyscfVersion = metadata.GetProperty("pyscf_version").GetString()
 
-if abs (recordedBondLength - 0.9584) > 1e-12 then
+if not (Double.IsFinite recordedBondLength) || abs (recordedBondLength - 0.9584) > 1e-12 then
     failwithf "Unexpected recorded O-H bond length: %.10f" recordedBondLength
 
 let coarse = loadScan coarsePath
 let fine = loadScan finePath
+
+let expectedCoarse = [|60.0 .. 5.0 .. 180.0|]
+let expectedFine = [|95.0 .. 115.0|]
+for field, expected, data in ["coarse_grid_degrees", expectedCoarse, coarse; "fine_grid_degrees", expectedFine, fine] do
+    let declared = metadata.GetProperty(field).EnumerateArray() |> Seq.map _.GetDouble() |> Seq.toArray
+    if declared <> expected || Array.map _.AngleDegrees data <> expected then
+        failwithf "Unexpected, duplicate or missing water grid point: %s" field
+let repositoryRoot = Directory.GetParent(codeDir).FullName
+let hashes = metadata.GetProperty("generated_files_sha256")
+let expectedFiles = set ["code/h2o_bond_angle_coarse.csv"; "code/h2o_bond_angle_fine.csv"; "manuscript/figures/h2o_bond_angle.png"]
+if (hashes.EnumerateObject() |> Seq.map _.Name |> Set.ofSeq) <> expectedFiles then
+    failwith "Unexpected water provenance file set"
+for relative in expectedFiles do
+    let digest = SHA256.HashData(File.ReadAllBytes(Path.Combine(repositoryRoot, relative))) |> Convert.ToHexString |> fun s -> s.ToLowerInvariant()
+    if digest <> hashes.GetProperty(relative).GetString() then failwithf "Water provenance hash mismatch: %s" relative
+for finePoint in fine do
+    match coarse |> Array.tryFind (fun point -> point.AngleDegrees = finePoint.AngleDegrees) with
+    | None -> ()
+    | Some coarsePoint ->
+        for left, right in [finePoint.NuclearRepulsionHa, coarsePoint.NuclearRepulsionHa; finePoint.HartreeFockHa, coarsePoint.HartreeFockHa; finePoint.FullCiHa, coarsePoint.FullCiHa] do
+            if abs (left-right) > 5e-9 then failwith "Coarse/fine overlap mismatch"
+for field, expected in ["molecule", "H2O"; "basis", "sto-3g (PySCF built-in basis data)"; "method", "RHF canonical molecular orbitals followed by PySCF FCI"] do
+    if metadata.GetProperty(field).GetString() <> expected then failwithf "Water metadata mismatch: %s" field
+if metadata.GetProperty("charge").GetInt32() <> 0 || metadata.GetProperty("spin_2S").GetInt32() <> 0 then
+    failwith "Unexpected water charge/spin"
 
 if coarse.Length <> 25 then
     failwithf "Expected 25 coarse points, found %d" coarse.Length

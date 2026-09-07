@@ -5,6 +5,7 @@
 // Source:   code/h2_dissociation_integrals.json, record "0.74"
 
 #r "nuget: FockMap, 0.9.0"
+#load "H2Data.fsx"
 
 open System.IO
 open System.Numerics
@@ -22,18 +23,15 @@ if not (File.Exists(referencePath)) then
         "Missing %s. Run: python3 code/ch18-generate-h2-integrals.py"
         referencePath
 
-let referenceDocument = JsonDocument.Parse(File.ReadAllText(referencePath))
-let referenceMetadata = referenceDocument.RootElement.GetProperty("_metadata")
-let h2Record = referenceDocument.RootElement.GetProperty("0.74")
+let referenceRoot, h2ScanRecords = H2Data.loadScan referencePath
+let referenceMetadata = referenceRoot.GetProperty("_metadata")
+let h2Record = referenceRoot.GetProperty("0.74")
 let h2BondLength = h2Record.GetProperty("bond_length_angstrom").GetDouble()
 let h2NuclearRepulsion = h2Record.GetProperty("Vnn").GetDouble()
 let h2ReferenceHartreeFock = h2Record.GetProperty("E_HF").GetDouble()
 
 let h2RawPhysicistIntegrals =
-    h2Record.GetProperty("integrals").EnumerateObject()
-    |> Seq.map (fun property ->
-        property.Name, Complex(property.Value.GetDouble(), 0.0))
-    |> Map.ofSeq
+    h2ScanRecords |> Array.find (fun (r, _, _) -> r = 0.74) |> fun (_, _, map) -> map
 
 let h2RawPhysicistFactory key =
     h2RawPhysicistIntegrals |> Map.tryFind key

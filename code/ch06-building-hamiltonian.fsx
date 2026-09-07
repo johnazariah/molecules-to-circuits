@@ -2,7 +2,7 @@
 // Chapter 6 Companion: Building the Qubit Hamiltonian
 // ══════════════════════════════════════════════════════════════
 // Run with: dotnet fsi code/ch06-building-hamiltonian.fsx
-// Prereq:   dotnet build --configuration Release
+// Prereq:   .NET 10 SDK; FSI restores pinned FockMap from NuGet.
 
 #r "nuget: FockMap, 0.9.0"
 #load "ch03-spin-orbitals.fsx"

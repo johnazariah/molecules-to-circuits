@@ -163,7 +163,8 @@ algorithm, which finds the ground state energy of molecules.
 ## Next Steps
 
 Try modifying this tutorial to:
-- Change the bond length and see how coefficients change
+- Run `dotnet fsi code/ch06-h2-at-bond.fsx 1.40` to inspect a different
+  committed scan geometry without editing the equilibrium fixture or loader
 - Use `computeHamiltonianWith` with different encodings
 - Compare the number of terms across encodings
 *)
