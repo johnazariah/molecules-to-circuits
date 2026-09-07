@@ -4,17 +4,34 @@ _The simplest form of tapering: find qubits that are always I or Z, fix their ei
 
 ## In This Chapter
 
-- **What you'll learn:** The algorithm for detecting diagonal Z₂ symmetries, how sector choice works, and how fixing a sector modifies each Pauli term.
-- **Why this matters:** Diagonal tapering is fast, easy to implement, and often removes 1–3 qubits from molecular Hamiltonians with zero information loss.
+- **What you'll learn:** The single-qubit Z detection algorithm, the
+  coefficient substitution rule, and its application to the H₂ physical
+  signs derived in Chapter 10.
+- **Why this matters:** Once a generator has been put on a single wire,
+  its sector can be represented without that wire. No approximation is
+  introduced within the selected invariant subspace.
 - **Prerequisites:** Chapter 10 (you understand why tapering is valuable and what Z₂ symmetries are).
 
 ---
 
 ## The Detection Algorithm
 
-Given a Hamiltonian $\hat{H} = \sum_\alpha c_\alpha \sigma_\alpha$, we say qubit $j$ is **diagonal Z₂ symmetric** if:
+Given a simplified Hamiltonian $\hat H=\sum_\alpha c_\alpha\sigma_\alpha$
+with distinct nonzero Pauli terms, qubit $j$ has a **single-qubit Z
+symmetry** if:
 
 $$\forall \alpha:\; \sigma_\alpha[j] \in \{I, Z\}$$
+
+This is exactly the condition $[H,Z_j]=0$. Multiplying by $Z_j$ commutes
+with I/Z and anticommutes with X/Y at that position. For distinct
+simplified Pauli terms, the unwanted commutators cannot cancel one
+another: multiplication by a fixed Pauli maps distinct strings to
+distinct strings up to phase. Terms with coefficients cancelled to zero
+must therefore be removed before scanning.
+
+The API calls this `diagonalZ2SymmetryQubits`. Its name does not mean it
+finds every diagonal Pauli symmetry. The multi-qubit product $Z_0Z_2$
+in Chapter 10 is diagonal too, but is outside this column-by-column test.
 
 The algorithm is a single scan:
 
@@ -22,8 +39,8 @@ The algorithm is a single scan:
 flowchart TD
     START["For each qubit j = 0, 1, ..., n-1"] --> SCAN["Inspect every Pauli term σ_α"]
     SCAN --> CHECK{"σ_α[j] ∈ {I, Z}?"}
-    CHECK -->|"All terms: yes"| DIAG["Qubit j is diagonal Z₂ ✓"]
-    CHECK -->|"Any term: X or Y"| SKIP["Qubit j is NOT diagonal ✗"]
+    CHECK -->|"All terms: yes"| DIAG["Z_j is a symmetry ✓"]
+    CHECK -->|"Any term: X or Y"| SKIP["Z_j alone is not a symmetry"]
     style DIAG fill:#d1fae5,stroke:#059669
     style SKIP fill:#fee2e2,stroke:#ef4444
 ```
@@ -35,12 +52,18 @@ scan alone.
 
 ### In FockMap
 
+The F# listings in this chapter are contextual excerpts from
+`code/ch11-diagonal-z2.fsx`. That runnable script references FockMap
+0.9.0 and opens `System.Numerics`, `Encodings` and `Encodings.Tapering`.
+Here `Complex(x,0.0)` is a real coefficient stored in a complex number,
+and `PauliRegisterSequence` collects the weighted registers into a sum.
+
 ```fsharp
 let symQubits = diagonalZ2SymmetryQubits hamiltonian
 // Returns int[] of taperable qubit indices
 ```
 
-For our toy example from Chapter 10:
+For a new, deliberately all-diagonal toy:
 
 ```fsharp
 let h =
@@ -59,7 +82,7 @@ the computational basis, so a basis state attains its minimum eigenvalue.
 Degeneracy can still permit coherent eigenstates; “diagonal” is the precise
 property used by the detector.
 
-### A more realistic example
+### A mixed toy
 
 In practice, molecular Hamiltonians are *mixed*: some qubits are diagonal, others are not. Consider a Hamiltonian where qubits 0 and 2 are always I/Z, but qubits 1 and 3 have X and Y terms:
 
@@ -99,7 +122,12 @@ let sector = [ (1, +1); (3, -1) ]
 // Fix qubit 1 to eigenvalue +1, qubit 3 to eigenvalue -1
 ```
 
-**Physical interpretation:** Different sectors correspond to different quantum numbers. If the diagonal qubits encode particle-number parity or spin projection, then sector $+1$ vs $-1$ selects different electron counts or spin states.
+**Physical interpretation:** The signs label the particular generators
+being fixed. If a generator represents particle-number parity, its sign
+selects even versus odd count, not a unique particle number. A generator
+related to spin can similarly encode a parity rather than a complete
+$M_s$ or total-spin label. Identify the operator first, then interpret
+its sign.
 
 For example, if qubit $j$ represents the parity of the total electron number (even vs odd), then:
 - Sector $+1$ → even number of electrons
@@ -140,6 +168,34 @@ Fix sector $[(1, +1),\; (3, -1)]$:
 
 Four qubits → two qubits. The eigenvalues of $\hat{H}'$ are exactly the eigenvalues of $\hat{H}$ in the $(+1, -1)$ sector.
 
+### Check the block, including its row order
+
+The original positions being removed are 1 and 3. Keep positions 0 and 2,
+in that order, and call the remaining bits $b_0,b_1$. Since
+$Z_1=+1$ fixes old bit 1 to zero and $Z_3=-1$ fixes old bit 3 to one,
+the insertion map is
+
+$$V|b_0b_1\rangle=|b_0,0,b_1,1\rangle.$$
+
+The original row is $8+b_0+4b_1$. Thus reduced integer rows
+$0,1,2,3$ correspond to original rows $8,9,12,13$, not four adjacent
+rows. Evaluating the reduced Pauli sum gives
+
+$$H'=\operatorname{diag}(-0.1,-0.9,-1.1,1.3).$$
+
+Selecting those same rows and columns of the original $16\times16$
+matrix gives exactly this matrix. The eigenvalues are the four diagonal
+entries; sorting gives $(-1.1,-0.9,-0.1,1.3)$.
+We have not calculated the other three choices of $(Z_1,Z_3)$, and
+we have not claimed that this sector contains the toy's global ground
+state. The requested sector is the problem we solved.
+
+The map $V$ also explains why the substitution is exact. On its image,
+$Z_1V=+V$ and $Z_3V=-V$, so every deleted Z can be replaced by its
+eigenvalue inside $V^\dagger HV$. An X on either deleted position would
+take us out of that image. Dropping such an X is not tapering; the
+single-qubit detector prevents that operation.
+
 ### In FockMap
 
 ```fsharp
@@ -151,6 +207,71 @@ printfn "%d → %d qubits" result.OriginalQubitCount result.TaperedQubitCount
 printfn "Removed: %A" result.RemovedQubits
 // [| 1; 3 |]
 ```
+
+The indices in the sector list refer to the original Hamiltonian, not
+to a string whose earlier positions have already been removed. A safe
+implementation accumulates all sign factors and deletes the complete
+set of positions together. Deleting qubit 1 first and then treating
+"qubit 3" as a position in the shorter string is an off-by-one error
+with perfectly plausible output.
+
+## Continue the H₂ Ledger
+
+In Chapter 10 we selected $g_\alpha=Z_0Z_2=-1$ and
+$g_\beta=Z_1Z_3=-1$, and chose
+$U=\mathrm{CNOT}(0,2)\mathrm{CNOT}(1,3)$.
+Write $\widetilde H=UHU^\dagger$. In this representation,
+the same signs are $Z_2=Z_3=-1$.
+The original JW Hamiltonian has no single-qubit candidates;
+$\widetilde H$ does. The operation in this chapter applies to
+$\widetilde H$, not directly to the original $H$.
+
+For example, the original term
+$0.12062523483390411\,ZIZI$ is proportional to $g_\alpha$.
+Conjugation makes it
+$0.12062523483390411\,IIZI$.
+Fixing $Z_2=-1$ turns it into
+$-0.12062523483390411\,II$ on the two kept qubits.
+Its contribution has become an energy offset; it has not disappeared.
+The analogous $IZIZ$ term contributes the same negative offset from
+$g_\beta$.
+
+Let $g=0.04530261550379918$ Ha. The four coupling terms become
+
+$$-g\,YYII+g\,YYZI+g\,YYIZ-g\,YYZZ.$$
+
+Their factors on the removed positions give
+
+$$(-g-g-g-g)\,YY=-4g\,YY.$$
+
+The final coefficient is negative even though two original coefficients
+were positive. Applying the signs *before* collecting terms is essential.
+For example, `YYZI` contributes $-g\,YY$, not $+g\,YY$.
+Chapter 12 derives all four conjugated strings and the complete matrix.
+
+The state mapping stays with the coefficients:
+
+| Original occupation | After $U$ | Reduced label | Reduced integer row |
+|:---:|:---:|:---:|:---:|
+| `0011` | `0011` | `00` | 0 |
+| `1001` | `1011` | `10` | 1 |
+| `0110` | `0111` | `01` | 2 |
+| `1100` | `1111` | `11` | 3 |
+
+In integer row order, the association is old rows $[12,9,6,3]$.
+$U$ keeps old bits 0 and 1 unchanged; this is the useful check on the
+two middle entries. Their diagonal energies happen to agree, so
+comparing diagonals alone would not detect a swapped label.
+
+The insertion-and-return map, which avoids relying on any table, is
+
+$$|\psi\rangle_{\rm full}
+=U^\dagger\bigl(|\psi\rangle_{0,1}\otimes|11\rangle_{2,3}\bigr),$$
+
+where the tensor notation names wire groups rather than reversing our
+integer-row convention. The full occupations reconstructed from reduced
+bits are $(b_0,b_1,1\oplus b_0,1\oplus b_1)$.
+This is also how reduced eigenvectors recover their physical labels.
 
 ---
 
@@ -173,11 +294,15 @@ This is fine for API exploration but not for a molecular result: the $+1$ sector
 
 ## Validation
 
-FockMap validates all inputs:
+FockMap rejects non-diagonal targets and invalid eigenvalues. These
+examples are contextual error demonstrations, not a script to run
+straight through:
 
 ```fsharp
 // Non-diagonal qubit → error
-taperDiagonalZ2 [(0, 1)] (prs [("XI", Complex.One)])
+let nonDiagonal =
+    PauliRegisterSequence [| PauliRegister("XI", Complex.One) |]
+taperDiagonalZ2 [(0, 1)] nonDiagonal
 // → ArgumentException: "Qubit 0 is not a diagonal Z2 symmetry"
 
 // Invalid eigenvalue → error
@@ -214,6 +339,27 @@ Choosing the correct sector is a common source of confusion for first-time pract
 2. **Tapering a non-diagonal qubit.** FockMap catches this, but if you're implementing by hand, silently dropping X/Y terms is the most dangerous bug.
 
 3. **Forgetting to combine like terms after tapering.** Removing qubits can make previously distinct Pauli strings identical. The terms must be re-accumulated.
+
+## Exercises
+
+1. **Substitute a different sector.** For the four-term diagonal toy,
+   fix $(Z_1,Z_3)=(-1,+1)$. Write the reduced Pauli sum on old qubits
+   0 and 2 and its four diagonal entries in integer order.
+
+2. **Collision and cancellation.** Let
+   $H=0.7\,IX+0.7\,ZX+0.2\,ZI$.
+   Identify the single-qubit Z candidate. Fix it to $-1$, collect the
+   reduced terms, and compute the two eigenvalues. Explain why the
+   $IX$ term does not prevent this particular removal.
+
+3. **The H₂ offset.** The identity coefficient before reduction is
+   $-0.8121706072487134$ Ha, and the two spin-parity coefficients
+   are both $0.12062523483390411$ Ha. Derive their combined reduced
+   identity coefficient in the physical $(-1,-1)$ sector.
+
+4. **Restore a state.** Take reduced H₂ label `10`.
+   Insert $b_2=b_3=1$, undo the two CNOTs, and identify its original
+   occupation label, row and $(N_\alpha,N_\beta)$.
 
 ## Further Reading
 

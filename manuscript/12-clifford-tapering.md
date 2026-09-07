@@ -4,8 +4,12 @@ _When no single qubit is diagonal, multi-qubit Z₂ symmetries may still exist. 
 
 ## In This Chapter
 
-- **What you'll learn:** The symplectic representation of Pauli strings, how to find all Z₂ symmetry generators via GF(2) linear algebra, how to synthesize a Clifford circuit that makes them diagonal, and how FockMap's unified `taper` function combines everything.
-- **Why this matters:** Many molecular Hamiltonians have Z₂ symmetries that diagonal-only tapering cannot exploit. Clifford tapering finds and uses them all.
+- **What you'll learn:** Binary Pauli commutation, an actual null-space
+  calculation, phase-correct Clifford conjugation, and the complete H₂
+  reduction begun in Chapter 10.
+- **Why this matters:** A single-qubit Z scan can miss conserved
+  multi-qubit products. Exposing them requires both a basis change and
+  the correct physical signs.
 - **Prerequisites:** Chapters 10–11 (diagonal tapering concepts and mechanics).
 
 ---
@@ -39,6 +43,11 @@ An $n$-qubit Pauli string becomes a binary vector of length $2n$ — the X-bits 
 
 $$\sigma \;\leftrightarrow\; (\underbrace{x_0, x_1, \ldots, x_{n-1}}_{\text{X bits}} \mid \underbrace{z_0, z_1, \ldots, z_{n-1}}_{\text{Z bits}})$$
 
+The API listings are contextual excerpts with FockMap 0.9.0 and
+`System.Numerics`, `Encodings` and `Encodings.Tapering` open, as in
+`code/ch12-clifford-tapering.fsx`. They illustrate individual operations;
+the separate H₂ companion below supplies the complete physical calculation.
+
 ```fsharp
 let sv = toSymplectic (PauliRegister("XYZ", Complex.One))
 // sv.X = [| true; true; false |]   — X has x=1, Y has x=1, Z has x=0
@@ -53,7 +62,11 @@ The payoff: two Pauli strings commute if and only if their **crosswise dot produ
 
 $$\text{commute?} \quad \sum_{i=0}^{n-1} (a_{x_i} \cdot b_{z_i} + a_{z_i} \cdot b_{x_i}) \stackrel{?}{=} 0 \pmod{2}$$
 
-Notice the crosswise structure: we pair the X-bits of $a$ with the Z-bits of $b$, and vice versa. If the sum is even, they commute. If odd, they anti-commute. This reduces commutativity checking to a **binary dot product** — something a computer can do in nanoseconds.
+We pair the X-bits of $a$ with the Z-bits of $b$, and vice versa.
+If the sum is even, they commute; if odd, they anticommute.
+At each qubit the contribution counts whether the two local Paulis
+introduce a minus sign on exchange. Multiplying those local signs
+explains why only the parity of the count matters.
 
 ```fsharp
 let a = toSymplectic (PauliRegister("XX", Complex.One))
@@ -77,19 +90,113 @@ mutually commuting (Abelian) subgroup and retain the Pauli phases
 
 ```fsharp
 let centralizer = findCommutingGenerators hamiltonian
-// Candidate Pauli strings that commute with every Hamiltonian term.
+// SymplecticVector[] representing the centralizer candidates.
 
 // A valid tapering implementation must then select independent candidates
 // that also commute with one another and track their phases.
 ```
 
-The null space computation uses Gaussian elimination with XOR instead of subtraction — the same row-reduction you learned in linear algebra, but in binary arithmetic. It runs in $O(L \cdot n^2)$ time, where $L$ is the number of Hamiltonian terms and $n$ is the number of qubits. In practice, this is dominated by the $O(n^4)$ cost of integral processing and is never the bottleneck. See Bravyi et al. (arXiv:1701.08213, §III) for the formal analysis.
+### GF(2), rank and free variables
+
+$\mathrm{GF}(2)$ is arithmetic with only the values zero and one.
+Addition and subtraction are both XOR: $1+1=0$.
+Multiplication has the ordinary binary truth table. A **null space**
+is the set of vectors $v$ satisfying $Av=0$; here its elements encode
+Paulis commuting with every Hamiltonian term.
+
+For an unknown generator $v=(x\mid z)$ and Hamiltonian row
+$(x_t\mid z_t)$, put $(z_t\mid x_t)$ into the check matrix $A$.
+Then ordinary binary matrix multiplication $Av=0$ is exactly the
+crosswise commutation condition. The swapped halves matter.
+Coefficients do not enter this matrix, except that zero terms must first
+be removed.
+
+Consider $H=XX+YY+ZZ$. With column order
+$(x_0,x_1,z_0,z_1)$, its check matrix is
+
+$$A=
+\begin{pmatrix}
+0&0&1&1\\
+1&1&1&1\\
+1&1&0&0
+\end{pmatrix}.$$
+
+Swap the first and third rows. Use the new first row to clear the
+leading one of the second row by XOR:
+
+$$
+\begin{pmatrix}
+1&1&0&0\\
+1&1&1&1\\
+0&0&1&1
+\end{pmatrix}
+\longrightarrow
+\begin{pmatrix}
+1&1&0&0\\
+0&0&1&1\\
+0&0&1&1
+\end{pmatrix}
+\longrightarrow
+\begin{pmatrix}
+1&1&0&0\\
+0&0&1&1\\
+0&0&0&0
+\end{pmatrix}.
+$$
+
+There are two **pivots**, the first nonzero entries in the two independent
+rows. The **rank** is therefore two. Of four unknown bits, two are
+free: choose $x_1=s$ and $z_1=t$. The equations give
+$x_0=s$, $z_0=t$, so
+
+$$v=s(1,1,0,0)+t(0,0,1,1).$$
+
+The null-space dimension is $4-2=2$, with Pauli representatives $XX$
+and $ZZ$. Both commute with the Hamiltonian and with one another.
+Their product is **$-YY$**, not $YY$; binary addition alone has forgotten
+that minus sign. A sector with $XX=\lambda_x$ and $ZZ=\lambda_z$
+has $YY=-\lambda_x\lambda_z$. The phase-free binary vectors answer
+commutation questions, not all coefficient or sector questions.
+
+### A centralizer basis need not be jointly fixable
+
+Take $H=ZI$ on two qubits. Its only condition is $x_0=0$.
+A null-space basis is $ZI,IX,IZ$. All three commute with $H$,
+but $IX$ and $IZ$ anticommute with each other. No state can have
+definite eigenvalues of both. Linear independence alone does not
+make them a valid three-generator tapering set, and a two-qubit
+register certainly cannot lose three qubits.
+
+There is a constructive elimination step for this second problem too.
+Write the binary commutation form as $s(a,b)$, equal to zero for
+commutation and one for anticommutation. If two independent candidates
+$g,h$ satisfy $s(g,h)=1$, replace each remaining basis vector $r$ by
+
+$$r'=r+s(r,h)g+s(r,g)h.$$
+
+Then $s(r',g)=s(r',h)=0$: the added contributions cancel the old
+ones modulo two. Keep $g$ as a sector generator, discard $h$ from the
+selected set, and repeat on the transformed remaining span. A vector
+commuting with that entire span can be retained directly. Remove
+dependent vectors as usual. This produces an independent commuting
+selection rather than mistaking the full nullity for the removable
+qubit count. Binary vector additions correspond to Pauli products;
+track their signs separately when translating the resulting basis
+and its sector labels back to operators.
+
+For $L$ terms and $2n$ columns, straightforward dense binary elimination
+costs $O(Ln^2)$ bit operations before bit-packing improvements.
+The cost of choosing and transforming generators depends on their
+number, support and representation. It is not valid to infer that this
+stage is "never the bottleneck" from a formal $O(n^4)$ integral count;
+sparse inputs and implementation overhead can change the balance.
 
 ---
 
 ## Clifford Rotation: Making Generators Diagonal
 
-Once we have independent generators, we need a Clifford circuit $U$ such that:
+Once we have independent **mutually commuting** generators, we need
+a Clifford circuit $U$ such that:
 
 $$U g_i U^\dagger = Z_{q_i} \quad \text{for each generator } g_i$$
 
@@ -99,7 +206,8 @@ This rotates each multi-qubit generator onto a single-qubit $Z$, making the syst
 >
 > **Input:** A Pauli Hamiltonian $\hat{H} = \sum_k c_k P_k$ on $n$ qubits.
 >
-> **Output:** A reduced Hamiltonian on $n - m$ qubits, where $m$ is the number of independent Z₂ symmetries.
+> **Output:** A Hamiltonian on $n-m$ qubits for the specified sector of
+> the $m$ selected independent commuting generators.
 >
 > 1. **Represent** each term $P_k$ as a $2n$-bit symplectic vector.
 > 2. **Build** the $L \times 2n$ commutation check matrix (one row per term).
@@ -109,14 +217,16 @@ This rotates each multi-qubit generator onto a single-qubit $Z$, making the syst
 > 6. **Conjugate** every term $P_k$ by the collected Clifford gates.
 > 7. **Fix** each target qubit $q_i$ to the eigenvalue implied by the physical sector and remove it.
 >
-> **Complexity:** Step 3 is $O(L \cdot n^2)$; step 5 is $O(Lm)$ where $L$ is the number of terms. Total is dominated by Hamiltonian construction, not tapering.
+> **Inputs still needed:** the physical signs of the chosen generators.
+> Neither a null space nor Clifford synthesis discovers those signs
+> from the target molecule's name.
 
-FockMap synthesizes this circuit using three elementary gates:
+FockMap's synthesis uses three elementary gate types:
 
 | Gate | Symbol | Effect on Pauli |
 |:---|:---:|:---|
-| Hadamard | $H_j$ | Swaps X↔Z on qubit $j$ |
-| Phase gate | $S_j$ | Maps X→Y on qubit $j$ (Z unchanged) |
+| Hadamard | $H_j$ | $X\to Z,\ Z\to X,\ Y\to-Y$ |
+| Phase gate | $S_j$ | $X\to Y,\ Y\to-X,\ Z\to Z$ |
 | CNOT | $\text{CNOT}_{c,t}$ | Propagates X from control to target; propagates Z from target to control |
 
 The synthesis algorithm must choose target qubits and local Clifford gates
@@ -130,6 +240,14 @@ let (gates, targets) = synthesizeTaperingClifford independentGens
 // targets : int[] — which qubit each generator maps to
 ```
 
+This is a contextual API signature, not a proof that an arbitrary array
+called `independentGens` meets the required pairwise-commuting contract.
+If synthesis produces $Ug_iU^\dagger=-Z_{q_i}$ rather than
+$+Z_{q_i}$, an original eigenvalue $\lambda_i$ becomes target
+$Z_{q_i}=-\lambda_i$. Changing a generator basis by multiplying rows
+similarly multiplies its sector signs, including any Pauli-product phase.
+The sign ledger must follow the generators actually used.
+
 ---
 
 ## Applying the Clifford to the Hamiltonian
@@ -141,39 +259,47 @@ let rotatedH = applyClifford gates hamiltonian
 // Every term is now conjugated — generators have become single-qubit Zs
 ```
 
-After rotation, the target qubits are diagonally taperable, and we apply the v1 diagonal tapering from Chapter 10.
+After rotation, inspect the target columns and apply the single-qubit
+substitution from Chapter 11. Every term must be I/Z on each target.
+This is a useful postcondition even when synthesis claims to have
+completed successfully.
 
 ---
 
 ## The Unified Pipeline
 
-FockMap's `taper` function combines everything:
+FockMap exposes a unified `taper` function, but we must separate its
+convenience from the mathematical acceptance conditions.
+In the pinned 0.9.0 source, `FullClifford` obtains centralizer candidates
+and calls `independentGenerators`, which performs binary linear
+independence selection. That operation alone is not the mutually
+commuting-subgroup selection just described.
+Consequently an arbitrary Hamiltonian cannot be certified by the mere
+presence of a `FullClifford` result.
 
-```fsharp
-// Full Clifford tapering in an explicitly derived physical sector
-let physicalOptions =
-    { defaultTaperingOptions with Sector = [(0, 1); (1, -1)] }
-let result = taper physicalOptions hamiltonian
+Its `Sector` entries refer to **target qubit indices after the
+synthesised Clifford**, not directly to particle numbers or a user's
+preferred original generators. An empty sector selects positive signs
+on those targets. That default is not a molecular ground-sector selector.
+To use automatic synthesis responsibly, inspect its actual generators,
+their mutual commutation, the signed images under its Clifford, and
+the correspondence between those images and the physical signs.
+Then compare the resulting sector spectrum.
 
-// Diagonal-only exploration uses the same explicit sector discipline
-let diagonalResult =
-    taper { physicalOptions with Method = DiagonalOnly } h
+For the molecular example below we instead use an explicit, fully
+derived two-CNOT circuit and signed diagonal substitution. This uses
+the existing public operations without claiming that automatic
+generator selection has solved the physics.
 
-// A removal cap changes cost, not the need to identify the sector
-let cappedResult =
-    taper { physicalOptions with MaxQubitsToRemove = Some 2 } h
-```
-
-`defaultTaperingOptions` is a configuration starting point, not evidence that
-its default positive sector represents the target molecule.
-
-The result includes everything you need:
+For a result whose generator and sector checks have passed, these fields
+allow the transformation to be inspected. This is a result-schema excerpt,
+not another executable calculation:
 
 ```fsharp
 result.OriginalQubitCount  // before tapering
 result.TaperedQubitCount   // after tapering
 result.RemovedQubits       // which qubits were removed
-result.Generators          // the Z₂ generators found
+result.Generators          // inspect these and their pairwise commutation
 result.CliffordGates       // the rotation circuit applied
 result.TargetQubits        // which qubits the generators mapped to
 result.Hamiltonian         // the tapered PauliRegisterSequence
@@ -248,6 +374,200 @@ into a one-qubit problem. Both sectors are needed to recover the full spectrum.
 Direct $4\times4$ matrix conjugation provides an independent check of every
 sign in the symbolic derivation.
 
+## H₂: Finish the Physical Reduction
+
+Return to the generators chosen in Chapter 10,
+$g_\alpha=ZIZI$ and $g_\beta=IZIZ$, both with eigenvalue $-1$.
+They commute and are independent. The full binary search also explains
+where they sit among the candidates.
+
+Every single-qubit Z occurs with a nonzero coefficient in the canonical
+H₂ Hamiltonian. Commuting with those four terms forces
+$x_0=x_1=x_2=x_3=0$ in an unknown generator.
+Each coupling term has X support on all four qubits, so the remaining
+condition is
+
+$$z_0+z_1+z_2+z_3=0\pmod2.$$
+
+There are four independent X constraints and one Z constraint:
+rank five in eight binary columns, nullity three.
+All candidates are even-weight Z products, so in this case they
+*do* commute pairwise. One basis is
+$Z_0Z_2,\ Z_1Z_3,\ Z_0Z_1$.
+We use the first two to keep the full $N=2,M_s=0$ block.
+The third will later split that block; it is not implied by the two
+spin parities.
+
+### Every transformed term, including its sign
+
+Set $U=\mathrm{CNOT}(0,2)\mathrm{CNOT}(1,3)$.
+For the first gate,
+$X_0\to X_0X_2$, $Z_2\to Z_0Z_2$, with $Z_0$ and $X_2$
+unchanged. The second gate has the analogous rules on 1 and 3.
+Extend the rules multiplicatively, preserving Pauli phases.
+For instance,
+
+$$U(Y_0Y_1X_2X_3)U^\dagger
+=(Y_0X_2)(Y_1X_3)X_2X_3=Y_0Y_1.$$
+
+This gives `YYXX` $\to$ `YYII`. The original coefficient is $-g$,
+so the final contribution after tapering is $-g\,YY$.
+The complete ledger below uses the original coefficient in its first
+column; the last column is the *signed operator* remaining after
+$Z_2=Z_3=-1$:
+
+| Coefficient (Ha) | Original | $UPU^\dagger$ | After fixing targets |
+|---:|:---:|:---:|:---:|
+| $-0.8121706072487134$ | IIII | IIII | $II$ |
+| $-0.2234315369081336$ | IIIZ | IZIZ | $-IZ$ |
+| $-0.2234315369081336$ | IIZI | ZIZI | $-ZI$ |
+| $0.1744128761226154$ | IIZZ | ZZZZ | $ZZ$ |
+| $0.1714128264477690$ | IZII | IZII | $IZ$ |
+| $0.1206252348339041$ | IZIZ | IIIZ | $-II$ |
+| $0.1659278503377033$ | IZZI | ZZZI | $-ZZ$ |
+| $-0.0453026155037992$ | XXYY | YYZZ | $YY$ |
+| $0.0453026155037992$ | XYYX | YYZI | $-YY$ |
+| $0.0453026155037992$ | YXXY | YYIZ | $-YY$ |
+| $-0.0453026155037992$ | YYXX | YYII | $YY$ |
+| $0.1714128264477691$ | ZIII | ZIII | $ZI$ |
+| $0.1659278503377034$ | ZIIZ | ZZIZ | $-ZZ$ |
+| $0.1206252348339041$ | ZIZI | IIZI | $-II$ |
+| $0.1686889817036122$ | ZZII | ZZII | $ZZ$ |
+
+All coefficients are electronic. Nuclear repulsion remains separate.
+The two surviving qubits are old qubits 0 and 1, in that order.
+Combining terms gives
+
+$$H_2=C\,II+B(ZI+IZ)+D\,ZZ+F\,YY,$$
+
+with
+
+$$
+\begin{aligned}
+C&=-1.0534210769165218,\\
+B&=\phantom{-}0.3948443633559027,\\
+D&=\phantom{-}0.0112461571508209,\\
+F&=-0.1812104620151967,
+\end{aligned}
+\qquad\text{in Ha}.
+$$
+
+For example, $C$ is the old identity coefficient minus the two
+spin-parity coefficients. $D$ is
+$0.1686889817036122+0.1744128761226154
+-2(0.1659278503377033)$.
+The paired $B$ coefficients differ only at floating-point round-off;
+the source fixture, rather than the rounded display, supplies the
+calculation.
+
+### The actual reduced matrix
+
+In reduced integer order, the displayed labels are
+$|00\rangle,|10\rangle,|01\rangle,|11\rangle$.
+They map to original occupation rows $[12,9,6,3]$.
+Since $YY|00\rangle=-|11\rangle$ and
+$YY|10\rangle=|01\rangle$, the matrix is
+
+$$
+H_2=
+\begin{pmatrix}
+C+2B+D&0&0&-F\\
+0&C-D&F&0\\
+0&F&C-D&0\\
+-F&0&0&C-2B+D
+\end{pmatrix}
+$$
+
+$$
+\approx
+\begin{pmatrix}
+-0.252486193&0&0&0.181210462\\
+0&-1.064667234&-0.181210462&0\\
+0&-0.181210462&-1.064667234&0\\
+0.181210462&0&0&-1.831863646
+\end{pmatrix}\ {\rm Ha}.
+$$
+
+The lower-right entry is the HF energy. It is not the upper-left entry:
+the HF determinant reduced to `11`. The middle two rows describe the
+different open-shell determinants, even though their diagonal entries
+are equal.
+
+The two eigenvalues in the even retained-bit block are
+$C+D\pm\sqrt{(2B)^2+F^2}$.
+Those in the odd block are $C-D\pm|F|$. Sorting all four gives
+
+$$
+-1.8523881736,\quad -1.2458776961,\quad
+-0.8834567721,\quad -0.2319616660\quad{\rm Ha}.
+$$
+
+These are exactly the four eigenvalues of the original $N=2,M_s=0$
+block. They are not all six eigenvalues of $N=2$: the two other
+$M_s$ components lie outside our selected sector.
+
+### A public-API calculation with no guessed sector
+
+The complete companion is `code/ch12-h2-physical-taper.fsx`.
+Its essential operations, after constructing the canonical `jwHam`
+and opening `Encodings.Tapering`, are:
+
+```fsharp
+let physicalGates = [ CNOT(0, 2); CNOT(1, 3) ]
+let rotated = applyClifford physicalGates jwHam
+let physical =
+    taperDiagonalZ2 [(2, -1); (3, -1)] rotated
+let reduced = physical.Hamiltonian
+```
+
+These are existing FockMap 0.9.0 APIs. The derivation fixes both gate
+directions and both sector signs before the calls. The companion
+compares the explicit occupation block and the full reduced spectrum;
+a successful default-positive automatic reduction would not establish
+the same result.
+
+### Optional third removal: a smaller, named block
+
+The additional generator $g_{\rm pair}=Z_0Z_1$ commutes with this H₂
+Hamiltonian. Its $+1$ sector contains the two closed-shell determinants
+`1100` and `0011`; its $-1$ sector contains the two open-shell
+$M_s=0$ determinants. Neither $N=2$ nor $M_s=0$ alone fixes this sign.
+We may choose $+1$ when studying the closed-shell invariant block,
+and the independent canonical spectrum confirms that its lower root
+is the molecular ground energy here. This is a block-specific statement,
+not permission to assign every unfamiliar symmetry the HF sign.
+
+On the two retained qubits, apply CNOT$(0,1)$:
+$ZZ\to IZ$, $ZI\to ZI$, $IZ\to ZZ$, and $YY\to-XZ$.
+Then fix target $Z_1=+1$. The one-qubit Hamiltonian is
+
+$$H_1=(C+D)I+2BZ-FX
+=-1.0421749197657006\,I
++0.7896887267118053\,Z
++0.1812104620151967\,X.$$
+
+Its basis is $|0\rangle\leftrightarrow|0011\rangle_{\rm occ}$,
+$|1\rangle\leftrightarrow|1100\rangle_{\rm occ}$.
+Its eigenvalues are $-1.8523881736$ and $-0.2319616660$ Ha.
+The other two $M_s=0$ energies were deliberately excluded, not lost
+through numerical approximation.
+
+For a normalised lower eigenvector, choose the HF component positive.
+The ratio of double-excitation to HF amplitudes follows from the first
+row of $(H_1-EI)v=0$:
+
+$$\frac{v_0}{v_1}
+=-\frac{0.1812104620151967}{-0.252486193\ldots-E}.$$
+
+At the lower eigenvalue, this is about $-0.1133$. Normalisation gives
+HF probability $|v_1|^2=0.9873338735$, agreeing with Chapter 9.
+To recover the full state, insert target bit 1 equal to zero, undo
+the final CNOT, insert the two spin-parity target bits equal to one,
+then undo the original two CNOTs. The relative minus sign between
+the determinants survives. Tapering preserves that wavefunction
+information within the chosen block; it does not turn the result
+into a classical bit string.
+
 ---
 
 ## Key Takeaways
@@ -256,7 +576,35 @@ sign in the symbolic derivation.
 - The null space gives the Pauli centralizer; tapering needs an independent mutually commuting subgroup with phases.
 - **Clifford synthesis** rotates multi-qubit generators onto single-qubit Zs using H, S, and CNOT — no matrices needed.
 - **The unified `taper` function** handles both diagonal and Clifford tapering with one API.
-- Everything is symbolic and exact — no approximation, no eigensolvers, no numerical instability.
+- Signed Clifford conjugation and sector substitution are exact algebraic
+  operations. Finite-precision coefficients and the numerical evidence
+  used to check an implementation still require explicit tolerances.
+
+## Exercises
+
+1. **A centralizer is not a tapering set.** For $H=ZI$, construct the
+   one-row binary check matrix, find its rank and nullity, and verify
+   that $ZI,IX,IZ$ form a null-space basis. Select two independent
+   commuting generators. Explain why all three cannot be fixed together.
+
+2. **Heisenberg signs.** Use CNOT$(0,1)$ to derive the image of $YY$
+   by writing $Y=iXZ$. Compute the reduced Hamiltonian for both signs
+   of $Z_1$ and recover the full multiset $\{-3,1,1,1\}$.
+
+3. **Complete the H₂ matrix.** Starting from $C,B,D,F$ above, derive
+   both $2\times2$ blocks and their eigenvalues. Identify which two
+   original determinants correspond to each block. Why is the
+   four-state spectrum not the entire two-electron spectrum?
+
+4. **A generator with a minus sign.** Suppose synthesis maps a
+   physical generator $g$ to $-Z_2$, and the target state has
+   $g=-1$. What value of $Z_2$ must be passed to diagonal tapering?
+   Would passing $-1$ merely change a global phase?
+
+5. **Restore the lower root.** Use the one-qubit matrix to calculate
+   the ground-state amplitude ratio and HF probability. Restore the
+   two original determinants and add $V_{nn}=0.7151043390810812$ Ha
+   to the lower electronic eigenvalue. Compare with Chapter 9.
 
 ## Further Reading
 
