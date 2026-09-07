@@ -179,6 +179,12 @@ Generated filenames are `manuscript/molecules-to-circuits.pdf`,
 `manuscript/molecules-to-circuits.epub` and `_build/html/`.
 MyST does not produce a second set of PDF/EPUB exports.
 
+The obsolete checked-in `manuscript/from molecules to quantum circuits.pdf`
+(161 pages) has been removed from the active source tree; it remains in Git
+history. No replacement is presented as current until the integrated edition
+passes its acceptance gates. This local deprecation does not alter existing
+GitHub or Zenodo downloads.
+
 ## The FockMap Library
 
 The code in this book uses the [FockMap](https://github.com/johnazariah/encodings)

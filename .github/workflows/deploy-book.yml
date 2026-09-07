@@ -15,7 +15,11 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  validate:
+    uses: ./.github/workflows/validate.yml
+
   build:
+    needs: validate
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

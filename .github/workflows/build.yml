@@ -7,81 +7,34 @@ on:
     branches: [main]
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
+  validate:
+    uses: ./.github/workflows/validate.yml
+
   build:
+    needs: validate
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
-
-      - name: Install pandoc
-        run: sudo apt-get update -qq && sudo apt-get install -y -qq pandoc
-
-      - name: Install LaTeX
-        run: sudo apt-get install -y -qq texlive-xetex texlive-latex-extra texlive-fonts-extra lmodern texlive-fonts-recommended
-
-      - name: Install Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-
-      - name: Install Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
-
-      - name: Install mermaid-cli
-        run: sudo npm install -g @mermaid-js/mermaid-cli
-
-      - name: Install Playwright Chrome
-        run: |
-          pip install playwright
-          python -m playwright install --with-deps chromium
-
-      - name: Build manuscript PDF
-        run: make
-
-      - name: Build sample PDF
-        run: make sample
-
-      - name: Word count
+      - uses: ./.github/actions/setup-rendering
+      - name: Check publication failure controls
+        run: make tooling-check
+      - name: Build print formats from one inventory
+        run: make all sample epub
+      - name: Source word count
         run: make word-count
-
-      - name: Upload manuscript PDF
-        uses: actions/upload-artifact@v4
-        with:
-          name: manuscript
-          path: manuscript/molecules-to-circuits.pdf
-
-      - name: Upload sample PDF
-        uses: actions/upload-artifact@v4
-        with:
-          name: sample
-          path: manuscript/molecules-to-circuits-sample.pdf
-
-  labs:
-    runs-on: ubuntu-24.04
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: '10.0.x'
-
-      - name: Execute labs
-        run: make lab-check
-
-      - name: Package labs
+      - name: Package companion source and evidence commands
         run: |
-          tar czf labs.tar.gz \
-            labs/ code/ scripts/ README.md LICENSE-CODE MANUSCRIPT-RIGHTS
-          echo "Labs tarball created"
-          ls -lh labs.tar.gz
-
-      - name: Upload labs tarball
-        uses: actions/upload-artifact@v4
+          tar czf labs.tar.gz labs/ code/ scripts/ tests/ \
+            README.md Makefile requirements-data.txt LICENSE-CODE MANUSCRIPT-RIGHTS
+      - uses: actions/upload-artifact@v4
         with:
-          name: labs
-          path: labs.tar.gz
+          name: book-and-companions
+          if-no-files-found: error
+          path: |
+            manuscript/molecules-to-circuits.pdf
+            manuscript/molecules-to-circuits-sample.pdf
+            manuscript/molecules-to-circuits.epub
+            labs.tar.gz

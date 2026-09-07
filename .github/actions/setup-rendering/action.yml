@@ -1,0 +1,27 @@
+name: Set up book rendering
+description: Install the shared Pandoc/XeLaTeX/Mermaid toolchain on a disposable Ubuntu runner
+runs:
+  using: composite
+  steps:
+    - name: Install system typesetting packages
+      shell: bash
+      run: |
+        sudo apt-get update -qq
+        sudo apt-get install -y -qq pandoc texlive-xetex texlive-latex-extra \
+          texlive-fonts-recommended fonts-dejavu lmodern
+    - uses: actions/setup-node@v4
+      with:
+        node-version: '22'
+    - uses: actions/setup-python@v5
+      with:
+        python-version: '3.12'
+    - name: Install local renderer and browser
+      shell: bash
+      env:
+        PUPPETEER_SKIP_DOWNLOAD: 'true'
+      run: |
+        npm install --prefix "$RUNNER_TEMP/book-tools" --no-audit --no-fund @mermaid-js/mermaid-cli@11.12.0
+        python -m pip install playwright
+        python -m playwright install --with-deps chromium
+        echo "MMDC=$RUNNER_TEMP/book-tools/node_modules/.bin/mmdc" >> "$GITHUB_ENV"
+        echo "MMDC_NO_SANDBOX=1" >> "$GITHUB_ENV"

@@ -340,8 +340,8 @@ when $d$ is not a power of two. Gray labels make neighbouring
 labels differ in one bit, but the required projectors mean a
 transition is not generally a weight-one Pauli operator.
 
-Do not confuse a largest retained occupation $m_\max$ with the
-number of levels: $d=m_\max+1$. Check population near the cutoff
+Do not confuse a largest retained occupation $m_{\max}$ with the
+number of levels: $d=m_{\max}+1$. Check population near the cutoff
 and convergence under a larger $d$; a compact encoding does
 not remove truncation error.
 
