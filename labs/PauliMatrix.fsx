@@ -119,18 +119,40 @@ let hermitianEigenvaluesAtTolerance accuracy (value: Complex[,]) =
     let scale = max 1.0 (value |> Seq.cast<Complex> |> Seq.map Complex.Abs |> Seq.max)
     if Math.BitIncrement(scale) - scale > accuracy / 8.0 then
         failwithf "Requested absolute eigensolver accuracy %.3e is below arithmetic resolution at matrix scale %.3e" accuracy scale
+    let mutable hermiticityDefect = 0.0
     for i in 0 .. n - 1 do
         for j in 0 .. n - 1 do
-            if Complex.Abs(value[i,j] - Complex.Conjugate(value[j,i])) > accuracy / 16.0 then
-                invalidArg "value" "Matrix is not Hermitian"
+            hermiticityDefect <-
+                Double.Hypot(hermiticityDefect,
+                    Complex.Abs(value[i,j] - Complex.Conjugate(value[j,i])))
+    let inputError = hermiticityDefect / 2.0
+    if not (Double.IsFinite inputError) || inputError > accuracy / 16.0 then
+        invalidArg "value" "Global Hermiticity defect exceeds the input accuracy budget"
+    let hermitian = Array2D.init n n (fun i j ->
+        0.5 * value[i,j] + 0.5 * Complex.Conjugate(value[j,i]))
 
     // Realification preserves the COMPLETE complex operator; every eigenvalue
     // occurs twice. This is not diagonalisation of the real part of H.
     let size = 2 * n
     let a = Array2D.init size size (fun i j ->
-        let z = value[i % n, j % n]
+        let z = hermitian[i % n, j % n]
         if (i < n) = (j < n) then z.Real
         elif i < n then -z.Imaginary else z.Imaginary)
+    let norm = a |> Seq.cast<float> |> Seq.fold (fun acc x -> Double.Hypot(acc, x)) 0.0
+    let unitRoundoff = (Math.BitIncrement(1.0) - 1.0) / 2.0
+    let mutable rotations = 0
+    // Budget accumulated floating-point work, not just the largest input ULP.
+    // The Frobenius norm bounds every intermediate exact orthogonal similarity.
+    let roundoffBudget () =
+        let operations = 64.0 * (float size + float rotations)
+        let accumulated = operations * unitRoundoff
+        if accumulated >= 0.5 then Double.PositiveInfinity
+        else accumulated / (1.0 - accumulated) * norm
+    let requireAccuracy () =
+        let bound = roundoffBudget () + inputError
+        if not (Double.IsFinite bound) || bound > accuracy / 2.0 then
+            failwithf "Cannot certify absolute eigenvalue accuracy %.3e: input/roundoff budget %.3e" accuracy bound
+    requireAccuracy ()
     let mutable residual = Double.PositiveInfinity
     let mutable sweeps = 0
     let residualTarget = accuracy / 16.0
@@ -140,6 +162,8 @@ let hermitianEigenvaluesAtTolerance accuracy (value: Complex[,]) =
             for q in p + 1 .. size - 1 do
                 let apq = a[p,q]
                 if abs apq > entryCutoff then
+                    rotations <- rotations + 1
+                    requireAccuracy ()
                     let tau = (a[q,q] - a[p,p]) / (2.0 * apq)
                     if not (Double.IsFinite tau) then failwith "Jacobi rotation exceeds finite arithmetic range"
                     let root = Double.Hypot(1.0, tau)
@@ -164,6 +188,7 @@ let hermitianEigenvaluesAtTolerance accuracy (value: Complex[,]) =
         sweeps <- sweeps + 1
     if not (Double.IsFinite residual) || residual > residualTarget then
         failwithf "Hermitian eigensolver failed to converge: off-diagonal row-sum %.3e" residual
+    requireAccuracy ()
     let duplicated = [| for i in 0 .. size - 1 -> a[i,i] |] |> Array.sort
     Array.init n (fun i ->
         if abs (duplicated[2*i] - duplicated[2*i+1]) > accuracy / 4.0 then
@@ -179,9 +204,10 @@ let assertSpectrumMatrix name tolerance (expected: float[]) (value: Complex[,]) 
         invalidArg "expected" "Spectrum dimension or finiteness mismatch"
     let actual = hermitianEigenvaluesAtTolerance (tolerance / 4.0) value
     let maximumError = Array.map2 (fun x y -> abs (x-y)) actual (Array.sort expected) |> Array.max
-    if maximumError > tolerance then
+    let comparisonBound = maximumError + tolerance / 4.0
+    if comparisonBound > tolerance then
         failwithf "%s eigenvalue mismatch: max sorted error %.3e Ha exceeds %.3e Ha" name maximumError tolerance
-    printfn "  %-25s eigenvalues pass (max absolute error %.3e Ha)" name maximumError
+    printfn "  %-25s eigenvalues pass (computed error %.3e Ha; including solver allowance %.3e Ha)" name maximumError comparisonBound
 
 let private oraclePath =
     Path.Combine(__SOURCE_DIRECTORY__, "..", "code", "h2_0.74_oracle.json")

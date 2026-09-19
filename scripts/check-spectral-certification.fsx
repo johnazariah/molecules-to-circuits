@@ -45,3 +45,30 @@ mixed[0,0] <- Complex(1e3,0.0)
 assertSpectrumMatrix "mixed resolvable" 1e-7 [|-9e-7;9e-7;1e3|] mixed
 rejects "mixed-scale imaginary block omitted" (fun () ->
     assertSpectrumMatrix "mixed omitted" 1e-7 [|0.0;0.0;1e3|] mixed)
+
+let rankOne = Array2D.create 64 64 (Complex(1e7, 0.0))
+let incorrectRankOne = Array.zeroCreate<float> 64
+incorrectRankOne[0] <- -2e-7
+incorrectRankOne[63] <- 6.4e8
+rejects "accumulated rank-one roundoff" (fun () ->
+    assertSpectrumMatrix "large rank one" 1e-7 incorrectRankOne rankOne)
+let phases = [|Complex.One; Complex.ImaginaryOne; -Complex.One; -Complex.ImaginaryOne|]
+let complexRankOne = Array2D.init 64 64 (fun i j ->
+    Complex(1e7, 0.0) * phases[i % 4] * Complex.Conjugate(phases[j % 4]))
+rejects "complex accumulated rank-one roundoff" (fun () ->
+    assertSpectrumMatrix "complex rank one" 1e-7 incorrectRankOne complexRankOne)
+let smallRankOne = Array2D.init 8 8 (fun i j ->
+    phases[i % 4] * Complex.Conjugate(phases[j % 4]))
+assertSpectrumMatrix "resolvable complex rank one" 1e-9 [|0.;0.;0.;0.;0.;0.;0.;8.|] smallRankOne
+rejects "solver allowance consumes comparison budget" (fun () ->
+    assertSpectrumMatrix "boundary" 1e-7 [|0.9e-7|] (diagonal [|0.|]))
+let accumulatedNonHermitian = Array2D.init 256 256 (fun i j ->
+    if i / 128 = j / 128 then Complex(0.0, 7.5e-10) else Complex.Zero)
+let falseRealSpectrum = Array.zeroCreate<float> 256
+falseRealSpectrum[0] <- -1.7e-7
+falseRealSpectrum[255] <- 1.7e-7
+rejects "global Hermiticity defect" (fun () ->
+    assertSpectrumMatrix "imaginary block defect" 1e-7 falseRealSpectrum accumulatedNonHermitian)
+let nearHermitian = Array2D.copy y
+nearHermitian[0,1] <- nearHermitian[0,1] + Complex(1e-14, 0.0)
+assertSpectrumMatrix "budgeted Hermitian projection" 1e-9 [|-1.;1.|] nearHermitian
