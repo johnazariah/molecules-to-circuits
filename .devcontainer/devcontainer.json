@@ -6,13 +6,23 @@
       "version": "3.12"
     },
     "ghcr.io/devcontainers/features/node:1": {
-      "version": "20"
+      "version": "22"
     },
     "ghcr.io/devcontainers/features/github-cli:1": {}
+  },
+  "remoteEnv": {
+    "PATH": "${containerWorkspaceFolder}/.venv/bin:${containerWorkspaceFolder}/_build/tools/node_modules/.bin:${containerEnv:PATH}",
+    "PYTHON": "${containerWorkspaceFolder}/.venv/bin/python",
+    "MMDC": "${containerWorkspaceFolder}/_build/tools/node_modules/.bin/mmdc",
+    "PLAYWRIGHT_BROWSERS_PATH": "${containerWorkspaceFolder}/_build/tools/browsers",
+    "MMDC_NO_SANDBOX": "1"
   },
   "postCreateCommand": "bash .devcontainer/setup.sh",
   "customizations": {
     "vscode": {
+      "settings": {
+        "python.defaultInterpreterPath": "${containerWorkspaceFolder}/.venv/bin/python"
+      },
       "extensions": [
         "ionide.ionide-fsharp",
         "ms-python.python",
