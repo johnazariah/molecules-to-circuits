@@ -119,7 +119,13 @@
           ]
         ]
       ],
-      "spin_integrals_sha256": "96b4f1644d66c03a211d69c4527de7f88582fbbe3b02cce4d2fe0d2d899fee99"
+      "spin_integrals_sha256": "96b4f1644d66c03a211d69c4527de7f88582fbbe3b02cce4d2fe0d2d899fee99",
+      "rhf_solver": {
+        "max_cycle": 50,
+        "conv_tol": 1e-09,
+        "converged": true,
+        "pyscf_threads": 1
+      }
     },
     "integrals": {
       "0,0": -1.5548851754561255,
@@ -243,7 +249,13 @@
           ]
         ]
       ],
-      "spin_integrals_sha256": "578a147ecc3d6b7de795fdb7c00b353f75f1b69761ac1c8eed36fe3a1670d22a"
+      "spin_integrals_sha256": "578a147ecc3d6b7de795fdb7c00b353f75f1b69761ac1c8eed36fe3a1670d22a",
+      "rhf_solver": {
+        "max_cycle": 50,
+        "conv_tol": 1e-09,
+        "converged": true,
+        "pyscf_threads": 1
+      }
     },
     "integrals": {
       "0,0": -1.482091887178947,
@@ -367,7 +379,13 @@
           ]
         ]
       ],
-      "spin_integrals_sha256": "b2a6616e9de8e406b67413fac1bdced4f21c7d0e0e4a908962e3915995fca288"
+      "spin_integrals_sha256": "b2a6616e9de8e406b67413fac1bdced4f21c7d0e0e4a908962e3915995fca288",
+      "rhf_solver": {
+        "max_cycle": 50,
+        "conv_tol": 1e-09,
+        "converged": true,
+        "pyscf_threads": 1
+      }
     },
     "integrals": {
       "0,0": -1.4105283677181668,
@@ -483,7 +501,13 @@
           ]
         ]
       ],
-      "spin_integrals_sha256": "f98bb2adf8d5d06185d41ba8ec76fdfc9c162b8ffef14dbe17637eb69560d908"
+      "spin_integrals_sha256": "f98bb2adf8d5d06185d41ba8ec76fdfc9c162b8ffef14dbe17637eb69560d908",
+      "rhf_solver": {
+        "max_cycle": 50,
+        "conv_tol": 1e-09,
+        "converged": true,
+        "pyscf_threads": 1
+      }
     },
     "integrals": {
       "0,0": -1.3422139948091043,
@@ -599,7 +623,13 @@
           ]
         ]
       ],
-      "spin_integrals_sha256": "73ee7477a6202024f989c59c261cafd22ced2ccd44cb5f74688e83f07ee09c89"
+      "spin_integrals_sha256": "73ee7477a6202024f989c59c261cafd22ced2ccd44cb5f74688e83f07ee09c89",
+      "rhf_solver": {
+        "max_cycle": 50,
+        "conv_tol": 1e-09,
+        "converged": true,
+        "pyscf_threads": 1
+      }
     },
     "integrals": {
       "0,0": -1.2778530061568751,
@@ -716,6 +746,12 @@
         ]
       ],
       "spin_integrals_sha256": "d5d8e2f7c83b1d1322f10217198d125b7c7cae1f99fa09a6e1e232ee38dd098c",
+      "rhf_solver": {
+        "max_cycle": 50,
+        "conv_tol": 1e-09,
+        "converged": true,
+        "pyscf_threads": 1
+      },
       "local_pyscf_spin_integrals_sha256": "a9a85179ad7f9fef8ef2ad5a90f54ac14b1923f1775ff17fdb6d14a1e1557a14",
       "canonical_max_abs_error_vs_local_pyscf": 2.220446049250313e-16
     },
@@ -833,7 +869,13 @@
           ]
         ]
       ],
-      "spin_integrals_sha256": "d92b6d18c4a0145369cd7ded356713a3d5e9881b659b3cf1e7520146c3a340ee"
+      "spin_integrals_sha256": "d92b6d18c4a0145369cd7ded356713a3d5e9881b659b3cf1e7520146c3a340ee",
+      "rhf_solver": {
+        "max_cycle": 50,
+        "conv_tol": 1e-09,
+        "converged": true,
+        "pyscf_threads": 1
+      }
     },
     "integrals": {
       "0,0": -1.2178260299951058,
@@ -949,7 +991,13 @@
           ]
         ]
       ],
-      "spin_integrals_sha256": "c615fbb0d87a6a6780c86de5b0486c6d0c01dead5636a93ce25b5c0780ae9a13"
+      "spin_integrals_sha256": "c615fbb0d87a6a6780c86de5b0486c6d0c01dead5636a93ce25b5c0780ae9a13",
+      "rhf_solver": {
+        "max_cycle": 50,
+        "conv_tol": 1e-09,
+        "converged": true,
+        "pyscf_threads": 1
+      }
     },
     "integrals": {
       "0,0": -1.1622206874733259,
@@ -1065,7 +1113,13 @@
           ]
         ]
       ],
-      "spin_integrals_sha256": "cfc64ab94c345a1815b2cfe2a63617bd4105e9e600c11be5d3d0fb82e15a9d85"
+      "spin_integrals_sha256": "cfc64ab94c345a1815b2cfe2a63617bd4105e9e600c11be5d3d0fb82e15a9d85",
+      "rhf_solver": {
+        "max_cycle": 50,
+        "conv_tol": 1e-09,
+        "converged": true,
+        "pyscf_threads": 1
+      }
     },
     "integrals": {
       "0,0": -1.1108441798837272,
@@ -1181,7 +1235,13 @@
           ]
         ]
       ],
-      "spin_integrals_sha256": "07276e8dc64fcc22e421dcf75d6533cfe7e849ff2c5d1f1f24af4ad912f89ff7"
+      "spin_integrals_sha256": "07276e8dc64fcc22e421dcf75d6533cfe7e849ff2c5d1f1f24af4ad912f89ff7",
+      "rhf_solver": {
+        "max_cycle": 50,
+        "conv_tol": 1e-09,
+        "converged": true,
+        "pyscf_threads": 1
+      }
     },
     "integrals": {
       "0,0": -1.0195850735403222,
@@ -1297,7 +1357,13 @@
           ]
         ]
       ],
-      "spin_integrals_sha256": "bf1fdfa1a9db8fef88f45e4c9ac8ac87e75c7048c80aeb96cb858fa63485bb7b"
+      "spin_integrals_sha256": "bf1fdfa1a9db8fef88f45e4c9ac8ac87e75c7048c80aeb96cb858fa63485bb7b",
+      "rhf_solver": {
+        "max_cycle": 50,
+        "conv_tol": 1e-09,
+        "converged": true,
+        "pyscf_threads": 1
+      }
     },
     "integrals": {
       "0,0": -0.9421415514240573,
@@ -1413,7 +1479,13 @@
           ]
         ]
       ],
-      "spin_integrals_sha256": "26d50743d8c849745b72900315e1a02d3b7055f671c3e66eb326ea169be5e600"
+      "spin_integrals_sha256": "26d50743d8c849745b72900315e1a02d3b7055f671c3e66eb326ea169be5e600",
+      "rhf_solver": {
+        "max_cycle": 50,
+        "conv_tol": 1e-09,
+        "converged": true,
+        "pyscf_threads": 1
+      }
     },
     "integrals": {
       "0,0": -0.8771718548164866,
@@ -1529,7 +1601,13 @@
           ]
         ]
       ],
-      "spin_integrals_sha256": "8274fd4cd54cb743ad0bce93ea70782ebbc305e02479524bc8ad6ae3b9509b1c"
+      "spin_integrals_sha256": "8274fd4cd54cb743ad0bce93ea70782ebbc305e02479524bc8ad6ae3b9509b1c",
+      "rhf_solver": {
+        "max_cycle": 50,
+        "conv_tol": 1e-09,
+        "converged": true,
+        "pyscf_threads": 1
+      }
     },
     "integrals": {
       "0,0": -0.8232722658032725,
@@ -1645,7 +1723,13 @@
           ]
         ]
       ],
-      "spin_integrals_sha256": "0f58df6d4593fd2abd463865f92cc4f0080607a9a38a0eaa8ee9e0ec963662f0"
+      "spin_integrals_sha256": "0f58df6d4593fd2abd463865f92cc4f0080607a9a38a0eaa8ee9e0ec963662f0",
+      "rhf_solver": {
+        "max_cycle": 50,
+        "conv_tol": 1e-09,
+        "converged": true,
+        "pyscf_threads": 1
+      }
     },
     "integrals": {
       "0,0": -0.7789220360818258,
@@ -1761,7 +1845,13 @@
           ]
         ]
       ],
-      "spin_integrals_sha256": "6957c32c570ebdcc960352516a2ba57646e4b7694877e3f97602356908bad74b"
+      "spin_integrals_sha256": "6957c32c570ebdcc960352516a2ba57646e4b7694877e3f97602356908bad74b",
+      "rhf_solver": {
+        "max_cycle": 50,
+        "conv_tol": 1e-09,
+        "converged": true,
+        "pyscf_threads": 1
+      }
     },
     "integrals": {
       "0,0": -0.7001472913640923,
@@ -1877,7 +1967,13 @@
           ]
         ]
       ],
-      "spin_integrals_sha256": "bd96a0bc8ab3324a85a12f42197d5edacc1387f96ba13c09e7d06feb898cd4ac"
+      "spin_integrals_sha256": "bd96a0bc8ab3324a85a12f42197d5edacc1387f96ba13c09e7d06feb898cd4ac",
+      "rhf_solver": {
+        "max_cycle": 50,
+        "conv_tol": 1e-09,
+        "converged": true,
+        "pyscf_threads": 1
+      }
     },
     "integrals": {
       "0,0": -0.6519014328809275,
@@ -1993,7 +2089,13 @@
           ]
         ]
       ],
-      "spin_integrals_sha256": "956272248a5214b1903c9c0ef37daa6c417fb4f766d25d5a6d6b70938e9a5c32"
+      "spin_integrals_sha256": "956272248a5214b1903c9c0ef37daa6c417fb4f766d25d5a6d6b70938e9a5c32",
+      "rhf_solver": {
+        "max_cycle": 50,
+        "conv_tol": 1e-09,
+        "converged": true,
+        "pyscf_threads": 1
+      }
     },
     "integrals": {
       "0,0": -0.599985397650129,
@@ -2141,7 +2243,13 @@
           ]
         ]
       ],
-      "spin_integrals_sha256": "b2ca90dde5c6974da87bdc260c1098f66e770bf6b5cd4a596c171a4dca80b8a7"
+      "spin_integrals_sha256": "b2ca90dde5c6974da87bdc260c1098f66e770bf6b5cd4a596c171a4dca80b8a7",
+      "rhf_solver": {
+        "max_cycle": 50,
+        "conv_tol": 1e-09,
+        "converged": true,
+        "pyscf_threads": 1
+      }
     },
     "integrals": {
       "0,0": -0.5725160419764688,

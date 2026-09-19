@@ -61,6 +61,17 @@ def h2_energy(R_angstrom):
     return mol.energy_nuc(), mf.e_tot, e_fci, {"rhf": solver_settings(mf), "fci": solver_settings(cisolver)}
 
 
+def separated_atom_limit():
+    atom = gto.M(atom="H 0 0 0", basis="sto-3g", spin=1, verbose=0)
+    # One electron in one spatial basis function: there is no electron-electron
+    # term. This is the neutral-atom FCI limit, not the restricted-HF limit.
+    hcore = scf.hf.get_hcore(atom)
+    overlap = atom.intor("int1e_ovlp")
+    energy = 2.0 * float(hcore[0, 0] / overlap[0, 0])
+    finite(energy, "STO-3G separated-atom limit")
+    return energy
+
+
 def generate(output_root):
     results = []
     print("H₂ Dissociation Curve (STO-3G)")
@@ -103,7 +114,7 @@ def generate(output_root):
         E_hf = [r[2] for r in results]
         E_fci = [r[3] for r in results]
 
-        fig, ax = plt.subplots(figsize=(8, 5))
+        fig, ax = plt.subplots(figsize=(9, 6))
         ax.plot(
             Rs,
             E_hf,
@@ -111,7 +122,7 @@ def generate(output_root):
             color="#9ca3af",
             markersize=4,
             linewidth=1.2,
-            label="Hartree–Fock",
+            label="Restricted Hartree–Fock (RHF)",
         )
         ax.plot(
             Rs,
@@ -120,26 +131,34 @@ def generate(output_root):
             color="#2563eb",
             markersize=5,
             linewidth=1.5,
-            label="Full CI (exact)",
+            label="Full CI (exact within STO-3G)",
         )
         ax.axvline(
             min_R,
             color="#dc2626",
             linestyle="--",
             alpha=0.4,
-            label=f"$R_e$ = {min_R:.2f} Å",
+            label=f"Lowest sampled energy: R = {min_R:.2f} Å",
         )
         ax.axhline(
             -1.0,
             color="#6b7280",
             linestyle=":",
             alpha=0.3,
-            label="2 × H atom (−1.0 Ha)",
+            label="Two H atoms, complete-basis\nnonrelativistic reference: −1.0 Ha",
+        )
+        atom_limit = separated_atom_limit()
+        ax.axhline(
+            atom_limit,
+            color="#7c3aed",
+            linestyle="-.",
+            alpha=0.6,
+            label=f"Two isolated H atoms, STO-3G: {atom_limit:.6f} Ha",
         )
         ax.set_xlabel("Bond length R (Å)")
         ax.set_ylabel("Total energy (Hartrees)")
-        ax.set_title("H₂ Dissociation Curve (STO-3G)")
-        ax.legend()
+        ax.set_title("H₂ Dissociation Curve — PySCF / STO-3G")
+        ax.legend(fontsize=9, loc="upper center", bbox_to_anchor=(0.5, -0.15))
         ax.grid(True, alpha=0.3)
         ax.set_xlim(0.2, 5.2)
 

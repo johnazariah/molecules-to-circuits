@@ -120,6 +120,12 @@
         ]
       ],
       "spin_integrals_sha256": "d5d8e2f7c83b1d1322f10217198d125b7c7cae1f99fa09a6e1e232ee38dd098c",
+      "rhf_solver": {
+        "max_cycle": 50,
+        "conv_tol": 1e-09,
+        "converged": true,
+        "pyscf_threads": 1
+      },
       "local_pyscf_spin_integrals_sha256": "a9a85179ad7f9fef8ef2ad5a90f54ac14b1923f1775ff17fdb6d14a1e1557a14",
       "canonical_max_abs_error_vs_local_pyscf": 2.220446049250313e-16
     },
