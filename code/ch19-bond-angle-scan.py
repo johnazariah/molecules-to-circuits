@@ -161,6 +161,9 @@ def generate(output_root):
         import matplotlib.pyplot as plt
 
         fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 5))
+        fig.suptitle(
+            f"H₂O — PySCF FCI / STO-3G; fixed O–H bond length = {BOND_LENGTH:.4f} Å"
+        )
 
         # Coarse scan
         c_angles = [r[0] for r in coarse]
@@ -173,11 +176,11 @@ def generate(output_root):
             color="#dc2626",
             linestyle="--",
             alpha=0.5,
-            label=f"min ≈ {fine_min_angle:.0f}°",
+            label=f"Lowest sampled angle: {fine_min_angle:.0f}°\n(from the fine grid)",
         )
         ax1.set_xlabel("H–O–H bond angle (degrees)")
         ax1.set_ylabel("Total energy (Hartrees)")
-        ax1.set_title("H₂O Bond Angle Scan — Coarse (STO-3G, FCI)")
+        ax1.set_title("Coarse angular scan (5° steps)")
         ax1.legend()
         ax1.grid(True, alpha=0.3)
 
@@ -192,12 +195,12 @@ def generate(output_root):
             color="#dc2626",
             linestyle="--",
             alpha=0.5,
-            label=f"min = {fine_min_angle:.0f}°",
+            label=f"Lowest sampled angle: {fine_min_angle:.0f}°",
         )
         ax2.axhline(fine_min_energy, color="#dc2626", linestyle=":", alpha=0.3)
         ax2.set_xlabel("H–O–H bond angle (degrees)")
         ax2.set_ylabel("Total energy (Hartrees)")
-        ax2.set_title("Fine Scan Near Minimum (1° steps)")
+        ax2.set_title("Fine angular scan (1° steps)")
         ax2.legend()
         ax2.grid(True, alpha=0.3)
 

@@ -63,6 +63,656 @@
   "generated_files_sha256": {
     "code/h2o_bond_angle_coarse.csv": "ec07d2c1f7d0fbab3dcb624338a4431444a700ccdacda660df5f2d2275f4e1ea",
     "code/h2o_bond_angle_fine.csv": "86d5ff78a5ca1b3d8f1838b4e473aca5d00e4cb8cb438117f562aea9d4429925",
-    "manuscript/figures/h2o_bond_angle.png": "399ef2908504793227accb93a5731c112d83c7fcc753a12a050143249b77a84c"
+    "manuscript/figures/h2o_bond_angle.png": "8605976ab909dbda0ad588b05238e1052aae70935f2cefeebe9bbe4f5f5abfbb"
+  },
+  "solver_settings_by_pass": {
+    "coarse": {
+      "60": {
+        "rhf": {
+          "max_cycle": 50,
+          "conv_tol": 1e-09,
+          "converged": true,
+          "pyscf_threads": 1
+        },
+        "fci": {
+          "max_cycle": 100,
+          "conv_tol": 1e-10,
+          "converged": true,
+          "pyscf_threads": 1
+        }
+      },
+      "65": {
+        "rhf": {
+          "max_cycle": 50,
+          "conv_tol": 1e-09,
+          "converged": true,
+          "pyscf_threads": 1
+        },
+        "fci": {
+          "max_cycle": 100,
+          "conv_tol": 1e-10,
+          "converged": true,
+          "pyscf_threads": 1
+        }
+      },
+      "70": {
+        "rhf": {
+          "max_cycle": 50,
+          "conv_tol": 1e-09,
+          "converged": true,
+          "pyscf_threads": 1
+        },
+        "fci": {
+          "max_cycle": 100,
+          "conv_tol": 1e-10,
+          "converged": true,
+          "pyscf_threads": 1
+        }
+      },
+      "75": {
+        "rhf": {
+          "max_cycle": 50,
+          "conv_tol": 1e-09,
+          "converged": true,
+          "pyscf_threads": 1
+        },
+        "fci": {
+          "max_cycle": 100,
+          "conv_tol": 1e-10,
+          "converged": true,
+          "pyscf_threads": 1
+        }
+      },
+      "80": {
+        "rhf": {
+          "max_cycle": 50,
+          "conv_tol": 1e-09,
+          "converged": true,
+          "pyscf_threads": 1
+        },
+        "fci": {
+          "max_cycle": 100,
+          "conv_tol": 1e-10,
+          "converged": true,
+          "pyscf_threads": 1
+        }
+      },
+      "85": {
+        "rhf": {
+          "max_cycle": 50,
+          "conv_tol": 1e-09,
+          "converged": true,
+          "pyscf_threads": 1
+        },
+        "fci": {
+          "max_cycle": 100,
+          "conv_tol": 1e-10,
+          "converged": true,
+          "pyscf_threads": 1
+        }
+      },
+      "90": {
+        "rhf": {
+          "max_cycle": 50,
+          "conv_tol": 1e-09,
+          "converged": true,
+          "pyscf_threads": 1
+        },
+        "fci": {
+          "max_cycle": 100,
+          "conv_tol": 1e-10,
+          "converged": true,
+          "pyscf_threads": 1
+        }
+      },
+      "95": {
+        "rhf": {
+          "max_cycle": 50,
+          "conv_tol": 1e-09,
+          "converged": true,
+          "pyscf_threads": 1
+        },
+        "fci": {
+          "max_cycle": 100,
+          "conv_tol": 1e-10,
+          "converged": true,
+          "pyscf_threads": 1
+        }
+      },
+      "100": {
+        "rhf": {
+          "max_cycle": 50,
+          "conv_tol": 1e-09,
+          "converged": true,
+          "pyscf_threads": 1
+        },
+        "fci": {
+          "max_cycle": 100,
+          "conv_tol": 1e-10,
+          "converged": true,
+          "pyscf_threads": 1
+        }
+      },
+      "105": {
+        "rhf": {
+          "max_cycle": 50,
+          "conv_tol": 1e-09,
+          "converged": true,
+          "pyscf_threads": 1
+        },
+        "fci": {
+          "max_cycle": 100,
+          "conv_tol": 1e-10,
+          "converged": true,
+          "pyscf_threads": 1
+        }
+      },
+      "110": {
+        "rhf": {
+          "max_cycle": 50,
+          "conv_tol": 1e-09,
+          "converged": true,
+          "pyscf_threads": 1
+        },
+        "fci": {
+          "max_cycle": 100,
+          "conv_tol": 1e-10,
+          "converged": true,
+          "pyscf_threads": 1
+        }
+      },
+      "115": {
+        "rhf": {
+          "max_cycle": 50,
+          "conv_tol": 1e-09,
+          "converged": true,
+          "pyscf_threads": 1
+        },
+        "fci": {
+          "max_cycle": 100,
+          "conv_tol": 1e-10,
+          "converged": true,
+          "pyscf_threads": 1
+        }
+      },
+      "120": {
+        "rhf": {
+          "max_cycle": 50,
+          "conv_tol": 1e-09,
+          "converged": true,
+          "pyscf_threads": 1
+        },
+        "fci": {
+          "max_cycle": 100,
+          "conv_tol": 1e-10,
+          "converged": true,
+          "pyscf_threads": 1
+        }
+      },
+      "125": {
+        "rhf": {
+          "max_cycle": 50,
+          "conv_tol": 1e-09,
+          "converged": true,
+          "pyscf_threads": 1
+        },
+        "fci": {
+          "max_cycle": 100,
+          "conv_tol": 1e-10,
+          "converged": true,
+          "pyscf_threads": 1
+        }
+      },
+      "130": {
+        "rhf": {
+          "max_cycle": 50,
+          "conv_tol": 1e-09,
+          "converged": true,
+          "pyscf_threads": 1
+        },
+        "fci": {
+          "max_cycle": 100,
+          "conv_tol": 1e-10,
+          "converged": true,
+          "pyscf_threads": 1
+        }
+      },
+      "135": {
+        "rhf": {
+          "max_cycle": 50,
+          "conv_tol": 1e-09,
+          "converged": true,
+          "pyscf_threads": 1
+        },
+        "fci": {
+          "max_cycle": 100,
+          "conv_tol": 1e-10,
+          "converged": true,
+          "pyscf_threads": 1
+        }
+      },
+      "140": {
+        "rhf": {
+          "max_cycle": 50,
+          "conv_tol": 1e-09,
+          "converged": true,
+          "pyscf_threads": 1
+        },
+        "fci": {
+          "max_cycle": 100,
+          "conv_tol": 1e-10,
+          "converged": true,
+          "pyscf_threads": 1
+        }
+      },
+      "145": {
+        "rhf": {
+          "max_cycle": 50,
+          "conv_tol": 1e-09,
+          "converged": true,
+          "pyscf_threads": 1
+        },
+        "fci": {
+          "max_cycle": 100,
+          "conv_tol": 1e-10,
+          "converged": true,
+          "pyscf_threads": 1
+        }
+      },
+      "150": {
+        "rhf": {
+          "max_cycle": 50,
+          "conv_tol": 1e-09,
+          "converged": true,
+          "pyscf_threads": 1
+        },
+        "fci": {
+          "max_cycle": 100,
+          "conv_tol": 1e-10,
+          "converged": true,
+          "pyscf_threads": 1
+        }
+      },
+      "155": {
+        "rhf": {
+          "max_cycle": 50,
+          "conv_tol": 1e-09,
+          "converged": true,
+          "pyscf_threads": 1
+        },
+        "fci": {
+          "max_cycle": 100,
+          "conv_tol": 1e-10,
+          "converged": true,
+          "pyscf_threads": 1
+        }
+      },
+      "160": {
+        "rhf": {
+          "max_cycle": 50,
+          "conv_tol": 1e-09,
+          "converged": true,
+          "pyscf_threads": 1
+        },
+        "fci": {
+          "max_cycle": 100,
+          "conv_tol": 1e-10,
+          "converged": true,
+          "pyscf_threads": 1
+        }
+      },
+      "165": {
+        "rhf": {
+          "max_cycle": 50,
+          "conv_tol": 1e-09,
+          "converged": true,
+          "pyscf_threads": 1
+        },
+        "fci": {
+          "max_cycle": 100,
+          "conv_tol": 1e-10,
+          "converged": true,
+          "pyscf_threads": 1
+        }
+      },
+      "170": {
+        "rhf": {
+          "max_cycle": 50,
+          "conv_tol": 1e-09,
+          "converged": true,
+          "pyscf_threads": 1
+        },
+        "fci": {
+          "max_cycle": 100,
+          "conv_tol": 1e-10,
+          "converged": true,
+          "pyscf_threads": 1
+        }
+      },
+      "175": {
+        "rhf": {
+          "max_cycle": 50,
+          "conv_tol": 1e-09,
+          "converged": true,
+          "pyscf_threads": 1
+        },
+        "fci": {
+          "max_cycle": 100,
+          "conv_tol": 1e-10,
+          "converged": true,
+          "pyscf_threads": 1
+        }
+      },
+      "180": {
+        "rhf": {
+          "max_cycle": 50,
+          "conv_tol": 1e-09,
+          "converged": true,
+          "pyscf_threads": 1
+        },
+        "fci": {
+          "max_cycle": 100,
+          "conv_tol": 1e-10,
+          "converged": true,
+          "pyscf_threads": 1
+        }
+      }
+    },
+    "fine": {
+      "95.0": {
+        "rhf": {
+          "max_cycle": 50,
+          "conv_tol": 1e-09,
+          "converged": true,
+          "pyscf_threads": 1
+        },
+        "fci": {
+          "max_cycle": 100,
+          "conv_tol": 1e-10,
+          "converged": true,
+          "pyscf_threads": 1
+        }
+      },
+      "96.0": {
+        "rhf": {
+          "max_cycle": 50,
+          "conv_tol": 1e-09,
+          "converged": true,
+          "pyscf_threads": 1
+        },
+        "fci": {
+          "max_cycle": 100,
+          "conv_tol": 1e-10,
+          "converged": true,
+          "pyscf_threads": 1
+        }
+      },
+      "97.0": {
+        "rhf": {
+          "max_cycle": 50,
+          "conv_tol": 1e-09,
+          "converged": true,
+          "pyscf_threads": 1
+        },
+        "fci": {
+          "max_cycle": 100,
+          "conv_tol": 1e-10,
+          "converged": true,
+          "pyscf_threads": 1
+        }
+      },
+      "98.0": {
+        "rhf": {
+          "max_cycle": 50,
+          "conv_tol": 1e-09,
+          "converged": true,
+          "pyscf_threads": 1
+        },
+        "fci": {
+          "max_cycle": 100,
+          "conv_tol": 1e-10,
+          "converged": true,
+          "pyscf_threads": 1
+        }
+      },
+      "99.0": {
+        "rhf": {
+          "max_cycle": 50,
+          "conv_tol": 1e-09,
+          "converged": true,
+          "pyscf_threads": 1
+        },
+        "fci": {
+          "max_cycle": 100,
+          "conv_tol": 1e-10,
+          "converged": true,
+          "pyscf_threads": 1
+        }
+      },
+      "100.0": {
+        "rhf": {
+          "max_cycle": 50,
+          "conv_tol": 1e-09,
+          "converged": true,
+          "pyscf_threads": 1
+        },
+        "fci": {
+          "max_cycle": 100,
+          "conv_tol": 1e-10,
+          "converged": true,
+          "pyscf_threads": 1
+        }
+      },
+      "101.0": {
+        "rhf": {
+          "max_cycle": 50,
+          "conv_tol": 1e-09,
+          "converged": true,
+          "pyscf_threads": 1
+        },
+        "fci": {
+          "max_cycle": 100,
+          "conv_tol": 1e-10,
+          "converged": true,
+          "pyscf_threads": 1
+        }
+      },
+      "102.0": {
+        "rhf": {
+          "max_cycle": 50,
+          "conv_tol": 1e-09,
+          "converged": true,
+          "pyscf_threads": 1
+        },
+        "fci": {
+          "max_cycle": 100,
+          "conv_tol": 1e-10,
+          "converged": true,
+          "pyscf_threads": 1
+        }
+      },
+      "103.0": {
+        "rhf": {
+          "max_cycle": 50,
+          "conv_tol": 1e-09,
+          "converged": true,
+          "pyscf_threads": 1
+        },
+        "fci": {
+          "max_cycle": 100,
+          "conv_tol": 1e-10,
+          "converged": true,
+          "pyscf_threads": 1
+        }
+      },
+      "104.0": {
+        "rhf": {
+          "max_cycle": 50,
+          "conv_tol": 1e-09,
+          "converged": true,
+          "pyscf_threads": 1
+        },
+        "fci": {
+          "max_cycle": 100,
+          "conv_tol": 1e-10,
+          "converged": true,
+          "pyscf_threads": 1
+        }
+      },
+      "105.0": {
+        "rhf": {
+          "max_cycle": 50,
+          "conv_tol": 1e-09,
+          "converged": true,
+          "pyscf_threads": 1
+        },
+        "fci": {
+          "max_cycle": 100,
+          "conv_tol": 1e-10,
+          "converged": true,
+          "pyscf_threads": 1
+        }
+      },
+      "106.0": {
+        "rhf": {
+          "max_cycle": 50,
+          "conv_tol": 1e-09,
+          "converged": true,
+          "pyscf_threads": 1
+        },
+        "fci": {
+          "max_cycle": 100,
+          "conv_tol": 1e-10,
+          "converged": true,
+          "pyscf_threads": 1
+        }
+      },
+      "107.0": {
+        "rhf": {
+          "max_cycle": 50,
+          "conv_tol": 1e-09,
+          "converged": true,
+          "pyscf_threads": 1
+        },
+        "fci": {
+          "max_cycle": 100,
+          "conv_tol": 1e-10,
+          "converged": true,
+          "pyscf_threads": 1
+        }
+      },
+      "108.0": {
+        "rhf": {
+          "max_cycle": 50,
+          "conv_tol": 1e-09,
+          "converged": true,
+          "pyscf_threads": 1
+        },
+        "fci": {
+          "max_cycle": 100,
+          "conv_tol": 1e-10,
+          "converged": true,
+          "pyscf_threads": 1
+        }
+      },
+      "109.0": {
+        "rhf": {
+          "max_cycle": 50,
+          "conv_tol": 1e-09,
+          "converged": true,
+          "pyscf_threads": 1
+        },
+        "fci": {
+          "max_cycle": 100,
+          "conv_tol": 1e-10,
+          "converged": true,
+          "pyscf_threads": 1
+        }
+      },
+      "110.0": {
+        "rhf": {
+          "max_cycle": 50,
+          "conv_tol": 1e-09,
+          "converged": true,
+          "pyscf_threads": 1
+        },
+        "fci": {
+          "max_cycle": 100,
+          "conv_tol": 1e-10,
+          "converged": true,
+          "pyscf_threads": 1
+        }
+      },
+      "111.0": {
+        "rhf": {
+          "max_cycle": 50,
+          "conv_tol": 1e-09,
+          "converged": true,
+          "pyscf_threads": 1
+        },
+        "fci": {
+          "max_cycle": 100,
+          "conv_tol": 1e-10,
+          "converged": true,
+          "pyscf_threads": 1
+        }
+      },
+      "112.0": {
+        "rhf": {
+          "max_cycle": 50,
+          "conv_tol": 1e-09,
+          "converged": true,
+          "pyscf_threads": 1
+        },
+        "fci": {
+          "max_cycle": 100,
+          "conv_tol": 1e-10,
+          "converged": true,
+          "pyscf_threads": 1
+        }
+      },
+      "113.0": {
+        "rhf": {
+          "max_cycle": 50,
+          "conv_tol": 1e-09,
+          "converged": true,
+          "pyscf_threads": 1
+        },
+        "fci": {
+          "max_cycle": 100,
+          "conv_tol": 1e-10,
+          "converged": true,
+          "pyscf_threads": 1
+        }
+      },
+      "114.0": {
+        "rhf": {
+          "max_cycle": 50,
+          "conv_tol": 1e-09,
+          "converged": true,
+          "pyscf_threads": 1
+        },
+        "fci": {
+          "max_cycle": 100,
+          "conv_tol": 1e-10,
+          "converged": true,
+          "pyscf_threads": 1
+        }
+      },
+      "115.0": {
+        "rhf": {
+          "max_cycle": 50,
+          "conv_tol": 1e-09,
+          "converged": true,
+          "pyscf_threads": 1
+        },
+        "fci": {
+          "max_cycle": 100,
+          "conv_tol": 1e-10,
+          "converged": true,
+          "pyscf_threads": 1
+        }
+      }
+    }
   }
 }
