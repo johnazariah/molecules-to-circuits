@@ -5,6 +5,9 @@
 # Publishing
 # MyST-based Jupyter Book 2 supplies `python -m jupyter_book build --html`.
 # The Sphinx-based 1.x CLI is not compatible with myst.yml.
-jupyter-book>=2.0,<3
+# 2.1.5 inserts its index.html redirect before React's expected head nodes,
+# breaking hydration. 2.1.6 fixes the static exporter (myst-cli 1.10.1).
+# Upstream repair: https://github.com/jupyter-book/mystmd/pull/2851
+jupyter-book==2.1.6
 
 # Chemistry-data dependencies are kept separately in requirements-data.txt.
