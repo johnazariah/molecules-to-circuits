@@ -173,11 +173,17 @@ the same "path up the tree".
 In the ordered basis `1100`, `0011`, the exercise supplies
 
 $$
-H_\mathrm{pair}=\begin{pmatrix}A&g\\g&D\end{pmatrix},
-\qquad
-A=-1.831863646477506,\quad
-D=-0.2524861930538954,\quad
-g=0.18121046201519672\ \mathrm{Ha}.
+H_\mathrm{pair}=\begin{pmatrix}A&g\\g&D\end{pmatrix}.
+$$
+
+Its coefficients, in hartree, are
+
+$$
+\begin{aligned}
+A&=-1.831863646477506,\\
+D&=-0.2524861930538954,\\
+g&=0.18121046201519672.
+\end{aligned}
 $$
 
 Solving the quadratic determinant equation gives

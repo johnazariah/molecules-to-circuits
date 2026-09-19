@@ -72,7 +72,7 @@ $$|g\rangle=|1100\rangle,\qquad |u\rangle=|0011\rangle.$$
 They are occupation rows 3 and 12. The real block of the
 electronic Hamiltonian in this ordered basis is
 
-$$H_{\rm closed}=
+$$H_{\mathrm{closed}}=
 \begin{pmatrix}A&g\\g&D\end{pmatrix}
 =\begin{pmatrix}
 -1.8318636465&0.1812104620\\
@@ -241,7 +241,7 @@ $$\text{Var}(\hat{E}) = \sum_{k\ne I}c_k^2
 \,\text{Var}(\hat{m}_k)\leq\sum_{k\ne I}\frac{c_k^2}{N_k}.$$
 
 **Coefficient-only allocation.** For a budget
-$N_{\rm total}=\sum_{k\ne I}N_k$, minimise the upper
+$N_{\mathrm{total}}=\sum_{k\ne I}N_k$, minimise the upper
 bound $\sum_{k\ne I}c_k^2/N_k$, not an unknown actual
 variance. A Lagrange multiplier $\nu$ gives
 $-c_k^2/N_k^2+\nu=0$, hence $N_k\propto|c_k|$.
@@ -265,7 +265,7 @@ measured Pauli has zero variance for that term.
 If the individual variances $\sigma_k^2$ are known, the
 variance-informed allocation is instead
 $N_k\propto|c_k|\sigma_k$, with optimum variance
-$(\sum_k|c_k|\sigma_k)^2/N_{\rm total}$ in the continuous
+$(\sum_k|c_k|\sigma_k)^2/N_{\mathrm{total}}$ in the continuous
 allocation relaxation. Real shot counts are integers, so
 round allocations upwards and recompute the achieved bound.
 These formulas concern independent term datasets, not a
@@ -486,7 +486,7 @@ return that bin.
 
 Use the *electronic* Hamiltonian. Declare a containing energy
 interval $[-2,0.25]$ Ha, reference shift
-$E_{\rm shift}=0.5$ Ha, and $t_0=1$ atomic time unit.
+$E_{\mathrm{shift}}=0.5$ Ha, and $t_0=1$ atomic time unit.
 Its interval width is 2.25 Ha, and $Wt_0<2\pi$.
 With this choice
 
@@ -496,7 +496,7 @@ lies between 0.0397887 and 0.3978874 on the chosen
 branch. There is no wrap through zero within the interval.
 The canonical ground energy gives
 
-$$E=-1.8523881736\ {\rm Ha}
+$$E=-1.8523881736\ {\mathrm{Ha}}
 \longrightarrow\phi=0.3743942059
 \longrightarrow 4096\phi=1533.5186673.$$
 
@@ -504,14 +504,14 @@ The nearest twelve-bit phase integer is $y=1534$,
 conventionally written `010111111110` from most to least
 significant bit. Decode it on the declared branch:
 
-$$E_{\rm decoded}=0.5-\frac{2\pi(1534)}{4096}
-=-1.8531265286\ {\rm Ha}.$$
+$$E_{\mathrm{decoded}}=0.5-\frac{2\pi(1534)}{4096}
+=-1.8531265286\ {\mathrm{Ha}}.$$
 
 The discrepancy from the exact electronic ground energy is
 about $-0.0007383550$ Ha. The grid spacing is
 
-$$\Delta E_{\rm bin}=\frac{2\pi}{4096}
-=0.0015339808\ {\rm Ha}.$$
+$$\Delta E_{\mathrm{bin}}=\frac{2\pi}{4096}
+=0.0015339808\ {\mathrm{Ha}}.$$
 
 This nearest-bin example is within half a bin. An actual QPE
 sample can fall in a neighbouring bin, so a resolution
@@ -522,7 +522,7 @@ about $-1.1380221895$ Ha for this particular bin.
 If the simulation circuit omits $c_I I$, its controlled
 version must account for both offsets:
 
-$$U=e^{-i(c_I-E_{\rm shift})t_0}\,e^{-i(H-c_I I)t_0}.$$
+$$U=e^{-i(c_I-E_{\mathrm{shift}})t_0}\,e^{-i(H-c_I I)t_0}.$$
 
 The scalar factor in this expression becomes a relative
 phase under control. Alternatively, declare and decode the
@@ -695,7 +695,7 @@ FockMap's scope ends at circuit generation. It is important to be clear about wh
    variance and estimated standard error. Then calculate the
    grouped-shot variances of $Z_0+Z_1$ and $Z_0-Z_1$
    on the Bell state given above.
-3. **Phase decode.** For $E_{\rm shift}=0.5$ Ha,
+3. **Phase decode.** For $E_{\mathrm{shift}}=0.5$ Ha,
    $t_0=1$ and the interval $[-2,0.25]$ Ha, decode
    twelve-bit integer 1534 and calculate the energy-bin spacing.
    Explain why this resolution does not establish ground-state

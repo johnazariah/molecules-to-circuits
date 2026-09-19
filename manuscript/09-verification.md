@@ -80,7 +80,7 @@ whereas `XYYX` and `YXXY` each produce $+|0011\rangle$.
 Their coefficients are respectively $-g,+g,+g,-g$, with
 $g=0.04530261550379918$ Ha. Hence
 
-$$H_{12,3}=H_{3,12}=4g=0.18121046201519672\ {\rm Ha}.$$
+$$H_{12,3}=H_{3,12}=4g=0.18121046201519672\ {\mathrm{Ha}}.$$
 
 The HF diagonal is $H_{3,3}=-1.831863646477506$ Ha.
 These checks name states and matrix entries; they do not merely recognise
@@ -110,9 +110,9 @@ a failure mode: two implementations calling the same faulty integral
 adapter are not independent tests of that adapter.
 
 For another encoding, form the $U$ from Chapter 7 and compare
-$U^\dagger H_{\rm enc}U$ with this occupation matrix. Check
-$U^\dagger U=I$ first. A comparison of $H_{\rm enc}$ directly with
-$H_{\rm JW}$ is appropriate only when their declared bases coincide.
+$U^\dagger H_{\mathrm{enc}}U$ with this occupation matrix. Check
+$U^\dagger U=I$ first. A comparison of $H_{\mathrm{enc}}$ directly with
+$H_{\mathrm{JW}}$ is appropriate only when their declared bases coincide.
 
 > **Why 16 and not 6?** The 4-qubit Hilbert space has $2^4=16$ basis
 > states, but only $\binom42=6$ have two electrons. Other eigenvalues
@@ -140,13 +140,21 @@ residuals can then check it.
 
 Diagonalising the particle-number blocks of the 15-term JW Hamiltonian gives:
 
-| Sector ($N_e$) | States | Eigenvalues $E_\text{el}$ (Ha) |
-|:---:|:---:|:---|
-| 0 | 1 | $0$ |
-| 1 | 4 | $-1.2533097866,\; -1.2533097866,\; -0.4750688488,\; -0.4750688488$ |
-| **2** | **6** | $\mathbf{-1.8523881736},\; -1.2458776961,\; -1.2458776961,\; -1.2458776961,\; -0.8834567721,\; -0.2319616660$ |
-| 3 | 4 | $-1.1607201546,\; -1.1607201546,\; -0.3595836390,\; -0.3595836390$ |
-| 4 | 1 | $0.2080748418$ |
+| Sector ($N_e$) | Electronic eigenvalue (Ha) | Multiplicity |
+|:---:|---:|:---:|
+| 0 | $0$ | 1 |
+| 1 | $-1.2533097866$ | 2 |
+| 1 | $-0.4750688488$ | 2 |
+| **2** | $\mathbf{-1.8523881736}$ | 1 |
+| 2 | $-1.2458776961$ | 3 |
+| 2 | $-0.8834567721$ | 1 |
+| 2 | $-0.2319616660$ | 1 |
+| 3 | $-1.1607201546$ | 2 |
+| 3 | $-0.3595836390$ | 2 |
+| 4 | $0.2080748418$ | 1 |
+
+Multiplicity counts the number of states with that eigenvalue. Summing
+within sectors gives $1,4,6,4,1$ states, respectively, for all 16 states.
 
 The ground state of the physical 2-electron sector is $E_0^\text{el} = -1.8523881736$ Ha. Adding nuclear repulsion:
 
@@ -181,10 +189,10 @@ Of course, STO-3G is a minimal basis — the absolute energy is still far from t
 ## What Numerical Agreement Actually Means
 
 For a small Hermitian matrix, compute and sort its eigenvalues, retaining
-all multiplicities. If $\lambda_k$ and $\lambda_k^{\rm ref}$ are the two
+all multiplicities. If $\lambda_k$ and $\lambda_k^{\mathrm{ref}}$ are the two
 sorted lists, an explicit absolute acceptance condition is
 
-$$\max_k|\lambda_k-\lambda_k^{\rm ref}|\leq\epsilon_E.$$
+$$\max_k|\lambda_k-\lambda_k^{\mathrm{ref}}|\leq\epsilon_E.$$
 
 For this small H₂ reference, $\epsilon_E=10^{-10}$ Ha is a useful
 comparison tolerance. It is a numerical software tolerance, not a claim
@@ -359,7 +367,14 @@ But can we make it *smaller*? Can we remove qubits without losing physics? That'
    Explain this from right-to-left ladder action. What eigenvalue does it
    have if the separate $0.7151043391$ Ha nuclear constant is included?
 
-2. **Correlation energy.** Compute the Hartree–Fock energy of H₂ by hand: $E_\text{HF} = h_{00} + h_{11} + [00\mid00] + V_{nn}$. Verify that $E_\text{corr} = E_\text{FCI} - E_\text{HF} = -0.0205245271$ Ha, about $-12.88$ kcal/mol. Then reproduce Chapter 6's separate diagonal and off-diagonal expectation contributions.
+2. **Correlation energy.** Compute the total Hartree–Fock energy of H₂ by
+   hand using the **spatial-orbital** integrals:
+   $E_{\mathrm{HF,total}}=2h^{\mathrm{spatial}}_{00}
+   +[00\mid00]_{\mathrm{spatial}}+V_{nn}$.
+   Both electrons occupy spatial orbital 0, with opposite spins.
+   Verify that $E_\text{corr}=E_\text{FCI}-E_\text{HF}
+   =-0.0205245271$ Ha, about $-12.88$ kcal/mol. Then reproduce
+   Chapter 6's separate diagonal and off-diagonal expectation contributions.
 
 3. **Independent reference.** Run `make verify-data` and inspect the full sector spectrum. Then compare each pinned FockMap encoding against that matrix rather than only against another encoding.
 

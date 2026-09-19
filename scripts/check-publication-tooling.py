@@ -111,6 +111,26 @@ class PublicationTests(unittest.TestCase):
         path.write_bytes(corrupted)
         self.assertFalse(renderer.valid_png(path))
 
+    def test_mathml_gate_rejects_raw_tex_fallback(self):
+        workspace = self.directory / "math-workspace"
+        (workspace / "scripts").mkdir(parents=True)
+        (workspace / "manuscript").mkdir()
+        script = workspace / "scripts/check-math-rendering.py"
+        script.write_bytes((ROOT / "scripts/check-math-rendering.py").read_bytes())
+        (workspace / "manuscript/Book.txt").write_text("chapter.md\n")
+        chapter = workspace / "manuscript/chapter.md"
+        chapter.write_text(r"$E_{\mathrm{shift}}=0.5$" + "\n")
+        valid = subprocess.run(
+            [sys.executable, str(script)], capture_output=True, text=True
+        )
+        self.assertEqual(valid.returncode, 0, valid.stderr)
+        chapter.write_text(r"$\bookundefinedcommand{x}$" + "\n")
+        invalid = subprocess.run(
+            [sys.executable, str(script)], capture_output=True, text=True
+        )
+        self.assertNotEqual(invalid.returncode, 0)
+        self.assertIn("refusing raw-TeX", invalid.stderr)
+
     def test_sample_full_contents_without_omitted_bodies(self):
         selected_title = (ROOT / "manuscript/code-reading.md").read_text().splitlines()[0]
         text = (f"{selected_title}\n\nIncluded bridge text.\n\n"

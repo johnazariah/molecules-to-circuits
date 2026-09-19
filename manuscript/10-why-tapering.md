@@ -97,8 +97,8 @@ conserved quantity, not the conservation law.
 For the spin-independent Hamiltonian used here, alpha and beta electron
 numbers are conserved separately. Define
 
-$$N_\alpha=\sum_{j\ {\rm even}}n_j,\quad
-N_\beta=\sum_{j\ {\rm odd}}n_j,\quad
+$$N_\alpha=\sum_{j\ {\mathrm{even}}}n_j,\quad
+N_\beta=\sum_{j\ {\mathrm{odd}}}n_j,\quad
 N=N_\alpha+N_\beta,\quad M_s=\frac{N_\alpha-N_\beta}{2}.$$
 
 $M_s$ is the spin projection in units of $\hbar$; it is the eigenvalue
@@ -248,8 +248,8 @@ There is a precise map behind "remove". Let $V$ insert the fixed target
 bits into a smaller register, so $V^\dagger V=I$ on that register.
 Then
 
-$$H_{\rm red}=V^\dagger UHU^\dagger V,\qquad
-|\psi\rangle_{\rm full}=U^\dagger V|\psi\rangle_{\rm red}.$$
+$$H_{\mathrm{red}}=V^\dagger UHU^\dagger V,\qquad
+|\psi\rangle_{\mathrm{full}}=U^\dagger V|\psi\rangle_{\mathrm{red}}.$$
 
 Because the selected subspace is invariant, this compressed Hamiltonian
 has exactly its sector's eigenvalues. Apply the same transformation to
@@ -271,7 +271,10 @@ This is why we taper *before* Trotterization, not after: the circuit should oper
 
 - A Z₂ symmetry is a conserved two-valued operator. A Clifford basis
   change can store its sector label on a removable qubit.
-- Removing a qubit with a verified generator and physical sector preserves that sector's spectrum exactly while reducing downstream Hamiltonian-simulation cost.
+- Removing a qubit with a verified generator and physical sector preserves
+  that sector's spectrum exactly. It reduces register width and can reduce
+  downstream simulation cost; compute the transformed term and gate counts
+  rather than assuming they improve.
 - Single-qubit Z generators are the simplest case. A multi-qubit Z
   product is also diagonal, but needs a basis change before the same
   single-wire substitution can remove it.

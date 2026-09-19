@@ -27,7 +27,7 @@ one Pauli rotation of weight $w\geq1$ costs $2(w-1)$ CNOTs.
 The identity has weight zero and contributes no CNOTs, so the correct
 sum over all Hamiltonian terms is
 
-$$C_{\rm step}=\sum_k2\max(w_k-1,0).$$
+$$C_{\mathrm{step}}=\sum_k2\max(w_k-1,0).$$
 
 The maximum prevents an identity term from being counted as negative
 two gates. Identity still contributes to energies. We omit its
@@ -69,7 +69,8 @@ It is deliberately more specific than "H₂, four qubits".
 | Primary tapered sector | $Z_0Z_2=-1,\ Z_1Z_3=-1$, hence $N=2,M_s=0$ for this four-mode basis |
 | Clifford and retained order | CNOT$(0,2)$, CNOT$(1,3)$; keep old qubits $(0,1)$ |
 | Optional further block | Retained $Z_0Z_1=+1$; CNOT$(0,1)$; keep old qubit 0 |
-| Spectrum comparison | Direct complex-Hermitian block eigenvalues, absolute tolerance $10^{-10}$ Ha |
+| Spectrum comparison | Direct complex-Hermitian block eigenvalues, absolute tolerance $10^{-9}$ Ha |
+| Matrix comparison | Entrywise operator comparison, absolute tolerance $10^{-10}$ Ha |
 
 The primary reduction represents the entire four-state $N=2,M_s=0$
 block. The optional reduction represents only its two-state closed-shell
@@ -95,7 +96,7 @@ The untapered Hamiltonian has one weight-zero identity, four weight-one
 terms, six weight-two terms and four weight-four terms. Thus
 
 $$W=4(1)+6(2)+4(4)=32,\qquad
-C_{\rm step}=4(0)+6(2)+4(6)=36.$$
+C_{\mathrm{step}}=4(0)+6(2)+4(6)=36.$$
 
 The two-qubit sum has weights $0,1,1,2,2$:
 $C\,II+B\,ZI+B\,IZ+D\,ZZ+F\,YY$.
@@ -116,7 +117,7 @@ more closely.
 The four retained electronic eigenvalues are
 
 $$\{-1.8523881736,-1.2458776961,-0.8834567721,-0.2319616660\}
-\ {\rm Ha}.$$
+\ {\mathrm{Ha}}.$$
 
 The optional closed-shell block retains the first and last of these.
 The HF determinant is `11` on two qubits and `1` on one qubit,
@@ -201,7 +202,7 @@ let hmixed =
 For this row fix $(Z_0,Z_2)=(+1,+1)$, and keep old qubits 1 and 3,
 in that order. The reduced operator is
 
-$$H_{\rm mixed,red}=0.5\,II-0.3\,XX+0.2\,IZ+0.1\,YY.$$
+$$H_{\mathrm{mixed,red}}=0.5\,II-0.3\,XX+0.2\,IZ+0.1\,YY.$$
 
 Its weights are $0,2,1,2$, giving four CNOTs per step, compared with
 eight before. The two-qubit matrix has even-bit coupling $-0.4$ and
@@ -243,7 +244,9 @@ not silently supply its counts.
 ## The Impact on Circuit Cost
 
 The real payoff of tapering shows in the **CNOT staircase** (Chapter 15). Each nonidentity Pauli rotation $e^{-i\theta P}$ with weight $w$ costs
-$2(w-1)$ CNOTs under the stated staircase model. Tapering reduces both term count and weight:
+$2(w-1)$ CNOTs under the stated staircase model. Tapering can reduce
+term count or Pauli weight, but neither reduction is guaranteed. The
+following counts belong to these particular operators and sectors:
 
 | System | Terms before | Terms after | CNOTs/step before | CNOTs/step after | Savings |
 |:---|:---:|:---:|:---:|:---:|:---:|

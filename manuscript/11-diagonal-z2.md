@@ -265,7 +265,7 @@ comparing diagonals alone would not detect a swapped label.
 
 The insertion-and-return map, which avoids relying on any table, is
 
-$$|\psi\rangle_{\rm full}
+$$|\psi\rangle_{\mathrm{full}}
 =U^\dagger\bigl(|\psi\rangle_{0,1}\otimes|11\rangle_{2,3}\bigr),$$
 
 where the tensor notation names wire groups rather than reversing our

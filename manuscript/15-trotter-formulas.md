@@ -78,7 +78,7 @@ open Encodings.Trotterization
 
 let step = firstOrderTrotter 0.1 hamiltonian
 
-printfn "Rotations: %d" step.Rotations.Length
+printfn "Stored factors including identity: %d" step.Rotations.Length
 for r in step.Rotations do
     printfn "  angle=%+.6f  Pauli=%s  weight=%d"
         r.Angle
@@ -86,8 +86,10 @@ for r in step.Rotations do
         (r.Operator.Signature |> Seq.filter (fun c -> c <> 'I') |> Seq.length)
 ```
 
-The output has 14 rotations. The following table lists their numerical
-content in **signature order for reading**, not a promise about the
+The array contains 15 factors, including the identity phase. Circuit
+emission skips the identity and produces 14 nonidentity rotations.
+The following table lists only those 14 nonidentity factors in
+**signature order for reading**, not a promise about the
 library's iteration order. Preserve the actual returned order when building
 the reference matrix for an exported circuit.
 
@@ -140,10 +142,10 @@ $$\underbrace{e^{-ic_1 P_1 \Delta t/2} \cdots e^{-ic_L P_L \Delta t/2}}_{\text{f
 ```fsharp
 let step2 = secondOrderTrotter 0.1 hamiltonian
 
-printfn "Rotations: %d (vs %d for first-order)"
+printfn "Stored factors including identity: %d (vs %d for first-order)"
     step2.Rotations.Length
     step.Rotations.Length
-// → 28 rotations (2 × 14)
+// → 30 stored factors (2 × 15); emission gives 28 nonidentity rotations
 ```
 
 The symmetry cancels the second-order term in the *local operator
@@ -155,7 +157,8 @@ Its linear term is $-iH\delta$, leaving a cubic leading discrepancy.
 
 | Property | First-order | Second-order |
 |:---|:---:|:---:|
-| Rotations per step | $L$ (14 for H₂) | $2L$ (28 for H₂) |
+| Stored factors including identity | 15 for H₂ | 30 for H₂ |
+| Emitted nonidentity rotations per step | $L$ (14 for H₂) | $2L$ (28 for H₂) |
 | Rotation angles | $c_k \Delta t$ | $c_k \Delta t / 2$ |
 | Error per step | $O(\Delta t^2)$ | $O(\Delta t^3)$ |
 | Total error for $N$ steps | $O(t^2/N)$ | $O(t^3/N^2)$ |
@@ -166,9 +169,10 @@ accuracy must be checked for the chosen Hamiltonian, ordering, and compiler.
 
 The central pair of identical half-step factors can be merged into one
 full-step factor. Adjacent repeated symmetric steps can also have
-mergeable boundary rotations. The raw FockMap list counts both half
-rotations; the 28-rotation, 72-CNOT figures below are deliberately
-*before* that optimisation.
+mergeable boundary rotations. The raw FockMap list contains both half-step
+factors, including two identity factors. After identity omission, the
+28-rotation, 72-CNOT figures are deliberately *before* adjacent-rotation
+merging.
 
 ---
 
@@ -192,10 +196,10 @@ Three quantities that have all been called a "norm" need separate names:
 
 | Quantity | Definition | Canonical H₂ value | Use |
 |:---|:---|:---|:---|
-| Operator norm | $\max_{\|\psi\|=1}\|H\psi\|$ | Bounded above by $\lambda_{\rm coeff}$ | Worst-case action of the operator |
-| Coefficient 1-norm | $\lambda_{\rm coeff}=\sum_k\lvert c_k\rvert$ | 2.6992778241 Ha | Pauli-expansion normalisation |
-| Measurement coefficient norm | $\lambda_{\rm meas}=\sum_{k\ne I}\lvert c_k\rvert$ | 1.8871072169 Ha | Independent-term sampling bound |
-| Pair-commutator sum | $\Lambda_{\rm comm}=\sum_{j<k}\|[c_jP_j,c_kP_k]\|$ | 0.2861997180 Ha² | First-order simulation bound |
+| Operator norm | $\max_{\|\psi\|=1}\|H\psi\|$ | Bounded above by $\lambda_{\mathrm{coeff}}$ | Worst-case action of the operator |
+| Coefficient 1-norm | $\lambda_{\mathrm{coeff}}=\sum_k\lvert c_k\rvert$ | 2.6992778241 Ha | Pauli-expansion normalisation |
+| Measurement coefficient norm | $\lambda_{\mathrm{meas}}=\sum_{k\ne I}\lvert c_k\rvert$ | 1.8871072169 Ha | Independent-term sampling bound |
+| Pair-commutator sum | $\Lambda_{\mathrm{comm}}=\sum_{j<k}\|[c_jP_j,c_kP_k]\|$ | 0.2861997180 Ha² | First-order simulation bound |
 
 There is also a matrix induced 1-norm, the largest absolute column sum.
 It is not the Pauli coefficient 1-norm. We use explicit names instead
@@ -320,8 +324,8 @@ Keep a separate error ledger:
 | Source | Example quantity | What it bounds |
 |:---|:---|:---|
 | Finite basis or active-space choice | Change in a target energy, Ha | Difference between chemical models |
-| Coefficient pruning | $\sum_{\rm removed}\lvert c_k\rvert$, Ha | Upper bound on operator change |
-| Product formula | $\eta=\|U_{\rm PF}-U_{\rm exact}\|$ | Dimensionless evolution discrepancy |
+| Coefficient pruning | $\sum_{\mathrm{removed}}\lvert c_k\rvert$, Ha | Upper bound on operator change |
+| Product formula | $\eta=\|U_{\mathrm{PF}}-U_{\mathrm{exact}}\|$ | Dimensionless evolution discrepancy |
 | Angle serialisation/synthesis | Unitary discrepancy | Extra implementation error |
 | Sampling | Standard error in Ha | Statistical uncertainty for an estimator |
 | Phase grid | $2\pi/(2^m t_0)$, Ha | QPE energy-bin spacing |
@@ -342,7 +346,7 @@ and still be an inaccurate model of the molecule.
 
 - A Trotter step converts a Hamiltonian into a list of **Pauli rotations** — each with a Pauli string and an angle.
 - First-order: $L$ rotations. Second-order: $2L$ rotations at half angle, with quadratically better error scaling.
-- $\Delta t\lambda_{\rm meas}$ is a scale, not an accuracy guarantee; commutator bounds or direct unitary checks set the step count.
+- $\Delta t\lambda_{\mathrm{meas}}$ is a scale, not an accuracy guarantee; commutator bounds or direct unitary checks set the step count.
 - CNOT cost is estimable from Pauli weights alone: $\sum_k 2(w_k - 1)$.
 - The canonical untapered H₂ step uses 36 CNOTs. A simulation cost additionally needs the total time, accuracy, compiler and surrounding algorithm.
 
@@ -355,7 +359,7 @@ and still be an inaccurate model of the molecule.
 2. **Assuming second order always wins.** It has better asymptotic error scaling, but ordering, commutator prefactors, and compiler cancellations determine the actual crossover.
 
 3. **Treating a norm heuristic as a proof.** A small
-   $\Delta t\lambda_{\rm meas}$ is useful intuition, but only an applicable
+   $\Delta t\lambda_{\mathrm{meas}}$ is useful intuition, but only an applicable
    bound or direct comparison certifies the approximation.
 
 ## Exercises
@@ -366,7 +370,7 @@ and still be an inaccurate model of the molecule.
    an H₂O benchmark.
 
 2. **Time step.** A hypothetical Hamiltonian has
-   $\lambda_{\rm meas}=30$ Ha. For $\Delta t=0.01$ and $t=1$
+   $\lambda_{\mathrm{meas}}=30$ Ha. For $\Delta t=0.01$ and $t=1$
    atomic time units, calculate the number of steps and the dimensionless
    norm scale. Does either establish an accuracy certificate?
 

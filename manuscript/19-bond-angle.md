@@ -184,9 +184,9 @@ calculation from a solver that stopped without meeting its target.
 The molecular-orbital matrix also connects this code to the
 integrals used earlier in the book. For real orbitals with
 coefficient matrix $C$,
-$h_{\rm MO}=C^\mathsf{T}h_{\rm AO}C$ transforms the one-electron
+$h_{\mathrm{MO}}=C^\mathsf{T}h_{\mathrm{AO}}C$ transforms the one-electron
 operator from the atomic-orbital basis. PySCF exposes
-$h_{\rm AO}$ as `mf.get_hcore()`. A two-electron transformation
+$h_{\mathrm{AO}}$ as `mf.get_hcore()`. A two-electron transformation
 has four orbital indices and also requires the chemist-to-physicist
 and spin-index conventions from Chapters 2–3 before it can become
 our raw factory. None of those transformations is performed by
@@ -294,7 +294,7 @@ locate a minimum in another.
 For illustration, fit a parabola to these *three samples only*.
 With $h=1^\circ$, its vertex is at
 
-$$\vartheta_{\rm fit}=99^\circ+
+$$\vartheta_{\mathrm{fit}}=99^\circ+
 \frac{h\,[E(98^\circ)-E(100^\circ)]}
 {2[E(98^\circ)-2E(99^\circ)+E(100^\circ)]}
 \simeq98.9035^\circ.$$

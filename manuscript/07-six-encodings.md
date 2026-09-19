@@ -142,7 +142,7 @@ by binary occupations. Lowering an occupied mode has nonzero norm and
 eventually reaches a vacuum $|\Omega\rangle$ annihilated by every $A_j$.
 From a normalised vacuum construct
 
-$$|n_0\ldots n_{n-1}\rangle_{\rm enc}
+$$|n_0\ldots n_{n-1}\rangle_{\mathrm{enc}}
 =(A_0^\dagger)^{n_0}\cdots(A_{n-1}^\dagger)^{n_{n-1}}|\Omega\rangle.$$
 
 The increasing order of creators is fixed; the rightmost operator acts
@@ -152,8 +152,8 @@ There are $2^n$ such vectors, so they fill the assumed register dimension.
 The matrix $U$ whose columns are these vectors, in occupation-integer order,
 is unitary. It satisfies
 
-$$A_j=U a_j^{\rm occ}U^\dagger,\qquad
-H_{\rm enc}=U H_{\rm occ}U^\dagger.$$
+$$A_j=U a_j^{\mathrm{occ}}U^\dagger,\qquad
+H_{\mathrm{enc}}=U H_{\mathrm{occ}}U^\dagger.$$
 
 This also tells us what to do with observables and states. An occupation
 state becomes $U|\psi\rangle$, and its number operator becomes

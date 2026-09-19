@@ -162,7 +162,7 @@ either maximum.
 With FockMap's actual H/S/Sdg/Rz alphabet, a string containing $n_X$
 Xs and $n_Y$ Ys uses
 
-$$N_{\rm one\ qubit}=1+2n_X+4n_Y.$$
+$$N_{\mathrm{one\ qubit}}=1+2n_X+4n_Y.$$
 
 The one is its central Rz; each X needs H before and after; each Y
 needs Sdg,H before and H,S after. Thus XXYY costs 13 one-qubit

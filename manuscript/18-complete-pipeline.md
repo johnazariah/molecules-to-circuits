@@ -44,8 +44,13 @@ thirty-six distinct terms in the final qubit Hamiltonian.
 
 The independent provenance record identifies the research source
 commit `66ebdfe255c0cc6ba25a6d1b76b58401aee3ab06`
-and the source file SHA-256
-`6539afb30a1c03ec89202a2960a06c6580a91afaebf13a6cadbcfd32c2d71812`.
+and the source file SHA-256. Grouped here into two 32-character
+halves for readability, with no space in the actual hash:
+
+```text
+6539afb30a1c03ec89202a2960a06c65
+80a91afaebf13a6cadbcfd32c2d71812
+```
 The FockMap package is 0.9.0, built from `96320a5`.
 A geometry label alone is not this contract: two files both called
 "H₂ integrals" may differ in basis, orbital order, tensor convention
@@ -236,7 +241,7 @@ neither HF nor FCI. Likewise, running the time-evolution circuit
 on the HF determinant does not lower its energy: exact evolution
 preserves the input state's expectation.
 
-The correlation energy is $E_{\rm FCI}-E_{\rm HF}=-0.0205245271$
+The correlation energy is $E_{\mathrm{FCI}}-E_{\mathrm{HF}}=-0.0205245271$
 Ha. It is the same difference whether we use electronic or total
 energies, because the same nuclear offset cancels. Across *different*
 geometries, however, $V_{nn}$ changes and must not be discarded
@@ -324,7 +329,7 @@ implementation rather than assumed to equal the number of geometries.
 
 There is a useful equivalence to check at every scan point:
 
-$$H_{\rm direct}(R)=H_{\rm skeleton}(R).$$
+$$H_{\mathrm{direct}}(R)=H_{\mathrm{skeleton}}(R).$$
 
 The left side encodes the raw tensor afresh. The right side
 reuses symbolic operator expansions and supplies the coefficients

@@ -485,7 +485,7 @@ $$
 0&-1.064667234&-0.181210462&0\\
 0&-0.181210462&-1.064667234&0\\
 0.181210462&0&0&-1.831863646
-\end{pmatrix}\ {\rm Ha}.
+\end{pmatrix}\ {\mathrm{Ha}}.
 $$
 
 The lower-right entry is the HF energy. It is not the upper-left entry:
@@ -499,7 +499,7 @@ Those in the odd block are $C-D\pm|F|$. Sorting all four gives
 
 $$
 -1.8523881736,\quad -1.2458776961,\quad
--0.8834567721,\quad -0.2319616660\quad{\rm Ha}.
+-0.8834567721,\quad -0.2319616660\quad{\mathrm{Ha}}.
 $$
 
 These are exactly the four eigenvalues of the original $N=2,M_s=0$
@@ -528,7 +528,7 @@ the same result.
 
 ### Optional third removal: a smaller, named block
 
-The additional generator $g_{\rm pair}=Z_0Z_1$ commutes with this H₂
+The additional generator $g_{\mathrm{pair}}=Z_0Z_1$ commutes with this H₂
 Hamiltonian. Its $+1$ sector contains the two closed-shell determinants
 `1100` and `0011`; its $-1$ sector contains the two open-shell
 $M_s=0$ determinants. Neither $N=2$ nor $M_s=0$ alone fixes this sign.
@@ -541,13 +541,17 @@ On the two retained qubits, apply CNOT$(0,1)$:
 $ZZ\to IZ$, $ZI\to ZI$, $IZ\to ZZ$, and $YY\to-XZ$.
 Then fix target $Z_1=+1$. The one-qubit Hamiltonian is
 
-$$H_1=(C+D)I+2BZ-FX
-=-1.0421749197657006\,I
-+0.7896887267118053\,Z
-+0.1812104620151967\,X.$$
+$$
+\begin{aligned}
+H_1&=(C+D)I+2BZ-FX\\
+&=-1.0421749197657006\,I\\
+&\quad+0.7896887267118053\,Z
++0.1812104620151967\,X .
+\end{aligned}
+$$
 
-Its basis is $|0\rangle\leftrightarrow|0011\rangle_{\rm occ}$,
-$|1\rangle\leftrightarrow|1100\rangle_{\rm occ}$.
+Its basis is $|0\rangle\leftrightarrow|0011\rangle_{\mathrm{occ}}$,
+$|1\rangle\leftrightarrow|1100\rangle_{\mathrm{occ}}$.
 Its eigenvalues are $-1.8523881736$ and $-0.2319616660$ Ha.
 The other two $M_s=0$ energies were deliberately excluded, not lost
 through numerical approximation.

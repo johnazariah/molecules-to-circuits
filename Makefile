@@ -29,7 +29,7 @@ EPUB_OUT    := $(MS_DIR)/molecules-to-circuits.epub
 # ── Source files ──
 CHAPTERS     := $(addprefix $(MS_DIR)/,$(shell sed '/^[[:space:]]*$$/d; /^\#/d' $(MS_DIR)/Book.txt))
 FIGURES      := $(wildcard $(MS_DIR)/figures/*)
-BUILD_SCRIPTS := scripts/render-mermaid.py scripts/check-book-manifests.py
+BUILD_SCRIPTS := scripts/render-mermaid.py scripts/check-book-manifests.py scripts/check-math-rendering.py
 PYTHON       ?= python3
 PORT         ?= 8000
 
@@ -72,12 +72,15 @@ SAMPLE_OPTS := --lua-filter=$(SAMPLE_FILTER) $(PANDOC_COMMON)
 # ══════════════════════════════════════════════════════════════
 
 .PHONY: all clean word-count diagrams data sample epub verify-data pipeline-check \
-	manifest-check tooling-check support-check semantic-check import-check html preview
+	manifest-check math-check tooling-check support-check semantic-check import-check html preview
 
 all: $(OUT)
 
 manifest-check:
 	$(PYTHON) scripts/check-book-manifests.py
+
+math-check:
+	$(PYTHON) scripts/check-math-rendering.py
 
 tooling-check:
 	$(PYTHON) scripts/check-publication-tooling.py
@@ -108,7 +111,7 @@ $(SAMPLE_OUT): $(CHAPTERS) $(FIGURES) $(BUILD_SCRIPTS) $(LUA_FILTER) $(SAMPLE_FI
 
 epub: $(EPUB_OUT)
 
-$(EPUB_OUT): $(CHAPTERS) $(FIGURES) $(BUILD_SCRIPTS) $(LUA_FILTER) $(MS_DIR)/Book.txt Makefile | manifest-check
+$(EPUB_OUT): $(CHAPTERS) $(FIGURES) $(BUILD_SCRIPTS) $(LUA_FILTER) $(MS_DIR)/Book.txt Makefile | manifest-check math-check
 	@echo "Building EPUB..."
 	$(PANDOC) $(CHAPTERS) \
 	  -o $(EPUB_OUT) \
@@ -203,13 +206,13 @@ diagrams: manifest-check
 
 # ── Data generation (requires requirements-data.txt) ──
 data:
-	python3 $(CODE_DIR)/ch18-generate-h2-integrals.py
-	python3 $(CODE_DIR)/ch18-dissociation-scan.py
-	python3 $(CODE_DIR)/ch19-bond-angle-scan.py
-	python3 $(CODE_DIR)/ch09-verify-h2.py
+	$(PYTHON) $(CODE_DIR)/ch18-generate-h2-integrals.py
+	$(PYTHON) $(CODE_DIR)/ch18-dissociation-scan.py
+	$(PYTHON) $(CODE_DIR)/ch19-bond-angle-scan.py
+	$(PYTHON) $(CODE_DIR)/ch09-verify-h2.py --write
 
 verify-data:
-	python3 $(CODE_DIR)/ch09-verify-h2.py
+	$(PYTHON) $(CODE_DIR)/ch09-verify-h2.py
 	dotnet fsi labs/03-compare-encodings.fsx
 
 .PHONY: data-reproduction-check

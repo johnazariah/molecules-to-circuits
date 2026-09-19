@@ -26,6 +26,15 @@ bibliography: paper.bib
 
 # Summary
 
+> **Historical educational-paper draft.** This packet is retained as a record
+> of an earlier description, not as current book documentation or an approved
+> new submission. The expanded September 2026 manuscript uses MyST/Jupyter
+> Book 2, ten numbered labs, a code-reading bridge, two selected-reference
+> appendices and worked solutions. Its chemistry references are separate
+> from circuit construction. The older inventory and universal execution
+> claims below are not the current reader contract; use the repository README
+> and the revised manuscript for that purpose.
+
 This educational resource is a self-contained computational tutorial
 covering the complete pipeline from molecular electronic structure to
 quantum circuit compilation for quantum simulation.  It is designed for

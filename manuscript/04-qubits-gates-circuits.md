@@ -191,6 +191,26 @@ measurement missed becomes a certain measurement outcome. A classical
 each prepared state. Interference uses amplitudes, not merely ignorance
 about which basis state was prepared.
 
+### A quarter-turn of relative phase: S and Sdg
+
+The **phase gate** $S$ and its adjoint are
+
+$$S=\begin{pmatrix}1&0\\0&i\end{pmatrix},\qquad
+S^\dagger=\begin{pmatrix}1&0\\0&-i\end{pmatrix}.$$
+
+Thus $S(a|0\rangle+b|1\rangle)=a|0\rangle+ib|1\rangle$:
+the amplitude of $|1\rangle$ gains a quarter-turn of relative phase.
+The inverse multiplies that amplitude by $-i$. In circuit listings,
+`Sdg` names $S^\dagger$; the suffix means *dagger*, not a different gate.
+
+For example, the positive Y eigenstate is
+$|{+y}\rangle=(|0\rangle+i|1\rangle)/\sqrt2$. Applying $S^\dagger$
+gives $|+\rangle$, and applying $H$ next gives $|0\rangle$.
+Similarly, the negative Y eigenstate becomes $|1\rangle$.
+This is why a Y-basis measurement can apply $S^\dagger$ then $H$
+before an ordinary computational-basis measurement. The matrix product
+for those operations is $HS^\dagger$, since the rightmost gate acts first.
+
 ### Rotation angles have a convention
 
 For a Pauli $P$, we define

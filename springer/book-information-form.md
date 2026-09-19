@@ -1,5 +1,15 @@
 # Springer Book Information Form
 
+> **Historical proposal draft — retained for provenance, not a current
+> submission packet.** This form and its neighbouring PDF predate the expanded
+> September 2026 manuscript. Their page counts, universal execution claims
+> and electronic-publication answers must not be reused as current facts.
+> Earlier book versions are publicly available through GitHub Pages,
+> GitHub Releases and Zenodo. See the repository README for the current
+> scope and edition status; a new publisher submission requires the author's
+> approval. The original draft below is preserved rather than silently
+> presented as a newly approved proposal.
+
 ## (1) Title of the book
 
 | Field | Answer |

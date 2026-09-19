@@ -165,6 +165,7 @@ myst.yml        HTML navigation, checked against Book.txt
 | `make html` | Build static HTML with Jupyter Book 2 |
 | `make preview` | Build HTML successfully, then serve it at localhost:8000 |
 | `make manifest-check` | Check ordered print/web inventory and sample selection |
+| `make math-check` | Reject equations that would fall back to raw TeX in the EPUB |
 | `make tooling-check` | Renderer failure/cache/cleanup and print-dependency negative controls |
 | `make support-check` | Execute the complete programs printed in the bridge/API appendix |
 | `make semantic-check` | Bounded immutable-pin, oracle, sector, algorithm and output-isolation gates; no full chemistry regeneration |
