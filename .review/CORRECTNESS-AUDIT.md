@@ -3099,3 +3099,50 @@ derivation steps. If it requires less, do not pad it.
 The acceptance target is a reader who can explain and carry out the next
 step, not a manuscript that reaches a particular page count or a keyword
 scan that finds a definition somewhere.
+
+---
+
+# Implementation verification checkpoint — 2026-09-07
+
+**Authority:** The author subsequently authorised full book implementation.
+**Integrated initial repair:** `4137857` (child commit `9293687`).
+**Status:** Partial progress; **EC-M01, EC-M02 and RG-01 remain open** pending
+the follow-up below. No full-book completion or regeneration acceptance is
+claimed.
+
+The initial repair replaces moment-only spectrum acceptance with
+complex-Hermitian realification/Jacobi diagonalisation and makes the oracle
+verifier read-only by default. Its targeted cases pass: a split degeneracy
+that the old moment gate accepted is rejected; a Pauli-Y imaginary-coupling
+case is handled; non-Hermitian, non-finite and wrong-dimension cases are
+rejected; corrupted coefficient/spectrum/order/metadata examples do not
+silently rewrite the oracle.
+
+Independent code review then found two additional false-acceptance paths:
+
+1. **Mixed-scale eigenvalue accuracy:** `labs/PauliMatrix.fsx:132-136` uses
+   scale-based rotation/stopping cutoffs unrelated to the requested absolute
+   tolerance. With diagonal entry `1e10` and a separate imaginary off-diagonal
+   pair `-9e-7 i`, `+9e-7 i`, the true spectrum is
+   `[-9e-7, 9e-7, 1e10]`. The gate at `1e-7` instead accepts
+   `[0, 0, 1e10]`. Solver convergence/residual criteria must respect the
+   requested accuracy or fail closed when it cannot be established.
+2. **Fixed metadata is not a computed energy:** the recursive JSON
+   comparison in `code/numerical_integrity.py:42-45` applies the numerical
+   energy tolerance to threshold metadata too. A changed
+   `input_threshold=-1e-10` or `combined_pauli_threshold=0` is accepted.
+   Fixed thresholds, counts and ordering indices require exact value/type
+   comparison; tolerance belongs only to the derived numerical fields.
+
+Both findings have been assigned to the executable-integrity owner with
+explicit regression cases. Passing the original negative controls is not
+sufficient closure, and no guard is relaxed on the strength of the initial
+commit.
+
+**Independent structural integration work:** `dca1dce` adds
+`scripts/check-book-contract.py` and 15 standard-library unit tests. The
+checker reports the expected pre-expansion gaps (two missing support
+sections and eleven absent exercise sections). It checks assembly, fenced
+code and relative resources, not mathematical truth or define-before-use
+comprehension. These failures must be resolved by the chapter/support
+implementation, not by weakening the contract.
