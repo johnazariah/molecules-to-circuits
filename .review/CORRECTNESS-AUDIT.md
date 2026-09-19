@@ -1,5 +1,11 @@
 # CORRECTNESS AUDIT — From Molecules to Quantum Circuits
 
+> **Implementation outcome, 2026-09-19:** The corrected and expanded manuscript
+> has been integrated and independently rechecked. See the
+> [final implementation acceptance](#final-implementation-acceptance--2026-09-19)
+> for closure, measured outputs and retained publisher/rights boundaries.
+> Earlier findings and intermediate failures below remain dated history.
+
 > **Current review:** See the [2026-09-07 comprehensive review](#comprehensive-review--2026-09-07)
 > below and the current dated section of `ACTION-PLAN.md`. The July finding count
 > and findings immediately below are historical, not a count of defects still
@@ -3146,3 +3152,343 @@ sections and eleven absent exercise sections). It checks assembly, fenced
 code and relative resources, not mathematical truth or define-before-use
 comprehension. These failures must be resolved by the chapter/support
 implementation, not by weakening the contract.
+
+# Targeted chapters 01–13 verification — 2026-09-19
+
+## Reviewed scope
+
+On-disk numbered chapters 01–13, identified by the caller as HEAD `b605610`,
+against the September correction/expansion plan and September audit, not
+the July history. Every chapter line range was requested through EOF.
+Long-line searches recovered most text truncated by the file reader.
+Eight lines still have hidden tails in both available views:
+`01-electronic-structure.md:21,23,25,140,408`,
+`05-visual-encodings.md:211`, `09-verification.md:177`, and
+`12-clifford-tapering.md:57`. This is therefore not an unqualified
+full-text-reading certificate.
+
+The mathematical checks covered integral conventions, real/complex ERI
+symmetries, spin counts, state and matrix ordering, Fenwick operations,
+Majorana normalisation/path pairing, H2 assembly, and signed physical-sector
+tapering. Narrow companion reads covered the Chapter 7 weight loop,
+Chapter 8 CAR check, and Chapter 12 physical taper, including the spectrum
+assertion it calls. No code was run. No CLI was exposed, the pinned external
+tree-helper source was inaccessible to the workspace reader, and the
+reported HEAD was not independently resolved. Chapters 14–23, support
+material, broad library correctness, builds and publishing remain with
+their other reviewers. Only this authoritative audit addendum was written;
+no manuscript/code edits, delegation, commits or pushes were performed.
+
+## Result
+
+The central high-priority mathematical repairs survive the inspected pass.
+No remaining high-priority defect was found in that material. Two concrete
+consistency residuals and one low-priority categorical cost claim remain:
+
+1. **Medium — BE-M03, mixed-index HF exercise remains.**
+   `manuscript/09-verification.md:362` still writes
+   `h00 + h11 + [00|00] + Vnn` without identifying the first two indices
+   as spin-orbital and the bracket as spatial. Using the spatial table
+   gives approximately `-0.3385183695` Ha, not RHF `-1.1167593074` Ha.
+   Minimal repair: use `2 h00(spatial) + [00|00](spatial) + Vnn`, or
+   explicitly distinguish spin and spatial superscripts. The corresponding
+   derivations in Chapters 3 and 6 are correct. This is the previously
+   identified exercise boundary, not a defect in the canonical tensor.
+2. **Medium — stated spectral tolerance exceeds the named gate.**
+   `manuscript/13-tapering-benchmarks.md:72,89-92` describes a direct
+   eigenvalue comparison at `1e-10` Ha and points to
+   `code/ch12-h2-physical-taper.fsx`. That script's lines 37 and 44 pass
+   `1e-9` to `assertSpectrumMatrix`; `labs/PauliMatrix.fsx:175-184`
+   uses that argument as the maximum sorted-eigenvalue error. Its
+   `1e-10` entrywise block checks are different tests, not a direct
+   `1e-10` eigenvalue gate. For example, a diagonal spectrum shifted
+   by `5e-10` Ha passes the stated function at `1e-9` but not `1e-10`.
+   Minimal repair: have the executable owner enforce and rerun the
+   claimed tolerance, or report the actual `1e-9` spectral tolerance
+   separately from the `1e-10` matrix tolerance. No numerical error in
+   the displayed canonical eigenvalues is alleged.
+3. **Low — BM-M06, categorical resource summaries remain.**
+   `manuscript/10-why-tapering.md:274` promises reduced downstream cost;
+   `manuscript/13-tapering-benchmarks.md:245-246` says tapering reduces
+   both term count and weight. The latter chapter's own mixed example
+   keeps four terms and maximum weight two. More generally, fixing
+   `Z0=+1` in `H=ZII+IXX` gives `II+XX`: two terms and two staircase
+   CNOTs both before and after. Minimal repair: say these quantities
+   *can* decrease and retain the existing model-specific counts.
+
+## Closed items
+
+Within the inspected chapter scope, BM-H01/H02/H03 are repaired:
+raw half / antisymmetrised quarter / restricted antisymmetrised unit
+prefactors agree; the nonzero-exchange example gives 0.5 Ha rather than
+0.7 Ha; canonical inputs agree; q0-left labels, integer rows and reversed
+dense factors agree; spectra are no longer offered as label certificates.
+BM-M01/M02/M03/M04/M17 are also repaired in the inspected passages.
+
+The checked H2 ledger retains HF row 3 at `-1.8318636465` Ha,
+electronic FCI `-1.8523881736` Ha, 15 terms including identity,
+14 nonidentity rotations and 36 untapered staircase CNOTs.
+The alpha/beta parity signs are derived as `(-1,-1)`.
+Chapters 10–13 consistently map reduced rows to original
+`[12,9,6,3]`, retain the full four-state `N=2, Ms=0` block at two
+qubits, and distinguish the optional closed-shell pair `+1` block.
+Their signed coefficient ledger, reduced matrices and analytic spectra
+agree. The reported `4→2→1` resource arithmetic is sound.
+
+XP01/02/04/05/06/08 and the corresponding early BE-M02 mathematical
+bridges are supplied and check out in this scope. The Majorana
+normalisation, two-node construction and full CAR derivation in XP07
+are mathematically consistent.
+
+## Remaining items
+
+BM-H05's Chapter 1 backend promise is repaired in the visible passage;
+its repeated claims outside this scope are not closed here.
+BM-M05/M16 correctly distinguish ideal versus midpoint-tree weight,
+Clifford versus arbitrary term-count invariance, and finite census versus
+runtime support/theorem claims. Their actual pinned-helper source
+correspondence was not independently verified in this tool environment.
+BM-M10 is repaired in Chapters 10–12; its appendix boundary is outside
+this pass. BM-M06 and BE-M03 remain partial for the residuals above.
+XP03, remaining BE/XP teaching/support requirements, executable gates
+and book-wide closure belong to the other owners.
+
+## New risks
+
+The spectrum-tolerance reporting mismatch is the only new verification
+contract issue established here. Hidden long-line tails and unavailable
+helper execution/source are explicit evidence limits, not presumed bugs.
+
+## Focused closure of the three residuals — 2026-09-19
+
+**Reviewed scope:** Only the three findings above and the named spectrum
+gate. **Result:** All three are closed in the current working-tree text.
+
+- `13-tapering-benchmarks.md:72-73` now distinguishes `1e-9` Ha spectrum
+  tolerance from `1e-10` Ha entrywise matrix tolerance, matching
+  `code/ch12-h2-physical-taper.fsx:35,37,43-44`.
+- `09-verification.md:370-377` explicitly uses spatial integrals and
+  `2 h00 + Coulomb + Vnn`, recovering the correct total HF energy.
+- `10-why-tapering.md:274-277` and
+  `13-tapering-benchmarks.md:247-249` make cost/count/weight reductions
+  conditional, while preserving sector exactness and width reduction.
+
+**Remaining items:** None from these three findings.
+The parent reports having read all eight previously truncated tails via
+wrapped CLI output; that closes the reading gap at the coordinated-review
+level, not by a new independent read here.
+**New risks:** None identified in this focused pass. No tests were rerun.
+
+---
+
+# Final implementation acceptance — 2026-09-19
+
+**Accepted implementation tree:** `c688ce0e3d79296a76a65c009e112d48a5a932a3`,
+with the documentation-only closure in this addendum following it.
+**Mode:** Author-authorised book implementation and local proof generation.
+No publisher submission, public book release, licence change or blog
+publication was performed.
+**Outcome:** The bounded correctness, expansion, integration and local-output
+tasks are complete. This is a substantially expanded manuscript candidate
+for the Apress sequence reported by the author, not a claim of publisher
+acceptance of this particular draft or an external scientific peer review.
+
+## What was integrated
+
+The five isolated workstreams were combined on
+`johnazariah-book-and-blog-review`. All 23 numbered chapters were corrected
+and expanded. The book now includes the code-reading bridge before Chapter 2,
+complete worked coupling/Fenwick/Majorana/physical-taper/VQE/QPE examples,
+exercises in every chapter, two expanded selected-reference appendices,
+25 selected solution sections and 53 central reference entries.
+
+The current source inventory is **83,235 whitespace-delimited words**,
+including code, tables and markup, versus 46,313 at review baseline.
+That is not a claim of 83,235 prose words. The full local PDF measures
+**291 pages** with the unchanged 11-point, one-inch-margin layout. No font,
+margin or blank-page manipulation was used to achieve the approximately
+300-page planning target.
+
+Significant integration commits include:
+
+- `e4cc7a8`, `d84d877`, `08a7398`: the three chapter workstreams;
+- `66cb16b`, `0919720`, `919e28b`, `b605610`: support matter and production
+  tooling;
+- `63d55fd`, `5616b9d`, `8ed7e87`, `7998cc9`: numerical and executable
+  integrity beyond the initial partial repair;
+- `f390e9e`: final chapter-boundary corrections, MathML compatibility and
+  print-layout repairs;
+- `622efb4`: convergence provenance and accurately labelled figures;
+- `89e386a`: checkout-local devcontainer tools;
+- `3d77efc`: the upstream HTML hydration repair via an exact publisher pin;
+- `c688ce0`: accumulated-roundoff/global-Hermiticity accuracy guards.
+
+## Independent manuscript and pedagogy closure
+
+The final verification was divided into the full Chapters 1-13, the full
+Chapters 14-23, and the cross-book learning sequence, support matter and
+exercise/selected-answer alignment. These were verification passes on the
+written expansion, not acceptance of the workstream authors' summaries.
+
+The residuals found during integration were corrected:
+
+- Chapter 15 now reports 15/30 **stored factors including identity** versus
+  14/28 **emitted nonidentity rotations**, retaining 36/72 logical CNOTs.
+- Chapter 4 defines S, S-dagger and the `Sdg` code name through matrices,
+  amplitude action and the Y-basis measurement sequence before later use.
+- Chapter 9's HF exercise explicitly uses spatial integrals.
+- Chapter 13 distinguishes the actual `1e-9` eigenvalue tolerance from
+  `1e-10` entrywise matrix comparison.
+- Tapering summaries distinguish guaranteed width reduction from
+  conditional gate/term/weight savings.
+
+Focused independent rereads accepted these repairs. The pedagogy reviewer
+closed XP01-12 within source-level verification and found no remaining
+blocking or medium reader failures in that pass. All 23 exercise sets were
+compared with the selected solutions; selected coverage is intentionally
+not a complete instructor key.
+
+The Chapters 1-13 reviewer had eight long-paragraph display gaps. The
+coordinator read all eight wrapped source passages and found no additional
+residual. This closes the coordinated reading gap without pretending the
+specialist's tool itself exposed those tails.
+
+| Finding group | Final disposition |
+|---|---|
+| BM-H01-H05 | Closed in the revised teaching text; central equations, canonical inputs, ordering, measurement/simulation split and water scope reconciled |
+| BM-M01-M04, BM-M06-M15, BM-M17, BM-L01 | Closed within the mathematical/source verification and the corrected local residuals above |
+| BM-M05/M16; CA-M010 | Closed at the retained narrow scope: actual helper shape, finite tests, documented custom-constructor warning and separate path-tree validation; no unsupported all-size theorem or SRL indictment |
+| BE-M01-M06; XP01-XP12 | Implemented and source-verified: prerequisites, complete worked bridges, exercises/selected answers, current-reader prose, honest appendices and purposeful figures |
+| EC-M01/EC-M02 | Closed for the implemented small-matrix/reference gates after the additional independent-review fixes and negative controls below |
+| EC-M03-M06, EC-L01/L02 | Convergence/finiteness, complete data contracts, provenance/grids, portable versus archival reproduction, lab scope and executable entry points repaired and exercised |
+| CA-M011 | Pinned `groupCommutingTerms` output verified as greedy QWC, not general commutation; full accounting, compatibility and identity treatment checked |
+| CA-H008 | Closed for the book's stated scope: actual QASM 2/3, JSON and Q# round trips, controlled identity phase and honestly labelled resource-helper semantics; no full fault-tolerant QPE budget is claimed |
+| BR-M01-M04, BR-L01/L02 | Rendering fails closed, figures invalidate outputs, evidence gates precede publication jobs, auxiliary drafts marked historical, correct agent contract/manifests and sample inventory |
+| BR-H01 | Local source/artifact inconsistency repaired: stale tracked PDF removed, local proofs rebuilt, old public downloads labelled earlier releases. Replacing public editions is a separate author/publisher action |
+| BR-H02 | Remains an external owner/rights-record task; the implementation does not alter or claim to repair Zenodo's historical mixed-rights record |
+
+## Numerical verification: failures were repaired, not waived
+
+The independent numerical reviewer first reproduced false acceptance from
+mixed scales, then accumulated Jacobi roundoff, then a globally significant
+Hermiticity defect whose individual entries were small. Each was repaired
+and added as a negative control rather than hidden by relaxing tolerances.
+The final focused re-review reported no significant issues in the changes.
+
+The gate now accounts for dimension/rotation-dependent floating-point
+roundoff using the matrix norm, checks the **global** Hermiticity defect,
+explicitly symmetrises only an input within the allocated perturbation
+budget, and includes solver allowance in the final comparison. It fails
+closed when the requested absolute accuracy is not supportable. This is
+the book's practical small-matrix numerical acceptance routine, not a new
+formal interval-arithmetic theorem for arbitrary matrices.
+
+The accepted negative controls cover the old split-degeneracy moment
+counterexample; imaginary Pauli-Y information; large unrelated diagonal
+scales; real and complex rank-one roundoff; accumulated non-Hermitian
+blocks; nonfinite/dimension errors; corrupted oracle coefficients, spectra,
+ordering and metadata; negative/zero thresholds and fractional counts; wrong
+state labels; and accidental raw/weighted double adaptation.
+Successful and failed default oracle verification remain read-only.
+
+## RG-01 and fresh executable evidence
+
+The chosen immutable public pin remains **FockMap 0.9.0**, source
+`96320a56786393269fd681c67c66df88058a8b8f`, DLL SHA-256
+`0ba8ae967ea65d4945a336c1217f8939e41feb63b6f04af617b66537717d25c3`.
+The fixture remains the byte-identical research artifact at merged
+`66ebdfe255c0cc6ba25a6d1b76b58401aee3ab06`, SHA-256
+`6539afb30a1c03ec89202a2960a06c6580a91afaebf13a6cadbcfd32c2d71812`.
+The committed direct oracle is unchanged by the provenance promotion:
+SHA-256 `a6747218407232d28c00864f98ccbe16f1ecb2656209d0cd64f0395aabd2db20`.
+
+Fresh integrated acceptance passed:
+
+| Check | Result |
+|---|---|
+| `make import-check` with isolated pinned importers | Complete bounded numerical, provenance, physical-sector, algorithm and actual import gate passed |
+| Immutable H2 contract | 4+32 raw inputs, complete JW matrix, literal N=0 through 4 eigenvalue lists/multiplicities, labelled HF row 3, immutable DLL and adapter negative control passed |
+| Six encoding comparisons | Actual complex-Hermitian sorted eigenvalue differences at rounding scale; moments retained only as diagnostics |
+| Physical taper | Explicit alpha/beta sector `(-1,-1)`, row map `[12,9,6,3]`, four-state sector spectrum and separately named closed-shell block passed |
+| CAR evidence | All six built-ins for n=2 through 6; selected custom-chain/star contrasts for n=3 through 6 passed as finite tests, not an exhaustive all-shape or all-size theorem |
+| QWC / resource helper | Five measurement bases; identity needs no shots; `qpeResources` documented and checked as an uncontrolled-step proxy, not a compiled QPE resource estimate |
+| VQE / QPE illustration | Canonical variational minimum and shifted 12-bit phase decode reproduced with overlap/resolution/confidence distinctions retained |
+| All ten numbered labs | Passed on the integrated tree |
+| Existing six F# companions and parameterised H2 example | Passed |
+| Three complete printed support examples | Passed |
+| Chemistry portable and archival reproduction | Portable numerical parity passed before promotion; strict isolated archival comparison passed twice in the data workstream and again after integration |
+| Generation failure controls | Nonconvergence, late water failure, partial-output protection and caught-I/O rollback passed |
+| Structural and publication tooling | 15 assembly unit tests and 12 bounded publication tests passed; all 23 exercise sections and six support sources present |
+
+The promoted data add 146 converged solver records without changing any
+pre-existing tensor/energy values. CSVs, oracle and immutable physicist
+fixture/provenance bytes remain unchanged. Figure/provenance changes are
+deliberate: the H2 plot separates the finite-STO-3G two-atom limit from
+the complete-basis reference; the water plot names PySCF, basis, fixed bond
+length and lowest sampled angle. Byte reproduction is explicitly a
+recorded-environment contract, not a portability promise for every allowed
+BLAS/platform/font combination.
+
+Actual import acceptance used the pinned Qiskit/QASM importer and Q# runtime,
+not a replacement handwritten parser:
+
+- QASM 2/3, strict JSON-to-Qiskit and transpiled labelled-column errors:
+  at most `4.601e-15`.
+- Compiled/simulated Q# on all 16 labelled inputs: `2.735e-15`.
+- The restored-identity controlled 32-by-32 product, after compilation:
+  `2.267e-14`.
+- Product-formula versus exact evolution discrepancy: approximately
+  `1.430e-3`, explicitly separate from import error.
+
+A compiled **one-step** controlled circuit is measured; it is not a
+fault-tolerant full-QPE hardware budget. No ground energy is inferred from
+a circuit count or an identity coefficient.
+
+## Actual output acceptance
+
+| Artifact | Measured result |
+|---|---|
+| Full PDF | 291 pages; 36 image placements; no text spans beyond page boundaries in the automated inspection |
+| Sample PDF | 61 pages; 9 image placements; full printed contents including omitted appendices/solutions with dash page entries |
+| EPUB | 31 XHTML documents; 36 PNGs; 3,235 MathML expressions; no raw-TeX mathematical fallback |
+| HTML | 29 pages inspected in a real browser, all HTTP 200, 3,041 rendered KaTeX expressions across the inspected pages, no page/console errors, no detected KaTeX errors or broken article images |
+
+Initial output inspection found clipped spectrum rows, a long coefficient
+equation, a hash and a selected-solution equation. They were reformatted
+without removing values. Initial EPUB conversion exposed unsupported legacy
+font declarations; the notation was normalised and a fail-closed MathML
+gate added with a deliberate undefined-command negative control.
+
+Initial HTML built with Jupyter Book 2.1.5 rendered content but raised React
+hydration errors. The official upstream exporter injected its index redirect
+before React-owned head content. Official **2.1.6** contains the upstream
+repair, inserting the redirect at the end of the head. The project now pins
+2.1.6 and rejects an incompatible ambient publisher before deleting existing
+output. A clean isolated rebuild and all-29-page integrated browser pass
+verified the fix. JavaScript was not disabled and errors were not suppressed.
+
+The PDF SHA-256 is
+`bfbc051839d8e138a41aa605d2efb4b9b3189e1a759a7b93e846c8e5b3df2741`;
+sample PDF
+`7e1c48f7fc61cf5ade4a0788a8d967cf8147df19caf075b37e7a854b144ef988`;
+EPUB
+`95cd08aabb46d94679b1aefb28699e8cfa03fed67de6e03d340d41b51bdb7a2e`.
+These identify this generated proof set; PDF creation metadata may change
+on a later rebuild. Detailed command logs and artifact identities are kept
+in the session's proof/evidence bundle, not added as parallel review files.
+
+## What remains outside implementation completion
+
+John reports that Apress are interested and happy to pick up the book after
+QCSE (*Quantum Bottleneck*). That is now the publication direction, not
+self-publication. Publisher contract/schedule/layout, external reader
+feedback and editorial acceptance remain separate decisions. The 291-page
+local layout does not predict Apress's final pagination.
+
+Historical GitHub/Zenodo editions were not replaced; Zenodo rights metadata
+was not changed. Earlier Springer/JOSE drafts are explicitly historical
+rather than silently reused as current submissions. The blog's P1-then-P2
+approval sequence and later-post freeze remain in force. Its reviewed
+harmonisation contract can use the corrected book commit, but no blog
+article, hook, date or approval was changed under book implementation
+authority.

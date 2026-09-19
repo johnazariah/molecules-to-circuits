@@ -1,6 +1,68 @@
 # ACTION PLAN — From Molecules to Quantum Circuits
 
-## Current correction plan — 2026-09-07
+## Implementation complete — 2026-09-19
+
+**Accepted implementation:** `c688ce0e3d79296a76a65c009e112d48a5a932a3`.
+The five workstreams are integrated; the full manuscript, executable
+companions and local proof outputs have passed the coordinated acceptance
+described in the
+[final audit addendum](CORRECTNESS-AUDIT.md#final-implementation-acceptance--2026-09-19).
+This supersedes the pre-implementation readiness assessments below.
+
+**Delivered:** 23 revised chapters, code-reading bridge, two expanded
+reference appendices, every-chapter exercises, 25 selected solution sections
+and 53 central references. The measured local proof is **291 pages** and
+the source inventory is **83,235 whitespace-delimited words**, including
+code/tables/markup. The sample is 61 pages; EPUB and all 29 HTML pages
+were also generated and inspected. This is within the author's approximate
+300-page range without changing typography to inflate the result.
+
+| Work | Outcome |
+|---|---|
+| Correctness and cross-chapter consistency | Independent chapter verifications completed; their bounded residuals repaired and rechecked |
+| Define-before-use and explanation depth | XP01-12 closed within source-level pedagogical verification; the full learning sequence and exercise/solution alignment checked |
+| Canonical numerical acceptance | RG-01 passed: immutable pin, complete oracle/state/sector checks, actual complex-Hermitian diagonalisation with fail-closed accuracy budgets, negative controls and real imports |
+| Reproducibility | Read-only verification, convergence/provenance safeguards, portable parity and repeated strict archival regeneration passed |
+| Local outputs | Full/sample PDF, EPUB MathML and pinned Jupyter Book 2.1.6 HTML accepted; no raw Mermaid/math fallback or clipped page-edge text in the inspected proofs |
+| Secondary production material | Old proposal packets marked historical; old public releases not misrepresented as this edition |
+| Public release, rights, publisher submission and blog approvals | Not performed; remain author-controlled and are not required to call this implementation complete |
+
+### Remaining publisher-facing work, not hidden implementation defects
+
+Follow the Apress/QCSE sequence below. Arrange external-reader and publisher
+editorial review, agree the final production format/index requirements and
+schedule, and make any resulting revisions. The selected answers are not a
+complete instructor key; the appendices are selected references, not an
+exhaustive library manual. The existing appendix lookup material is supplied;
+a separate publisher-style subject index has not been manufactured to fill
+the planning allocation.
+
+If a later public release is authorised, reconcile historical GitHub/Zenodo
+edition and rights records first. Do not infer permission to change those
+records, release a competing edition or publish frozen blog posts from this
+local implementation closure.
+
+## Publishing direction — author update, 2026-09-19
+
+John reports that **Apress are interested in this book and happy to pick it
+up after QCSE (*Quantum Bottleneck*)**. The intended sequence is therefore
+QCSE first, then the encodings book with Apress. Self-publication is not the
+working publication plan.
+
+This records the author's stated development, not an inferred signed
+contract, acceptance of this manuscript, delivery date or agreed page/format
+specification. The approximately 300-page target remains the author's
+planning target until the publisher's production requirements are agreed.
+
+Complete the corrected, expanded manuscript and executable companions for
+publisher handoff. Local PDF/sample/EPUB/HTML builds are proofing and
+reproducibility artifacts, not permission to release a competing edition.
+Do not publish GitHub/Zenodo/Leanpub releases, submit a proposal, change
+rights or remove existing public material without separate author direction.
+The existing blog approvals also remain unchanged; any future public book
+content plan must respect the eventual Apress arrangements.
+
+## Implemented correction plan and acceptance criteria — 2026-09-07
 
 **Authority:** The full-book review in
 [CORRECTNESS-AUDIT.md](CORRECTNESS-AUDIT.md#comprehensive-review--2026-09-07).
@@ -18,7 +80,8 @@ reasoning rather than brevity or padding. See the
 [expansion review](CORRECTNESS-AUDIT.md#apress-expansion-and-definition-order-review--2026-09-07)
 and the expansion-planning section below. This is a planning target, not a
 publisher-confirmed page specification or an implemented expansion.
-**Current judgement:** Strong translation-layer manuscript, but **not ready for
+**Pre-implementation judgement (superseded by 19 September closure):**
+Strong translation-layer manuscript, but **not ready for
 publication as a fully consistent teaching text**. Five high-priority source
 findings remain, together with foundational, algorithmic and pedagogical
 corrections. The accepted central chemistry and package results should be
@@ -114,8 +177,10 @@ without commissioning a universal theorem.
 #### RG-01 — Regenerate against the immutable pin before relaxing fail-closed guards
 
 **Owner:** Encodings Book Review coordinator, step 4 of the research-journal
-handoff. **Status:** Required implementation/integration gate; not satisfied
-by package availability, a migrated dependency, or the existing moment tests.
+handoff. **Status:** Passed on 2026-09-19 with fresh numerical, negative-control,
+physical-sector, real-import, archival and output evidence in the final
+audit addendum. Package availability, a migrated dependency or the old
+moment tests alone were not accepted as closure.
 **Step 3:** The separate *Fockmap book migration* session reported a no-op on
 2026-09-07: fresh main `c5cf9df` already contains the scoped pin/raw-primary
 migration. No migration commit or PR needs integrating.
@@ -264,9 +329,10 @@ contradictions remain.
 
 **Author direction:** Use the additional room to explain concepts, define
 material before substantive use and preserve clarity over brevity.
-**Status:** Implementation authorised on 2026-09-07. The allocations remain
-planning estimates; definition gaps are not closed until the revised
-explanations and complete book have been assessed.
+**Status:** Implemented and source-verified on 2026-09-19. The allocations
+remain planning estimates; the actual accepted local PDF is 291 pages.
+The content was assessed as a continuous learning sequence rather than
+accepted solely because it grew in length.
 
 ### Teaching policy
 
