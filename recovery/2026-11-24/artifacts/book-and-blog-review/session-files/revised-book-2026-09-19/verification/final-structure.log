@@ -1,0 +1,10 @@
+python3 scripts/check-math-rendering.py
+MathML acceptance passed for all 29 manuscript sources.
+python3 scripts/check-book-manifests.py
+Manifests agree: 23 chapters, 6 supporting files, 5 sample bodies
+python3 scripts/check-publication-tooling.py
+............
+----------------------------------------------------------------------
+Ran 12 tests in 1.945s
+
+OK

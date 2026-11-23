@@ -1,0 +1,41 @@
+python3 scripts/check-book-manifests.py
+Manifests agree: 23 chapters, 6 supporting files, 5 sample bodies
+Building manuscript...
+pandoc manuscript/foreword.md manuscript/01-electronic-structure.md manuscript/code-reading.md manuscript/02-notation.md manuscript/03-spin-orbitals.md manuscript/04-qubits-gates-circuits.md manuscript/05-visual-encodings.md manuscript/06-building-hamiltonian.md manuscript/07-six-encodings.md manuscript/08-building-vlasov.md manuscript/09-verification.md manuscript/10-why-tapering.md manuscript/11-diagonal-z2.md manuscript/12-clifford-tapering.md manuscript/13-tapering-benchmarks.md manuscript/14-time-evolution.md manuscript/15-trotter-formulas.md manuscript/16-cnot-staircase.md manuscript/17-cost-analysis.md manuscript/18-complete-pipeline.md manuscript/19-bond-angle.md manuscript/20-algorithms.md manuscript/21-circuit-export.md manuscript/22-scaling.md manuscript/23-whats-next.md manuscript/appendix-cookbook.md manuscript/appendix-theory.md manuscript/selected-solutions.md manuscript/references.md -o manuscript/molecules-to-circuits.pdf --pdf-engine=xelatex --lua-filter=manuscript/mermaid.lua --resource-path=manuscript:. -H manuscript/preamble.tex -V geometry:margin=1in -V fontsize=11pt -V classoption=oneside -V mainfont="DejaVu Serif" -V sansfont="DejaVu Sans" -V monofont="DejaVu Sans Mono" -V title="From Molecules to Quantum Circuits" -V subtitle="A Computational Guide to Fermion-to-Qubit Encodings" -V author="John S Azariah" -V date="Expanded working manuscript" --toc --toc-depth=2 --highlight-style=tango --top-level-division=chapter -V colorlinks=true -V linkcolor=blue -V urlcolor=blue --metadata=abstract:"This tutorial develops the translation layer from molecular electronic structure to logical quantum circuits. For H₂/STO-3G at 0.74 Å, generated PySCF integrals feed an independently verified fermionic matrix and Jordan-Wigner Pauli Hamiltonian before encoding, symmetry, product-formula, cost, and export concepts are applied. Separate PySCF scripts provide the H₂ dissociation reference and an H₂O FCI angular scan at fixed experimental O-H length; these chemistry references are not represented as energies produced by circuit construction alone. The tutorial covers six fermion-to-qubit encodings, physical-sector tapering requirements, Trotter decomposition, CNOT accounting, and OpenQASM/Q# export across 23 chapters, a code-reading bridge, reference appendices, selected worked solutions and executable companions. Companion software and source at https://github.com/johnazariah/encodings."
+[WARNING] Deprecated: --highlight-style. Use --syntax-highlighting instead.
+Generating single mermaid chart
+Generating single mermaid chart
+Generating single mermaid chart
+Generating single mermaid chart
+Generating single mermaid chart
+Generating single mermaid chart
+Generating single mermaid chart
+Generating single mermaid chart
+Generating single mermaid chart
+Generating single mermaid chart
+Generating single mermaid chart
+Generating single mermaid chart
+Generating single mermaid chart
+Generating single mermaid chart
+Generating single mermaid chart
+Generating single mermaid chart
+Generating single mermaid chart
+Generating single mermaid chart
+Generating single mermaid chart
+Generating single mermaid chart
+Generating single mermaid chart
+Generating single mermaid chart
+Generating single mermaid chart
+Generating single mermaid chart
+Generating single mermaid chart
+Generating single mermaid chart
+Generating single mermaid chart
+Generating single mermaid chart
+Generating single mermaid chart
+Generating single mermaid chart
+Generating single mermaid chart
+Generating single mermaid chart
+Generating single mermaid chart
+Generating single mermaid chart
+Done: 291 pages
+-rw-r--r--@ 1 johnaz  staff   3.3M Sep 19 15:07 manuscript/molecules-to-circuits.pdf

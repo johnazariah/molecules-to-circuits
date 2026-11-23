@@ -1,0 +1,131 @@
+PYTHON="python3" bash scripts/build-site.sh
+Manifests agree: 23 chapters, 6 supporting files, 5 sample bodies
+v2.1.5
+building myst-cli session with API URL: https://api.mystmd.org
+(node:16363) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+🌎 Building Jupyter Book (via myst) site
+🔍 Querying template metadata from https://api.mystmd.org/templates/site/myst/book-theme
+🐕 Fetching template from https://github.com/myst-templates/book-theme/archive/refs/heads/main.zip
+💾 Saved template to path _build/templates/site/myst/book-theme
+Building the base site.
+To set a baseurl (e.g. GitHub pages) use "BASE_URL" environment variable.
+⤵️  Installing web libraries (can take up to 60 s)
+📦 Installed web libraries in 2.49 s
+No character metrics for '₂' in style 'Main-Regular' and mode 'text'
+📖 Built manuscript/foreword.md in 402 ms.
+⚠️  manuscript/01-electronic-structure.md:118 unknownSymbol, Unrecognized Unicode character "₂" (8322)
+   V_{nn} = \sum_{A<B}\frac{Z_A Z_B}{\lvert\mathbf R_A-\mathbf R_B\rvert}
+\quad\text{and, for H₂,}\quad V_{nn}=\frac1R.
+📖 Built manuscript/01-electronic-structure.md in 402 ms.
+📖 Built manuscript/code-reading.md in 400 ms.
+📖 Built manuscript/02-notation.md in 400 ms.
+📖 Built manuscript/03-spin-orbitals.md in 399 ms.
+📖 Built manuscript/04-qubits-gates-circuits.md in 397 ms.
+📖 Built manuscript/05-visual-encodings.md in 396 ms.
+📖 Built manuscript/06-building-hamiltonian.md in 394 ms.
+📖 Built manuscript/07-six-encodings.md in 393 ms.
+📖 Built manuscript/08-building-vlasov.md in 392 ms.
+📖 Built manuscript/09-verification.md in 391 ms.
+📖 Built manuscript/10-why-tapering.md in 390 ms.
+📖 Built manuscript/11-diagonal-z2.md in 389 ms.
+📖 Built manuscript/12-clifford-tapering.md in 389 ms.
+📖 Built manuscript/13-tapering-benchmarks.md in 387 ms.
+📖 Built manuscript/14-time-evolution.md in 386 ms.
+📖 Built manuscript/15-trotter-formulas.md in 386 ms.
+📖 Built manuscript/16-cnot-staircase.md in 385 ms.
+📖 Built manuscript/17-cost-analysis.md in 384 ms.
+📖 Built manuscript/18-complete-pipeline.md in 383 ms.
+📖 Built manuscript/19-bond-angle.md in 382 ms.
+📖 Built manuscript/20-algorithms.md in 382 ms.
+📖 Built manuscript/21-circuit-export.md in 381 ms.
+📖 Built manuscript/22-scaling.md in 380 ms.
+📖 Built manuscript/23-whats-next.md in 379 ms.
+📖 Built manuscript/appendix-cookbook.md in 379 ms.
+📖 Built manuscript/appendix-theory.md in 377 ms.
+📖 Built manuscript/selected-solutions.md in 377 ms.
+⏳ Waiting to resolve up to 44 DOIs from doi.org...
+🪄  Linked 44 DOIs from doi.org in 8.6 s for manuscript/references.md
+📖 Built manuscript/references.md in 9.07 s.
+📚 Built 29 pages for project in 9.4 s.
+
+manuscript/01-electronic-structure.md
+  - ⚠️  unknownSymbol, Unrecognized Unicode character "₂" (8322)
+
+
+
+	✨✨✨  Starting Book Theme  ✨✨✨
+
+
+
+🔌 Server started on port 3000!  🥳 🎉
+
+
+	👉  http://127.0.0.1:3000  👈
+
+
+(node:16656) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+
+💌 GET  / 200 - - 36.084 ms
+GET /code-reading 200 - - 63.556 ms
+💌 GET  /notation 200 - - 59.302 ms
+GET /electronic-structure 200 - - 46.059 ms
+💌 GET  /spin-orbitals 200 - - 79.631 ms
+💌 GET  /qubits-gates-circuits 200 - - 19.375 ms
+GET /visual-encodings 200 - - 41.130 ms
+💌 GET  /six-encodings 200 - - 13.621 ms
+💌 GET  /building-vlasov 200 - - 42.075 ms
+💌 GET  /building-hamiltonian 200 - - 34.340 ms
+💌 GET  /verification 200 - - 14.169 ms
+GET /why-tapering 200 - - 23.974 ms
+💌 GET  /diagonal-z2 200 - - 12.521 ms
+GET /clifford-tapering 200 - - 28.293 ms
+GET /tapering-benchmarks 200 - - 35.459 ms
+💌 GET  /time-evolution 200 - - 14.791 ms
+GET /trotter-formulas 200 - - 26.555 ms
+GET /cnot-staircase 200 - - 32.527 ms
+GET /cost-analysis 200 - - 36.856 ms
+💌 GET  /complete-pipeline 200 - - 26.054 ms
+GET /bond-angle 200 - - 17.819 ms
+💌 GET  /circuit-export 200 - - 31.324 ms
+GET /algorithms 200 - - 21.808 ms
+GET /scaling 200 - - 36.660 ms
+💌 GET  /whats-next 200 - - 10.485 ms
+GET /appendix-cookbook 200 - - 16.637 ms
+💌 GET  /appendix-theory 200 - - 24.825 ms
+💌 GET  /references 200 - - 37.104 ms
+GET /selected-solutions 200 - - 36.986 ms
+💌 GET  /index.json 200 - - 6.376 ms
+💌 GET  /electronic-structure.json 200 - - 9.244 ms
+💌 GET  /code-reading.json 200 - - 9.353 ms
+💌 GET  /notation.json 200 - - 11.013 ms
+💌 GET  /spin-orbitals.json 200 - - 11.726 ms
+GET /qubits-gates-circuits.json 200 - - 13.073 ms
+💌 GET  /building-hamiltonian.json 200 - - 16.480 ms
+GET /visual-encodings.json 200 - - 22.262 ms
+💌 GET  /six-encodings.json 200 - - 16.010 ms
+💌 GET  /building-vlasov.json 200 - - 7.332 ms
+GET /verification.json 200 - - 9.194 ms
+💌 GET  /diagonal-z2.json 200 - - 5.712 ms
+GET /why-tapering.json 200 - - 7.782 ms
+GET /clifford-tapering.json 200 - - 11.760 ms
+💌 GET  /tapering-benchmarks.json 200 - - 14.951 ms
+💌 GET  /time-evolution.json 200 - - 7.553 ms
+💌 GET  /cost-analysis.json 200 - - 3.836 ms
+GET /cnot-staircase.json 200 - - 6.211 ms
+GET /trotter-formulas.json 200 - - 8.839 ms
+💌 GET  /complete-pipeline.json 200 - - 10.465 ms
+💌 GET  /bond-angle.json 200 - - 6.810 ms
+💌 GET  /circuit-export.json 200 - - 8.148 ms
+GET /algorithms.json 200 - - 8.894 ms
+GET /scaling.json 200 - - 8.895 ms
+💌 GET  /appendix-cookbook.json 200 - - 5.184 ms
+GET /whats-next.json 200 - - 4.036 ms
+💌 GET  /appendix-theory.json 200 - - 6.326 ms
+💌 GET  /robots.txt 200 - - 0.459 ms
+💌 GET  /references.json 200 - - 9.317 ms
+GET /myst-theme.css 200 - - 5.754 ms
+GET /selected-solutions.json 200 - - 11.052 ms
+GET /sitemap_style.xsl 200 - - 0.267 ms
+GET /sitemap.xml 200 - - 1.227 ms
+💌 GET  /favicon.ico 200 - - 178.431 ms

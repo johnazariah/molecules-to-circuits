@@ -1,0 +1,20 @@
+
+Chapter 11: Diagonal Z₂ Symmetries
+====================================
+Original Hamiltonian (4 qubits):
+  0.3 IIZZ + 0.2 IZIZ + 0.8 ZIZI - 0.4 ZZII
+
+Diagonal Z₂ symmetric qubits: [|0; 1; 2; 3|]
+
+(+1,+1) sector:
+  4 → 2 qubits
+  Removed: [|1; 3|]
+  Result: 0.2 II + 0.3 IZ - 0.4 ZI + 0.8 ZZ
+
+(-1,+1) sector:
+  4 → 2 qubits
+  Removed: [|1; 3|]
+  Result: -0.2 II + 0.3 IZ + 0.4 ZI + 0.8 ZZ
+
+Auto (+1 sector for all): 4 → 0 qubits
+  Result: 0.9 

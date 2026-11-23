@@ -1,0 +1,272 @@
+python3 scripts/check-book-manifests.py
+Manifests agree: 23 chapters, 6 supporting files, 5 sample bodies
+Building sample...
+pandoc manuscript/foreword.md manuscript/01-electronic-structure.md manuscript/code-reading.md manuscript/02-notation.md manuscript/03-spin-orbitals.md manuscript/04-qubits-gates-circuits.md manuscript/05-visual-encodings.md manuscript/06-building-hamiltonian.md manuscript/07-six-encodings.md manuscript/08-building-vlasov.md manuscript/09-verification.md manuscript/10-why-tapering.md manuscript/11-diagonal-z2.md manuscript/12-clifford-tapering.md manuscript/13-tapering-benchmarks.md manuscript/14-time-evolution.md manuscript/15-trotter-formulas.md manuscript/16-cnot-staircase.md manuscript/17-cost-analysis.md manuscript/18-complete-pipeline.md manuscript/19-bond-angle.md manuscript/20-algorithms.md manuscript/21-circuit-export.md manuscript/22-scaling.md manuscript/23-whats-next.md manuscript/appendix-cookbook.md manuscript/appendix-theory.md manuscript/selected-solutions.md manuscript/references.md -o manuscript/molecules-to-circuits-sample.pdf --lua-filter=manuscript/sample-filter.lua --pdf-engine=xelatex --lua-filter=manuscript/mermaid.lua --resource-path=manuscript:. -H manuscript/preamble.tex -V geometry:margin=1in -V fontsize=11pt -V classoption=oneside -V mainfont="DejaVu Serif" -V sansfont="DejaVu Sans" -V monofont="DejaVu Sans Mono" -V title="From Molecules to Quantum Circuits" -V subtitle="A Computational Guide to Fermion-to-Qubit Encodings" -V author="John S Azariah" -V date="Expanded working manuscript" --toc --toc-depth=2 --highlight-style=tango --top-level-division=chapter -V colorlinks=true -V linkcolor=blue -V urlcolor=blue
+[WARNING] Deprecated: --highlight-style. Use --syntax-highlighting instead.
+Done: 61 pages
+-rw-r--r--@ 1 johnaz  staff   904K Sep 19 15:08 manuscript/molecules-to-circuits-sample.pdf
+Building EPUB...
+pandoc manuscript/foreword.md manuscript/01-electronic-structure.md manuscript/code-reading.md manuscript/02-notation.md manuscript/03-spin-orbitals.md manuscript/04-qubits-gates-circuits.md manuscript/05-visual-encodings.md manuscript/06-building-hamiltonian.md manuscript/07-six-encodings.md manuscript/08-building-vlasov.md manuscript/09-verification.md manuscript/10-why-tapering.md manuscript/11-diagonal-z2.md manuscript/12-clifford-tapering.md manuscript/13-tapering-benchmarks.md manuscript/14-time-evolution.md manuscript/15-trotter-formulas.md manuscript/16-cnot-staircase.md manuscript/17-cost-analysis.md manuscript/18-complete-pipeline.md manuscript/19-bond-angle.md manuscript/20-algorithms.md manuscript/21-circuit-export.md manuscript/22-scaling.md manuscript/23-whats-next.md manuscript/appendix-cookbook.md manuscript/appendix-theory.md manuscript/selected-solutions.md manuscript/references.md \
+	  -o manuscript/molecules-to-circuits.epub \
+	  --toc --toc-depth=2 \
+	  --lua-filter=manuscript/mermaid.lua \
+	  --resource-path=manuscript:. \
+	  --highlight-style=tango \
+	  --metadata title="From Molecules to Quantum Circuits" \
+	  --metadata subtitle="A Computational Guide to Fermion-to-Qubit Encodings" \
+	  --metadata author="John S Azariah" \
+	  --top-level-division=chapter \
+	  --mathml
+[WARNING] Deprecated: --highlight-style. Use --syntax-highlighting instead.
+[WARNING] Could not convert TeX math |n_0\ldots n_{n-1}\rangle_{\rm enc}
+  =(A_0^\dagger)^{n_0}\cdots(A_{n-1}^\dagger)^{n_{n-1}}|\Omega\rangle., rendering as TeX:
+  _{n-1}\rangle_{\rm enc}
+                     ^
+  unexpected control sequence \rm
+  expecting "%", "\\label", "\\tag", "\\nonumber", whitespace or "\\allowbreak"
+[WARNING] Could not convert TeX math A_j=U a_j^{\rm occ}U^\dagger,\qquad
+  H_{\rm enc}=U H_{\rm occ}U^\dagger., rendering as TeX:
+  A_j=U a_j^{\rm occ}U^\dagger,\qquad
+                 ^
+  unexpected control sequence \rm
+  expecting "%", "\\label", "\\tag", "\\nonumber", whitespace or "\\allowbreak"
+[WARNING] Could not convert TeX math H_{12,3}=H_{3,12}=4g=0.18121046201519672\ {\rm Ha}., rendering as TeX:
+  046201519672\ {\rm Ha}.
+                     ^
+  unexpected control sequence \rm
+  expecting "%", "\\label", "\\tag", "\\nonumber", whitespace or "\\allowbreak"
+[WARNING] Could not convert TeX math U^\dagger H_{\rm enc}U, rendering as TeX:
+  U^\dagger H_{\rm enc}U
+                   ^
+  unexpected control sequence \rm
+  expecting "%", "\\label", "\\tag", "\\nonumber", whitespace or "\\allowbreak"
+[WARNING] Could not convert TeX math H_{\rm enc}, rendering as TeX:
+  H_{\rm enc}
+         ^
+  unexpected control sequence \rm
+  expecting "%", "\\label", "\\tag", "\\nonumber", whitespace or "\\allowbreak"
+[WARNING] Could not convert TeX math H_{\rm JW}, rendering as TeX:
+  H_{\rm JW}
+         ^
+  unexpected control sequence \rm
+  expecting "%", "\\label", "\\tag", "\\nonumber", whitespace or "\\allowbreak"
+[WARNING] Could not convert TeX math \lambda_k^{\rm ref}, rendering as TeX:
+  \lambda_k^{\rm ref}
+                 ^
+  unexpected control sequence \rm
+  expecting "%", "\\label", "\\tag", "\\nonumber", whitespace or "\\allowbreak"
+[WARNING] Could not convert TeX math \max_k|\lambda_k-\lambda_k^{\rm ref}|\leq\epsilon_E., rendering as TeX:
+  a_k-\lambda_k^{\rm ref}|\leq\epsilon_E.
+                     ^
+  unexpected control sequence \rm
+  expecting "%", "\\label", "\\tag", "\\nonumber", whitespace or "\\allowbreak"
+[WARNING] Could not convert TeX math N_\alpha=\sum_{j\ {\rm even}}n_j,\quad
+  N_\beta=\sum_{j\ {\rm odd}}n_j,\quad
+  N=N_\alpha+N_\beta,\quad M_s=\frac{N_\alpha-N_\beta}{2}., rendering as TeX:
+  lpha=\sum_{j\ {\rm even}}n_j,\quad
+                     ^
+  unexpected control sequence \rm
+  expecting "%", "\\label", "\\tag", "\\nonumber", whitespace or "\\allowbreak"
+[WARNING] Could not convert TeX math H_{\rm red}=V^\dagger UHU^\dagger V,\qquad
+  |\psi\rangle_{\rm full}=U^\dagger V|\psi\rangle_{\rm red}., rendering as TeX:
+  H_{\rm red}=V^\dagger UHU^\dagger V,\qqu
+         ^
+  unexpected control sequence \rm
+  expecting "%", "\\label", "\\tag", "\\nonumber", whitespace or "\\allowbreak"
+[WARNING] Could not convert TeX math |\psi\rangle_{\rm full}
+  =U^\dagger\bigl(|\psi\rangle_{0,1}\otimes|11\rangle_{2,3}\bigr),, rendering as TeX:
+  |\psi\rangle_{\rm full}
+                    ^
+  unexpected control sequence \rm
+  expecting "%", "\\label", "\\tag", "\\nonumber", whitespace or "\\allowbreak"
+[WARNING] Could not convert TeX math 
+  \approx
+  \begin{pmatrix}
+  -0.252486193&0&0&0.181210462\\
+  0&-1.064667234&-0.181210462&0\\
+  0&-0.181210462&-1.064667234&0\\
+  0.181210462&0&0&-1.831863646
+  \end{pmatrix}\ {\rm Ha}.
+  , rendering as TeX:
+  .181210462&0&0&-1.831863646
+                     ^
+  unexpected control sequence \rm
+  expecting "%", "\\label", "\\tag", "\\nonumber", whitespace or "\\allowbreak"
+[WARNING] Could not convert TeX math 
+  -1.8523881736,\quad -1.2458776961,\quad
+  -0.8834567721,\quad -0.2319616660\quad{\rm Ha}.
+  , rendering as TeX:
+  458776961,\quad
+                     ^
+  unexpected control sequence \rm
+  expecting "%", "\\label", "\\tag", "\\nonumber", whitespace or "\\allowbreak"
+[WARNING] Could not convert TeX math g_{\rm pair}=Z_0Z_1, rendering as TeX:
+  g_{\rm pair}=Z_0Z_1
+         ^
+  unexpected control sequence \rm
+  expecting "%", "\\label", "\\tag", "\\nonumber", whitespace or "\\allowbreak"
+[WARNING] Could not convert TeX math |0\rangle\leftrightarrow|0011\rangle_{\rm occ}, rendering as TeX:
+  w|0011\rangle_{\rm occ}
+                     ^
+  unexpected control sequence \rm
+  expecting "%", "\\label", "\\tag", "\\nonumber", whitespace or "\\allowbreak"
+[WARNING] Could not convert TeX math |1\rangle\leftrightarrow|1100\rangle_{\rm occ}, rendering as TeX:
+  w|1100\rangle_{\rm occ}
+                     ^
+  unexpected control sequence \rm
+  expecting "%", "\\label", "\\tag", "\\nonumber", whitespace or "\\allowbreak"
+[WARNING] Could not convert TeX math C_{\rm step}=\sum_k2\max(w_k-1,0)., rendering as TeX:
+  C_{\rm step}=\sum_k2\max(w_k-1,0).
+         ^
+  unexpected control sequence \rm
+  expecting "%", "\\label", "\\tag", "\\nonumber", whitespace or "\\allowbreak"
+[WARNING] Could not convert TeX math W=4(1)+6(2)+4(4)=32,\qquad
+  C_{\rm step}=4(0)+6(2)+4(6)=36., rendering as TeX:
+  C_{\rm step}=4(0)+6(2)+4(6)=36.
+         ^
+  unexpected control sequence \rm
+  expecting "%", "\\label", "\\tag", "\\nonumber", whitespace or "\\allowbreak"
+[WARNING] Could not convert TeX math \{-1.8523881736,-1.2458776961,-0.8834567721,-0.2319616660\}
+  \ {\rm Ha}., rendering as TeX:
+  \ {\rm Ha}.
+         ^
+  unexpected control sequence \rm
+  expecting "%", "\\label", "\\tag", "\\nonumber", whitespace or "\\allowbreak"
+[WARNING] Could not convert TeX math H_{\rm mixed,red}=0.5\,II-0.3\,XX+0.2\,IZ+0.1\,YY., rendering as TeX:
+  H_{\rm mixed,red}=0.5\,II-0.3\,XX+0.2\,I
+         ^
+  unexpected control sequence \rm
+  expecting "%", "\\label", "\\tag", "\\nonumber", whitespace or "\\allowbreak"
+[WARNING] Could not convert TeX math \lambda_{\rm coeff}, rendering as TeX:
+  \lambda_{\rm coeff}
+               ^
+  unexpected control sequence \rm
+  expecting "%", "\\label", "\\tag", "\\nonumber", whitespace or "\\allowbreak"
+[WARNING] Could not convert TeX math \lambda_{\rm coeff}=\sum_k\lvert c_k\rvert, rendering as TeX:
+  \lambda_{\rm coeff}=\sum_k\lvert c_k\rve
+               ^
+  unexpected control sequence \rm
+  expecting "%", "\\label", "\\tag", "\\nonumber", whitespace or "\\allowbreak"
+[WARNING] Could not convert TeX math \lambda_{\rm meas}=\sum_{k\ne I}\lvert c_k\rvert, rendering as TeX:
+  \lambda_{\rm meas}=\sum_{k\ne I}\lvert c
+               ^
+  unexpected control sequence \rm
+  expecting "%", "\\label", "\\tag", "\\nonumber", whitespace or "\\allowbreak"
+[WARNING] Could not convert TeX math \Lambda_{\rm comm}=\sum_{j<k}\|[c_jP_j,c_kP_k]\|, rendering as TeX:
+  \Lambda_{\rm comm}=\sum_{j<k}\|[c_jP_j,c
+               ^
+  unexpected control sequence \rm
+  expecting "%", "\\label", "\\tag", "\\nonumber", whitespace or "\\allowbreak"
+[WARNING] Could not convert TeX math \sum_{\rm removed}\lvert c_k\rvert, rendering as TeX:
+  \sum_{\rm removed}\lvert c_k\rvert
+            ^
+  unexpected control sequence \rm
+  expecting "%", "\\label", "\\tag", "\\nonumber", whitespace or "\\allowbreak"
+[WARNING] Could not convert TeX math \eta=\|U_{\rm PF}-U_{\rm exact}\|, rendering as TeX:
+  \eta=\|U_{\rm PF}-U_{\rm exact}\|
+                ^
+  unexpected control sequence \rm
+  expecting "%", "\\label", "\\tag", "\\nonumber", whitespace or "\\allowbreak"
+[WARNING] Could not convert TeX math \Delta t\lambda_{\rm meas}, rendering as TeX:
+  elta t\lambda_{\rm meas}
+                     ^
+  unexpected control sequence \rm
+  expecting "%", "\\label", "\\tag", "\\nonumber", whitespace or "\\allowbreak"
+[WARNING] Could not convert TeX math \Delta t\lambda_{\rm meas}, rendering as TeX:
+  elta t\lambda_{\rm meas}
+                     ^
+  unexpected control sequence \rm
+  expecting "%", "\\label", "\\tag", "\\nonumber", whitespace or "\\allowbreak"
+[WARNING] Could not convert TeX math \lambda_{\rm meas}=30, rendering as TeX:
+  \lambda_{\rm meas}=30
+               ^
+  unexpected control sequence \rm
+  expecting "%", "\\label", "\\tag", "\\nonumber", whitespace or "\\allowbreak"
+[WARNING] Could not convert TeX math N_{\rm one\ qubit}=1+2n_X+4n_Y., rendering as TeX:
+  N_{\rm one\ qubit}=1+2n_X+4n_Y.
+         ^
+  unexpected control sequence \rm
+  expecting "%", "\\label", "\\tag", "\\nonumber", whitespace or "\\allowbreak"
+[WARNING] Could not convert TeX math E_{\rm FCI}-E_{\rm HF}=-0.0205245271, rendering as TeX:
+  E_{\rm FCI}-E_{\rm HF}=-0.0205245271
+         ^
+  unexpected control sequence \rm
+  expecting "%", "\\label", "\\tag", "\\nonumber", whitespace or "\\allowbreak"
+[WARNING] Could not convert TeX math H_{\rm direct}(R)=H_{\rm skeleton}(R)., rendering as TeX:
+  H_{\rm direct}(R)=H_{\rm skeleton}(R).
+         ^
+  unexpected control sequence \rm
+  expecting "%", "\\label", "\\tag", "\\nonumber", whitespace or "\\allowbreak"
+[WARNING] Could not convert TeX math h_{\rm MO}=C^\mathsf{T}h_{\rm AO}C, rendering as TeX:
+  h_{\rm MO}=C^\mathsf{T}h_{\rm AO}C
+         ^
+  unexpected control sequence \rm
+  expecting "%", "\\label", "\\tag", "\\nonumber", whitespace or "\\allowbreak"
+[WARNING] Could not convert TeX math h_{\rm AO}, rendering as TeX:
+  h_{\rm AO}
+         ^
+  unexpected control sequence \rm
+  expecting "%", "\\label", "\\tag", "\\nonumber", whitespace or "\\allowbreak"
+[WARNING] Could not convert TeX math \vartheta_{\rm fit}=99^\circ+
+  \frac{h\,[E(98^\circ)-E(100^\circ)]}
+  {2[E(98^\circ)-2E(99^\circ)+E(100^\circ)]}
+  \simeq98.9035^\circ., rendering as TeX:
+  \vartheta_{\rm fit}=99^\circ+
+                 ^
+  unexpected control sequence \rm
+  expecting "%", "\\label", "\\tag", "\\nonumber", whitespace or "\\allowbreak"
+[WARNING] Could not convert TeX math H_{\rm closed}=
+  \begin{pmatrix}A&g\\g&D\end{pmatrix}
+  =\begin{pmatrix}
+  -1.8318636465&0.1812104620\\
+  0.1812104620&-0.2524861931
+  \end{pmatrix}\quad\text{Ha}., rendering as TeX:
+  H_{\rm closed}=
+         ^
+  unexpected control sequence \rm
+  expecting "%", "\\label", "\\tag", "\\nonumber", whitespace or "\\allowbreak"
+[WARNING] Could not convert TeX math N_{\rm total}=\sum_{k\ne I}N_k, rendering as TeX:
+  N_{\rm total}=\sum_{k\ne I}N_k
+         ^
+  unexpected control sequence \rm
+  expecting "%", "\\label", "\\tag", "\\nonumber", whitespace or "\\allowbreak"
+[WARNING] Could not convert TeX math (\sum_k|c_k|\sigma_k)^2/N_{\rm total}, rendering as TeX:
+  \sigma_k)^2/N_{\rm total}
+                     ^
+  unexpected control sequence \rm
+  expecting "%", "\\label", "\\tag", "\\nonumber", whitespace or "\\allowbreak"
+[WARNING] Could not convert TeX math E_{\rm shift}=0.5, rendering as TeX:
+  E_{\rm shift}=0.5
+         ^
+  unexpected control sequence \rm
+  expecting "%", "\\label", "\\tag", "\\nonumber", whitespace or "\\allowbreak"
+[WARNING] Could not convert TeX math E=-1.8523881736\ {\rm Ha}
+  \longrightarrow\phi=0.3743942059
+  \longrightarrow 4096\phi=1533.5186673., rendering as TeX:
+  1.8523881736\ {\rm Ha}
+                     ^
+  unexpected control sequence \rm
+  expecting "%", "\\label", "\\tag", "\\nonumber", whitespace or "\\allowbreak"
+[WARNING] Could not convert TeX math E_{\rm decoded}=0.5-\frac{2\pi(1534)}{4096}
+  =-1.8531265286\ {\rm Ha}., rendering as TeX:
+  E_{\rm decoded}=0.5-\frac{2\pi(1534)}{40
+         ^
+  unexpected control sequence \rm
+  expecting "%", "\\label", "\\tag", "\\nonumber", whitespace or "\\allowbreak"
+[WARNING] Could not convert TeX math \Delta E_{\rm bin}=\frac{2\pi}{4096}
+  =0.0015339808\ {\rm Ha}., rendering as TeX:
+  \Delta E_{\rm bin}=\frac{2\pi}{4096}
+                ^
+  unexpected control sequence \rm
+  expecting "%", "\\label", "\\tag", "\\nonumber", whitespace or "\\allowbreak"
+[WARNING] Could not convert TeX math U=e^{-i(c_I-E_{\rm shift})t_0}\,e^{-i(H-c_I I)t_0}., rendering as TeX:
+  U=e^{-i(c_I-E_{\rm shift})t_0}\,e^{-i(H-
+                     ^
+  unexpected control sequence \rm
+  expecting "%", "\\label", "\\tag", "\\nonumber", whitespace or "\\allowbreak"
+[WARNING] Could not convert TeX math E_{\rm shift}=0.5, rendering as TeX:
+  E_{\rm shift}=0.5
+         ^
+  unexpected control sequence \rm
+  expecting "%", "\\label", "\\tag", "\\nonumber", whitespace or "\\allowbreak"
+-rw-r--r--@ 1 johnaz  staff   2.5M Sep 19 15:08 manuscript/molecules-to-circuits.epub

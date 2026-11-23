@@ -1,0 +1,19 @@
+{
+  "manuscript/molecules-to-circuits.pdf": {
+    "pages": 291,
+    "image_placements": 36,
+    "sha256": "bfbc051839d8e138a41aa605d2efb4b9b3189e1a759a7b93e846c8e5b3df2741",
+    "out_of_page_text_spans": 0
+  },
+  "manuscript/molecules-to-circuits-sample.pdf": {
+    "pages": 61,
+    "image_placements": 9,
+    "sha256": "7e1c48f7fc61cf5ade4a0788a8d967cf8147df19caf075b37e7a854b144ef988",
+    "out_of_page_text_spans": 0
+  },
+  "manuscript/molecules-to-circuits.epub": {
+    "content_documents": 31,
+    "pngs": 36,
+    "sha256": "95cd08aabb46d94679b1aefb28699e8cfa03fed67de6e03d340d41b51bdb7a2e"
+  }
+}

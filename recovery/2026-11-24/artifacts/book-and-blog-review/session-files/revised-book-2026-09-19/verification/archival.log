@@ -1,0 +1,3 @@
+Portable parity passes: complete H2 matrices/coefficients/spectra, scan energies, grids and bound provenance.
+PNG byte equality and regenerated floating-point hashes are deliberately not scientific tolerance tests.
+Chemistry regeneration passed --archival checks in an isolated copy; accepted artifacts were not changed.

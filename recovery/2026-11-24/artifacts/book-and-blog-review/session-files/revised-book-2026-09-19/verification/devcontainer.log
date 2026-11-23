@@ -1,0 +1,23 @@
+Setting up the book's checkout-local development environment...
+  sudo apt-get update -qq 
+  sudo apt-get install -y -qq texlive-xetex texlive-latex-extra texlive-fonts-recommended fonts-dejavu lmodern pandoc 
+  python3 -m venv /Users/johnaz/PhD/copilot-worktrees/encodings-book/johnazariah-congenial-garbanzo/.venv 
+  /Users/johnaz/PhD/copilot-worktrees/encodings-book/johnazariah-congenial-garbanzo/.venv/bin/python -m pip install --quiet -r /Users/johnaz/PhD/copilot-worktrees/encodings-book/johnazariah-congenial-garbanzo/requirements-data.txt -r /Users/johnaz/PhD/copilot-worktrees/encodings-book/johnazariah-congenial-garbanzo/requirements.txt playwright 
+  env PUPPETEER_SKIP_DOWNLOAD=true npm install --prefix /Users/johnaz/PhD/copilot-worktrees/encodings-book/johnazariah-congenial-garbanzo/_build/tools --no-audit --no-fund @mermaid-js/mermaid-cli@11.12.0 
+  /Users/johnaz/PhD/copilot-worktrees/encodings-book/johnazariah-congenial-garbanzo/.venv/bin/python -m playwright install --with-deps chromium 
+  dotnet --version 
+  /Users/johnaz/PhD/copilot-worktrees/encodings-book/johnazariah-congenial-garbanzo/.venv/bin/python -m jupyter_book --version 
+  /Users/johnaz/PhD/copilot-worktrees/encodings-book/johnazariah-congenial-garbanzo/_build/tools/node_modules/.bin/mmdc --version 
+
+Dry run only; no dependencies installed.
+  export PATH=/Users/johnaz/PhD/copilot-worktrees/encodings-book/johnazariah-congenial-garbanzo/.venv/bin:/Users/johnaz/PhD/copilot-worktrees/encodings-book/johnazariah-congenial-garbanzo/_build/tools/node_modules/.bin:"$PATH"
+  export PYTHON=/Users/johnaz/PhD/copilot-worktrees/encodings-book/johnazariah-congenial-garbanzo/.venv/bin/python
+  export MMDC=/Users/johnaz/PhD/copilot-worktrees/encodings-book/johnazariah-congenial-garbanzo/_build/tools/node_modules/.bin/mmdc
+  export PLAYWRIGHT_BROWSERS_PATH=/Users/johnaz/PhD/copilot-worktrees/encodings-book/johnazariah-congenial-garbanzo/_build/tools/browsers
+  export MMDC_NO_SANDBOX=1  # disposable container only
+
+  dotnet fsi labs/01-first-encoding.fsx
+  make manifest-check tooling-check
+  make sample
+  make html
+Real circuit importer dependencies are optional; see scripts/requirements-import.txt.

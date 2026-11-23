@@ -1,0 +1,47 @@
+[
+  {
+    "basis": "ZZZZ",
+    "coefficient_l1_Ha": 2.518067362129961,
+    "terms": [
+      "IIII",
+      "IIZI",
+      "IIIZ",
+      "IIZZ",
+      "ZIII",
+      "IZII",
+      "ZZII",
+      "ZIIZ",
+      "IZZI",
+      "ZIZI",
+      "IZIZ"
+    ]
+  },
+  {
+    "basis": "YXXY",
+    "coefficient_l1_Ha": 0.04530261550379917,
+    "terms": [
+      "YXXY"
+    ]
+  },
+  {
+    "basis": "YYXX",
+    "coefficient_l1_Ha": 0.04530261550379917,
+    "terms": [
+      "YYXX"
+    ]
+  },
+  {
+    "basis": "XXYY",
+    "coefficient_l1_Ha": 0.04530261550379917,
+    "terms": [
+      "XXYY"
+    ]
+  },
+  {
+    "basis": "XYYX",
+    "coefficient_l1_Ha": 0.04530261550379917,
+    "terms": [
+      "XYYX"
+    ]
+  }
+]

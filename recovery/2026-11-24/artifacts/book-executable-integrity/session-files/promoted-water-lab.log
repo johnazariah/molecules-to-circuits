@@ -1,0 +1,24 @@
+H2O angular scan at fixed r_OH = 0.9584 Angstrom
+================================================
+Recorded PySCF version: 2.13.0
+Coarse grid: 25 points (60-180 deg, 5 deg step)
+Fine grid:   21 points (95-115 deg, 1 deg step)
+
+HF sampled minimum:  101 deg  -74.9636683789 Ha
+FCI sampled minimum: 99 deg  -75.0140865447 Ha
+Experimental angle:  104.52 deg
+
+HF bending energy (180 deg -> HF minimum):   0.112928 Ha
+FCI bending energy (180 deg -> FCI minimum): 0.125873 Ha
+HF fraction of stated FCI bending energy:    89.7%
+
+Fine-scan neighborhood around the FCI minimum:
+     97 deg  HF -74.9629519525 Ha  FCI -75.0139243423 Ha
+     98 deg  HF -74.9632722320 Ha  FCI -75.0140506756 Ha
+     99 deg  HF -74.9634973572 Ha  FCI -75.0140865447 Ha
+    100 deg  HF -74.9636288868 Ha  FCI -75.0140335106 Ha
+    101 deg  HF -74.9636683789 Ha  FCI -75.0138931159 Ha
+
+Checks passed.
+This lab validates the PySCF reference data only.
+Encoding and circuit-cost parity require a separate generated artifact.

@@ -1,0 +1,25 @@
+Chapter 3: Spin-Orbital Integrals
+=================================
+Source: h2_dissociation_integrals.json
+PySCF: 2.13.0
+R = 0.74 Angstrom, Vnn = 0.7151043391 Ha, E_HF = -1.1167593074 Ha
+One-body integrals (spin-orbital):
+  h(0,0) = -1.2533097866 Ha
+  h(1,1) = -1.2533097866 Ha
+  h(2,2) = -0.4750688488 Ha
+  h(3,3) = -0.4750688488 Ha
+
+Total two-body integrals in raw map: 32
+  Same-spin (αα + ββ): 16
+  Cross-spin (αβ + βα): 16
+
+Canonical raw tensor loaded; FockMap's primary builders apply the index order and 1/2.
+Run make verify-data for coefficient and dense-matrix parity.
+  JW                        dense matrix passes (max error 6.661e-016)
+  Physical Nalpha=Nbeta=1   eigenvalues pass (computed error 6.661e-016 Ha; including solver allowance 2.500e-010 Ha)
+  Closed-shell pair (+1)    eigenvalues pass (computed error 6.661e-016 Ha; including solver allowance 2.500e-010 Ha)
+4q: -0.8121706072 IIII - 0.2234315369 IIIZ - 0.2234315369 IIZI + 0.1744128761 IIZZ + 0.1714128264 IZII + 0.1206252348 IZIZ + 0.1659278503 IZZI - 0.0453026155 XXYY + 0.0453026155 XYYX + 0.0453026155 YXXY - 0.0453026155 YYXX + 0.1714128264 ZIII + 0.1659278503 ZIIZ + 0.1206252348 ZIZI + 0.1686889817 ZZII; metrics=(15, 4, 32, 36)
+2q: -1.053421077 II + 0.3948443634 IZ - 0.181210462 YY + 0.3948443634 ZI + 0.01124615715 ZZ; metrics=(5, 2, 6, 4)
+1q: -1.04217492 I + 0.181210462 X + 0.7896887267 Z; metrics=(3, 1, 2, 0)
+Reduced rows [0;1;2;3] correspond to original rows [|12; 9; 6; 3|]. HF becomes row 3, then |1>.
+The optional closed-shell pair block is not the whole two-electron sector.

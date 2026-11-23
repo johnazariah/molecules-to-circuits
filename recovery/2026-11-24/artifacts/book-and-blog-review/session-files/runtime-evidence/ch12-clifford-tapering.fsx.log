@@ -1,0 +1,18 @@
+
+Chapter 12: General Clifford Tapering
+======================================
+
+Symplectic representation:
+  XYZ → X bits = [|true; true; false|], Z bits = [|false; true; true|]
+
+Commutativity:
+  XX and ZZ commute? true
+  XZ and YI commute? false
+
+Heisenberg model (XX + YY + ZZ + ZI + IZ):
+  Diagonal Z₂ qubits: 0
+  General Z₂ symmetries: 1
+
+  FullClifford application is withheld here.
+  Select generator eigenvalues from the target physical sector,
+  then compare all tapered sector spectra with the untapered matrix.

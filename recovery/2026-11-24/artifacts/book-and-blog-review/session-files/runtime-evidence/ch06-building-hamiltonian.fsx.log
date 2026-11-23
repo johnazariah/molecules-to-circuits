@@ -1,0 +1,52 @@
+Chapter 3: Spin-Orbital Integrals
+=================================
+Source: h2_dissociation_integrals.json
+PySCF: 2.13.0
+R = 0.74 Angstrom, Vnn = 0.7151043391 Ha, E_HF = -1.1167593074 Ha
+One-body integrals (spin-orbital):
+  h(0,0) = -1.2533097866 Ha
+  h(1,1) = -1.2533097866 Ha
+  h(2,2) = -0.4750688488 Ha
+  h(3,3) = -0.4750688488 Ha
+
+Total two-body integrals in raw map: 32
+  Same-spin (αα + ββ): 16
+  Cross-spin (αβ + βα): 16
+
+Canonical raw tensor loaded; FockMap's primary builders apply the index order and 1/2.
+Run make verify-data for coefficient and dense-matrix parity.
+
+Chapter 6: Building the Qubit Hamiltonian
+==========================================
+
+The complete 15-term H₂ Hamiltonian (Jordan-Wigner):
+
+   1. -0.8122  IIII    [diagonal]
+   2. +0.1714  ZIII    [diagonal]
+   3. +0.1714  IZII    [diagonal]
+   4. -0.2234  IIZI    [diagonal]
+   5. -0.2234  IIIZ    [diagonal]
+   6. +0.1687  ZZII    [diagonal]
+   7. +0.0453  YXXY    [configuration coupling]
+   8. -0.0453  YYXX    [configuration coupling]
+   9. -0.0453  XXYY    [configuration coupling]
+  10. +0.0453  XYYX    [configuration coupling]
+  11. +0.1206  ZIZI    [diagonal]
+  12. +0.1659  ZIIZ    [diagonal]
+  13. +0.1659  IZZI    [diagonal]
+  14. +0.1206  IZIZ    [diagonal]
+  15. +0.1744  IIZZ    [diagonal]
+
+  Diagonal terms: 11
+  Configuration-coupling terms: 4
+
+  Coupling enables determinant mixing; correlation energy is the
+  optimized expectation difference of the full Hamiltonian.
+
+Same Hamiltonian, different encodings:
+  Jordan-Wigner              15 terms
+  Bravyi-Kitaev              15 terms
+  Parity                     15 terms
+  Balanced Binary Tree       15 terms
+  Balanced Ternary Tree      15 terms
+  Vlasov Tree                15 terms

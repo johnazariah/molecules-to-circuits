@@ -1,0 +1,56 @@
+Building sample...
+pandoc manuscript/01-electronic-structure.md manuscript/02-notation.md manuscript/03-spin-orbitals.md manuscript/04-qubits-gates-circuits.md manuscript/05-visual-encodings.md manuscript/06-building-hamiltonian.md manuscript/07-six-encodings.md manuscript/08-building-vlasov.md manuscript/09-verification.md manuscript/10-why-tapering.md manuscript/11-diagonal-z2.md manuscript/12-clifford-tapering.md manuscript/13-tapering-benchmarks.md manuscript/14-time-evolution.md manuscript/15-trotter-formulas.md manuscript/16-cnot-staircase.md manuscript/17-cost-analysis.md manuscript/18-complete-pipeline.md manuscript/19-bond-angle.md manuscript/20-algorithms.md manuscript/21-circuit-export.md manuscript/22-scaling.md manuscript/23-whats-next.md manuscript/appendix-cookbook.md manuscript/references.md -o /Users/johnaz/.copilot/session-state/04aacd0a-7d1c-42b1-bd1f-56d09044dc31/files/current-sample.pdf --pdf-engine=xelatex --lua-filter=manuscript/mermaid.lua --resource-path=manuscript:. -H manuscript/preamble.tex -V geometry:margin=1in -V fontsize=11pt -V classoption=oneside -V mainfont="DejaVu Serif" -V sansfont="DejaVu Sans" -V monofont="DejaVu Sans Mono" -V title="From Molecules to Quantum Circuits" -V subtitle="A Computational Guide to Fermion-to-Qubit Encodings" -V author="John S Azariah" -V date="March 2026" --toc --toc-depth=2 --highlight-style=tango --top-level-division=chapter -V colorlinks=true -V linkcolor=blue -V urlcolor=blue --lua-filter=manuscript/sample-filter.lua
+[WARNING] Deprecated: --highlight-style. Use --syntax-highlighting instead.
+mermaid.lua: WARNING — Playwright Chrome not found, mmdc may fail
+  ✗ manuscript/mermaid-images/diagram-3bc3043a.png: sh: mmdc: command not found
+
+  ✗ manuscript/mermaid-images/diagram-763cf1cf.png: sh: mmdc: command not found
+
+  ✗ manuscript/mermaid-images/diagram-731db378.png: sh: mmdc: command not found
+
+  ✗ manuscript/mermaid-images/diagram-f2153456.png: sh: mmdc: command not found
+
+  ✗ manuscript/mermaid-images/diagram-13a07673.png: sh: mmdc: command not found
+
+  ✗ manuscript/mermaid-images/diagram-7dbf280a.png: sh: mmdc: command not found
+
+  ✗ manuscript/mermaid-images/diagram-6305b734.png: sh: mmdc: command not found
+
+  ✗ manuscript/mermaid-images/diagram-d60d4a90.png: sh: mmdc: command not found
+
+  ✗ manuscript/mermaid-images/diagram-8e8b578a.png: sh: mmdc: command not found
+
+  ✗ manuscript/mermaid-images/diagram-b2a9af97.png: sh: mmdc: command not found
+
+  ✗ manuscript/mermaid-images/diagram-295bc7d6.png: sh: mmdc: command not found
+
+  ✗ manuscript/mermaid-images/diagram-8bf9f1a2.png: sh: mmdc: command not found
+
+  ✗ manuscript/mermaid-images/diagram-f3c2f56d.png: sh: mmdc: command not found
+
+  ✗ manuscript/mermaid-images/diagram-c447211e.png: sh: mmdc: command not found
+
+  ✗ manuscript/mermaid-images/diagram-805f171c.png: sh: mmdc: command not found
+
+  ✗ manuscript/mermaid-images/diagram-42da32c2.png: sh: mmdc: command not found
+
+  ✗ manuscript/mermaid-images/diagram-87f310cc.png: sh: mmdc: command not found
+
+  ✗ manuscript/mermaid-images/diagram-62110307.png: sh: mmdc: command not found
+
+  ✗ manuscript/mermaid-images/diagram-6a3aeb8d.png: sh: mmdc: command not found
+
+  ✗ manuscript/mermaid-images/diagram-82c339b1.png: sh: mmdc: command not found
+
+  ✗ manuscript/mermaid-images/diagram-621522e6.png: sh: mmdc: command not found
+
+  ✗ manuscript/mermaid-images/diagram-ce93a39c.png: sh: mmdc: command not found
+
+  ✗ manuscript/mermaid-images/diagram-718ee66c.png: sh: mmdc: command not found
+
+  ✗ manuscript/mermaid-images/diagram-72d90223.png: sh: mmdc: command not found
+
+  ✗ manuscript/mermaid-images/diagram-e0b23cce.png: sh: mmdc: command not found
+
+Done: 54 pages
+-rw-r--r--@ 1 johnaz  staff   288K Sep  7 15:17 /Users/johnaz/.copilot/session-state/04aacd0a-7d1c-42b1-bd1f-56d09044dc31/files/current-sample.pdf

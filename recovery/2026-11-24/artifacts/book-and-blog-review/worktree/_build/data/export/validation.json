@@ -1,0 +1,23 @@
+{
+  "importer_versions": {
+    "qiskit": "2.2.3",
+    "qiskit-qasm3-import": "0.6.0",
+    "qsharp": "1.22.0"
+  },
+  "absolute_matrix_tolerance": 1e-11,
+  "maximum_errors": {
+    "QASM 2 Qiskit": 2.88711357575485e-15,
+    "QASM 3 Qiskit": 2.88711357575485e-15,
+    "JSON Qiskit": 2.896204876521985e-15,
+    "Q#": 2.734769414967001e-15
+  },
+  "product_formula_operator_error": 0.001429955155431014,
+  "controlled_single_step_resources": {
+    "qubits": 5,
+    "cnots": 308,
+    "total_gates": 683,
+    "depth": 546
+  },
+  "controlled_compiler": "Qiskit 2.2.3; basis u,cx; optimisation 1; seed 7; no coupling map",
+  "identity_phase_policy": "omitted uncontrolled; must restore for controlled U"
+}

@@ -1,0 +1,520 @@
+
+manuscript/01-electronic-structure.md:19
+The ground-state energy determines whether a chemical reaction will happen, how strong a bond is, what shape 
+a molecule takes, and why water boils at 100°C rather than −50°C. It is arguably the single most important 
+quantity in all of chemistry. And for any system with more than one electron, we cannot compute it 
+analytically — the electron–electron repulsion couples the electrons' coordinates, making the Schrödinger 
+equation non-separable. Even helium, the simplest multi-electron atom, has no closed-form solution. 
+Perturbation theory can improve the picture incrementally — each order of the expansion buys another digit or 
+two of accuracy — but it never closes the gap to an exact result, and it converges poorly (or not at all) for 
+strongly correlated systems.
+
+manuscript/01-electronic-structure.md:21
+Classical computational chemistry has developed an extraordinary arsenal of approximation methods — 
+Hartree–Fock, density functional theory, coupled cluster, configuration interaction — each trading accuracy 
+for tractability in a different way. These methods have transformed chemistry and earned multiple Nobel 
+Prizes. But they share a fundamental limitation: while methods like CCSD(T) capture most correlation energy 
+at steep but polynomial cost (O(N⁷)), they break down for strongly correlated systems. And the cost of 
+capturing the *exact* correlation energy — full configuration interaction — grows exponentially with the 
+number of electrons.
+
+manuscript/01-electronic-structure.md:23
+This is where quantum simulation enters the picture. An $n$-qubit register can represent amplitudes over 
+$2^n$ occupation states without storing those amplitudes one by one in classical memory. That compact 
+representation is necessary, but it is not an algorithmic guarantee: preparing a useful molecular state and 
+estimating its ground-state energy can still be hard. Quantum algorithms may offer better scaling for 
+structured chemistry problems when the Hamiltonian can be implemented efficiently, the trial state has 
+adequate overlap with the target, and the required precision and fault-tolerant resources are available 
+(Kempe, Kitaev & Regev, 2006; Reiher et al., 2017). Translating the molecular problem into that form requires 
+a specific sequence of mathematical transformations, each with its own conventions, sign choices, and 
+opportunities for error.
+
+manuscript/01-electronic-structure.md:27
+We will do this for the hydrogen molecule, H₂. Not because H₂ is interesting in itself (it isn't — any laptop 
+can solve H₂ exactly in milliseconds), but because H₂ is small enough that we can see every step, check every 
+number, and build intuition for what happens at larger scale. Later, when we work with H₂O, the same pipeline 
+will produce larger numbers but the same kinds of objects.
+
+manuscript/01-electronic-structure.md:63
+> **Common Mistake #1:** Students sometimes think the difficulty is the number of particles. It isn't — 
+classical N-body problems with gravitational interactions are also hard. The quantum difficulty is that we 
+must find the *wavefunction* $\Psi(\mathbf{r}_1, \mathbf{r}_2, \ldots, \mathbf{r}_N)$, which lives in a 
+$3N$-dimensional space. For a modest molecule with 50 electrons, this is a function of 150 continuous 
+variables. No grid-based method can touch that.
+
+manuscript/01-electronic-structure.md:87
+> **Why this matters for quantum simulation:** The Born–Oppenheimer approximation is not unique to quantum 
+computing — every classical electronic structure method uses it too. It means the quantum computer's job is 
+to solve the electronic problem at a *fixed* geometry. If you want a potential energy surface, you run the 
+quantum computer many times, once per geometry. (This is exactly what our H₂O bond-angle scan will do in 
+later chapters.)
+
+manuscript/01-electronic-structure.md:117
+Is STO-3G a good basis set? No — it is the smallest possible choice, and it captures only the crudest 
+features of the electronic structure. Serious computational chemistry uses much larger basis sets (cc-pVDZ, 
+cc-pVTZ, aug-cc-pVQZ, …). But STO-3G is perfect for *learning*, because it keeps the numbers small enough to 
+track by hand while still exhibiting all the essential structure.
+
+manuscript/01-electronic-structure.md:119
+> **Common Mistake #2:** Confusing "basis set" with "basis states." The basis set (STO-3G) determines which 
+*orbitals* we use. The basis states (the 6 configurations in the table below) are the many-electron states 
+built from those orbitals. A bigger basis set gives more orbitals, which gives exponentially more 
+configurations — and this is where the computational hardness lives.
+
+manuscript/01-electronic-structure.md:121
+> **What "exact" means in this book:** When we say a computation is "exact" (e.g., Full Configuration 
+Interaction), we mean exact *within the chosen basis set*. STO-3G H₂ has only 4 spin-orbitals and 6 
+configurations, so FCI is trivial and gives the exact answer for that basis. But STO-3G itself is a crude 
+approximation to the true electronic wavefunction — a larger basis set (cc-pVDZ, cc-pVTZ) would give a more 
+accurate energy. The quantum simulation pipeline operates at the basis-set level: it solves the 
+finite-dimensional problem exactly, but the finite-dimensional problem is only as good as the basis set that 
+defines it. Throughout this book, "exact" always means "exact within the basis."
+
+manuscript/01-electronic-structure.md:161
+The **exact** ground state of H₂ is a *superposition* of some of these configurations. The Hartree–Fock 
+approximation uses only the first ($\lvert 1100\rangle$), capturing about 99% of the ground-state energy. The 
+remaining ~1% is the **correlation energy** — the part that arises from electron–electron interactions that a 
+single-configuration picture misses.
+
+manuscript/01-electronic-structure.md:163
+This 1% sounds small. It isn't. The correlation energy often determines whether a reaction happens, which 
+isomer is more stable, and what the dissociation curve looks like — though many qualitative features (such as 
+molecular geometries and shapes) are already captured at the Hartree–Fock level. The challenge is that 
+methods which systematically improve on HF — full CI, for example — scale exponentially. Polynomial 
+approximations like CCSD(T) work well for weakly correlated systems but fail for strongly correlated ones 
+(bond-breaking, transition metals, open shells). This is precisely the gap that quantum simulation aims to 
+fill.
+
+manuscript/01-electronic-structure.md:165
+> **A hint of what's coming:** Those occupation vectors $\lvert n_0 n_1 n_2 n_3\rangle$ look exactly like 
+qubit computational basis states $\lvert q_0 q_1 q_2 q_3\rangle$. Four spin-orbitals → four qubits. Six 
+configurations → a 16-dimensional Hilbert space (of which 6 states have two electrons). A quantum computer 
+can represent superpositions of these configurations natively.
+
+manuscript/01-electronic-structure.md:179
+where $h_{pq}$ are **one-body integrals**, $\langle pq \mid rs\rangle$ are **two-body integrals**, and 
+$V_{nn}$ is the nuclear repulsion constant. The operators $a_p^\dagger$ and $a_p$ create and destroy 
+electrons in specific spin-orbitals, and they obey algebraic rules (the canonical anti-commutation relations) 
+that automatically enforce the Pauli exclusion principle.
+
+manuscript/01-electronic-structure.md:202
+> **What's ahead in Chapters 2–3:** The next two chapters are the notation and bookkeeping layer — getting 
+the integral conventions right, expanding from spatial orbitals to spin-orbitals, and building the complete 
+numerical tables that the encoding pipeline will consume. They are detail-heavy by necessity: get a sign or 
+index wrong here, and every Hamiltonian coefficient downstream is wrong, with no error message to tell you. 
+If you find yourself impatient, remember: these are the numbers the quantum computer will actually process. 
+Chapters 4 and 5 are where the quantum hardware and encoding ideas arrive.
+
+manuscript/02-notation.md:17
+If you take integrals from a chemistry code (which typically outputs chemist's notation) and plug them into a 
+physics formula (which uses physicist's notation) without converting, you will get the wrong Hamiltonian. You 
+will not get an error message. Your code will run. Your Pauli strings will have the right structure. Your 
+eigenvalues will be wrong — silently, plausibly, maddeningly wrong.
+
+manuscript/02-notation.md:35
+> I first encountered this notation in Dr. Robert Ditchfield's Quantum Chemistry course (Chem 81) at 
+Dartmouth in 1992. He would write the charge-density form on the blackboard and say, "This is the natural way 
+to think about it." He was right — it *is* the natural way to think about it. It's just not the way the 
+second-quantized Hamiltonian is written.
+
+manuscript/02-notation.md:79
+Notice: $\langle 01 \mid 01\rangle \neq \langle 00 \mid 11\rangle$ in general. The integral $\langle 00 \mid 
+11\rangle = [01 \mid 01]$ is a pair-scattering integral in which both electrons change orbital. For H₂/STO-3G 
+at 0.74 Å, $[01 \mid 01] = 0.1812$ Ha, distinct from $[00 \mid 11] = 0.6637$ Ha. For real orbitals, the 
+within-bracket symmetry also gives $[01 \mid 01]=[01 \mid 10]$; these are not two independent values.
+
+manuscript/02-notation.md:81
+> **Common Mistake #1: Using the wrong convention.** If you take $[00 \mid 11]$ from PySCF and use it as 
+$\langle 00 \mid 11\rangle$ in the physicist's Hamiltonian, you have swapped a Coulomb integral for an 
+exchange integral. The Hamiltonian will have plausible structure, but the eigenvalues will be wrong. There is 
+no error message. The only way to catch it is to verify against a known result.
+
+manuscript/02-notation.md:97
+3. **The operator ordering is $a_p^\dagger a_q^\dagger a_s a_r$** — the annihilation operators are in 
+*reverse* order relative to the ket indices of the integral ($r, s$ become $a_s a_r$, not $a_r a_s$). This is 
+not a typo. It follows from the integral convention and anti-commutation relations. Getting this order wrong 
+flips signs on configuration-coupling terms.
+
+manuscript/02-notation.md:131
+> **Common Mistake #2: Applying chemist's symmetries to physicist's integrals.** If you assume $\langle pq 
+\mid rs\rangle = \langle qp \mid rs\rangle$ (swapping only the bra indices), you are applying a chemist's 
+symmetry to a physicist's integral. In physicist's notation, the correct symmetry is $\langle pq \mid 
+rs\rangle = \langle qp \mid sr\rangle$ — you must swap *both* bra indices and *both* ket indices together.
+
+manuscript/02-notation.md:143
+Some references absorb the $\frac{1}{2}$ into the integrals, defining $g_{pqrs} = \frac{1}{2}\langle pq \mid 
+rs\rangle$. Others restrict the summation to $p < q$ and $r < s$ to avoid double-counting, eliminating the 
+prefactor. Both are correct. But if you mix conventions — using the unrestricted sum without the 
+$\frac{1}{2}$, or using the restricted sum with it — your two-body energy will be off by a factor of 2.
+
+manuscript/03-spin-orbitals.md:21
+Electron spin is an intrinsic angular momentum that has no classical analogue. It is not the electron 
+"spinning on its axis" — that mental picture, while universal in introductory courses, breaks down 
+immediately under scrutiny (the electron would need to rotate faster than light). Spin is a purely 
+quantum-mechanical degree of freedom that happens to behave like angular momentum: it has a magnitude ($s = 
+1/2$) and a projection along any chosen axis.
+
+manuscript/03-spin-orbitals.md:40
+In the non-relativistic Hamiltonian we've been using, spin and spatial degrees of freedom are completely 
+independent — the Hamiltonian contains no term that couples them. An electron in $\sigma_g$ with spin 
+$\alpha$ has exactly the same energy as one with spin $\beta$. The one-body integrals are spin-independent, 
+and the two-body integrals only require each electron to conserve its own spin (as we'll see below).
+
+manuscript/03-spin-orbitals.md:42
+This is an approximation. In reality, **spin-orbit coupling** — the interaction between an electron's spin 
+angular momentum and its orbital angular momentum — mixes the spin and spatial degrees of freedom. Hydrogenic 
+estimates often scale roughly as $Z^4$, but molecular trends also depend on electronic structure and bonding. 
+The effect is negligible for H₂ and small for the light-element examples in this book, but it can be 
+significant for heavy atoms such as iodine, lead, and the actinides.
+
+manuscript/03-spin-orbitals.md:78
+> **Convention alert:** Some references use **blocked** indexing ($\alpha$ orbitals first, then all $\beta$), 
+so the ordering would be $0\alpha, 1\alpha, 0\beta, 1\beta$. This book's PySCF-to-FockMap conversion imposes 
+interleaved indexing; PySCF itself does not define one universal spin-orbital ordering for every interface. 
+If your integral source uses a different order, permute the indices before proceeding. This is another 
+silent-error source.
+
+manuscript/03-spin-orbitals.md:128
+> **Common Mistake #1: Omitting cross-spin integrals.** If you include only the same-spin blocks 
+($\alpha\alpha$ and $\beta\beta$) and forget the cross-spin blocks, your encoded Hamiltonian will contain 
+only Z-type (diagonal) Pauli terms and no XX/YY excitation terms. The Hamiltonian will commute with all 
+computational basis states, meaning it cannot produce entanglement or represent any quantum correlation. The 
+eigenvalues will be the Hartree–Fock values, not the exact (full-CI) values. This was our actual 
+first-implementation bug.
+
+manuscript/04-qubits-gates-circuits.md:35
+This seems limiting: if measurement destroys the superposition, what good is it? The answer is 
+**interference**. By carefully manipulating the amplitudes before measurement, you can arrange for wrong 
+answers to cancel (destructive interference) and correct answers to reinforce (constructive interference). 
+This is how every quantum algorithm works — not by trying all possibilities, but by engineering interference 
+to amplify the right answer.
+
+manuscript/04-qubits-gates-circuits.md:37
+For our purposes, the key fact is this: an $n$-qubit register stores $2^n$ complex amplitudes. For 4 qubits: 
+16 amplitudes — containing the 6-dimensional Hilbert space of our H₂ problem (the 6 two-electron 
+configurations are embedded in the larger 16-dimensional qubit space). For 100 qubits: $2^{100} \approx 
+10^{30}$ amplitudes. A classical computer cannot even *store* this state, let alone manipulate it. A quantum 
+computer encodes it naturally in the physical state of 100 two-level systems.
+
+manuscript/04-qubits-gates-circuits.md:51
+Why are the Paulis special? Because they form a **basis** for all $2 \times 2$ Hermitian matrices. Any 
+single-qubit observable — any Hamiltonian term — can be written as a real-linear combination of $I$, $X$, 
+$Y$, $Z$. (With complex coefficients, they span all $2 \times 2$ matrices.) This is why the encoded 
+Hamiltonian is a sum of Pauli strings: it's the natural basis for qubit operators, just as $\{\lvert 
+0\rangle, \lvert 1\rangle\}$ is the natural basis for qubit states.
+
+manuscript/04-qubits-gates-circuits.md:74
+Consider two qubits in the state $\frac{1}{\sqrt{2}}(\lvert 00\rangle + \lvert 11\rangle)$. If you measure 
+the first qubit and get 0, the second qubit is *guaranteed* to be 0 — even though, before measurement, 
+neither qubit had a definite value. This correlation cannot be explained by any shared classical information 
+prepared in advance (this is the content of Bell's theorem, which we won't prove but which decades of 
+experiments have confirmed).
+
+manuscript/04-qubits-gates-circuits.md:76
+Entanglement is what allows a quantum computer to explore the exponentially large Hilbert space *coherently* 
+— maintaining phase relationships between configurations rather than just sampling them independently. And it 
+is what allows the correlation energy (the off-diagonal coherences in the density matrix, which we'll see in 
+Chapter 6) to be represented on quantum hardware.
+
+manuscript/04-qubits-gates-circuits.md:121
+This is called **universality**. The set $\{R_z, R_x, \text{CNOT}\}$ (or equivalently $\{H, T, 
+\text{CNOT}\}$, where $T$ is the $\pi/4$ phase gate, historically called the "$\pi/8$ gate") can approximate 
+any quantum operation to arbitrary precision. Every quantum algorithm — Shor's, Grover's, VQE, QPE — can be 
+compiled down to these elementary gates.
+
+manuscript/04-qubits-gates-circuits.md:166
+> **Multi-qubit states and tensor products:** An $n$-qubit state is described by the **tensor product** 
+(Kronecker product) of individual qubit states: $\lvert\psi\rangle = \lvert q_0\rangle \otimes \lvert 
+q_1\rangle \otimes \cdots \otimes \lvert q_{n-1}\rangle$. A Pauli string like $X_0 Z_1 I_2$ means "apply $X$ 
+to qubit 0, $Z$ to qubit 1, and $I$ to qubit 2" — formally, the $2 \times 2 \times 2 = 8$-dimensional (i.e. 
+$8 \times 8$) matrix $X \otimes Z \otimes I$. When we say two operators "commute" ($[A, B] = AB - BA = 0$) or 
+"anti-commute" ($\{A, B\} = AB + BA = 0$), we mean these tensor-product matrices. The encoding problem (next 
+chapter) is precisely the challenge of translating anti-commuting fermionic operators into operators built 
+from tensor products of qubit Pauli operators.
+
+manuscript/05-visual-encodings.md:52
+This is the **exponential wall**: the dimension of the configuration space grows combinatorially with the 
+number of orbitals. Classical methods (Hartree–Fock, DFT, coupled cluster) get around this by approximating — 
+they never build the full matrix. But those approximations break down for strongly correlated systems, which 
+are precisely the systems where quantum simulation promises an advantage.
+
+manuscript/05-visual-encodings.md:70
+A quantum computer can represent the exponentially large state vector $\lvert \Psi \rangle$ using only $n$ 
+qubits — one per spin-orbital. The $2^n$-dimensional Hilbert space of $n$ qubits matches the 
+$\binom{n}{N_e}$-dimensional configuration space (embedded in the full $2^n$-dimensional space). 
+Superpositions of configurations are *native* to quantum hardware.
+
+manuscript/05-visual-encodings.md:117
+> **The fermion sign, operationally:** Consider the occupation state $\lvert 1010\rangle$ (orbitals 0 and 2 
+occupied). To create an electron in orbital 3, we apply $a_3^\dagger$. The Z-chain scans all orbitals below 3 
+(orbitals 0, 1, 2): two are occupied, so the sign is $(-1)^2 = +1$. To create an electron in orbital 1, the 
+Z-chain scans orbitals below 1 (only orbital 0): one is occupied, so the sign is $(-1)^1 = -1$. This is the 
+**fermion sign** — the net parity of all occupied orbitals with index below the target position. Every 
+encoding must inject this sign into the qubit representation.
+
+manuscript/05-visual-encodings.md:186
+Despite the linear scaling, JW excels when interactions are **local** — between neighboring orbitals. A 
+hopping term $a_2^\dagger a_3 + a_3^\dagger a_2$ only needs a short Z-chain because the two orbitals are 
+adjacent. For 1D molecular chains or systems with sequential orbital numbering, JW often has the lowest 
+*average* weight even if its worst case is high.
+
+manuscript/05-visual-encodings.md:347
+That's Pauli weight 1 under JW — regardless of $n$. The Z-chains from the creation and annihilation operators 
+cancel in the product. Under other encodings (BK, tree), the number operator weight may increase to $O(\log 
+n)$ because the occupation information is distributed across parity qubits, but this is still much cheaper 
+than the creation/annihilation operators.
+
+manuscript/05-visual-encodings.md:396
+- Aspuru-Guzik, A., Dutoi, A. D., Love, P. J., and Head-Gordon, M. "Simulated Quantum Computation of 
+Molecular Energies." *Science* 309, 1704 (2005). The paper that launched quantum computational chemistry: 
+showed that the Jordan–Wigner encoding could be plugged into a quantum phase estimation algorithm to compute 
+molecular ground-state energies. Before this work, JW was a mathematical curiosity; after it, an entire field 
+was born.
+
+manuscript/05-visual-encodings.md:397
+- Seeley, J. T., Richard, M. J., and Love, P. J. "The Bravyi–Kitaev transformation for quantum computation of 
+electronic structure." *J. Chem. Phys.* 137, 224109 (2012). Formalized the **index-set framework** — the 
+three set-valued functions (Update, Parity, Occupation) that unify JW, BK, and Parity under a single 
+abstraction. This is the framework that FockMap's `EncodingScheme` type directly implements.
+
+manuscript/07-six-encodings.md:33
+The answer is that all valid encodings preserve the **canonical anti-commutation relations** (CAR): 
+$\{a_p^\dagger, a_q\} = \delta_{pq}$. Any encoding that faithfully maps the CAR from fermionic operators to 
+Pauli operators must produce a Hamiltonian with the same spectrum — because the eigenvalues of the 
+Hamiltonian depend only on the algebraic relations among the operators, not on the specific matrix form. 
+Different encodings are related by a unitary change of basis on the qubit Hilbert space, and unitary 
+transformations preserve eigenvalues. This is the mathematical guarantee that the physics is 
+encoding-independent.
+
+manuscript/07-six-encodings.md:80
+Why? Because the Hamiltonian is a polynomial in the operators $a_p^\dagger$ and $a_p$. If two representations 
+of these operators satisfy the same algebraic relations (the CAR), then any polynomial in them produces the 
+same algebraic object — and therefore the same eigenvalues. This is a standard result in operator algebra: 
+the CAR define the algebra up to unitary equivalence.
+
+manuscript/07-six-encodings.md:189
+The path-based framework's generality has a concrete payoff: FockMap ships *two* ternary-tree encodings with 
+logarithmic worst-case weight but different tree shapes — the balanced ternary tree associated with Jiang et 
+al. (2020) and a breadth-first tree inspired by Vlasov (arXiv:1904.09912). Both preserve the CAR in the 
+tested implementation, but they assign qubits to tree nodes differently.
+
+manuscript/09-verification.md:18
+A wrong-convention Hamiltonian (Chapter 2, Error #1) can have real coefficients and plausible Pauli 
+symmetries. A missing cross-spin block (Chapter 3, Mistake #1) can lose configuration-coupling terms while 
+still looking like a valid Hamiltonian. A reversed operator ordering (Chapter 6, Mistake #2) flips signs but 
+leaves much of the structure intact.
+
+manuscript/09-verification.md:57
+> **Why 16 and not 6?** The 4-qubit Hilbert space has $2^4 = 16$ basis states, but H₂ has only 2 electrons — 
+so only 6 of those states ($\binom{4}{2} = 6$) have the right particle number. The remaining 10 eigenvalues 
+belong to the 0-electron, 1-electron, 3-electron, and 4-electron sectors. They are physically meaningful 
+(they represent the spectrum with different electron counts) but they are not the ground state we are looking 
+for.
+
+manuscript/09-verification.md:95
+The Hartree–Fock error is $12.88$ kcal/mol for this model. Our Full CI result captures the entire correlation 
+energy within the STO-3G basis. As Chapter 6 showed, configuration coupling makes the lower variational 
+energy possible, but the final correlation energy contains both a change in diagonal populations and an 
+off-diagonal interference contribution.
+
+manuscript/09-verification.md:99
+> **The point of quantum simulation is not to replace the basis set.** It offers a different route to the 
+finite-basis electronic problem when explicit Full CI is intractable. For H₂ in STO-3G (6 configurations), 
+any laptop can do Full CI. For 50 electrons in 100 spin-orbitals, explicitly storing roughly $10^{29}$ 
+configuration amplitudes is impossible. A quantum register avoids that storage, but a useful calculation 
+still needs state preparation, adequate target-state overlap, Hamiltonian simulation, and precise 
+measurement. Whether a quantum algorithm wins depends on those costs and on the best classical method for the 
+particular molecule.
+
+manuscript/09-verification.md:124
+This is not a coincidence. It is a mathematical guarantee: every valid encoding preserves the canonical 
+anti-commutation relations, and therefore preserves the operator algebra, and therefore preserves every 
+eigenvalue. FockMap's test suite verifies the anti-commutation relations symbolically (no eigenvalues 
+needed), but the eigenvalue comparison provides an independent numerical cross-check.
+
+manuscript/10-why-tapering.md:41
+Particle-number conservation is the most common source. In many encodings, the total electron number operator 
+$\hat{N} = \sum_j \hat{n}_j$ commutes with the Hamiltonian. Under JW, $\hat{N}$ maps to a sum of $Z$ 
+operators. If certain linear combinations of these $Z$ operators commute with every Hamiltonian term, the 
+corresponding qubits can be fixed and removed.
+
+manuscript/10-why-tapering.md:82
+A qubit $j$ is *diagonally taperable* if every term in the Hamiltonian has only I or Z at position $j$ — 
+never X or Y. This means qubit $j$'s value is determined by symmetry: it is always $+1$ or always $-1$ in the 
+sector we care about, and it never gets flipped during the simulation. We can fix it to that value and remove 
+it from the problem entirely.
+
+manuscript/10-why-tapering.md:104
+When we remove a tapered qubit, we are removing a degree of freedom whose value was *already determined* — 
+fixed by a conservation law (like particle number or spin parity) that the Hamiltonian respects. The qubit 
+was never free to vary in the first place; it was constrained by symmetry to a single eigenvalue in the 
+sector we're studying. Removing it simply acknowledges this constraint explicitly.
+
+manuscript/11-diagonal-z2.md:110
+For $k$ diagonal qubits, there are $2^k$ possible sectors. Each gives a valid tapered Hamiltonian with the 
+eigenvalues of that sector, but sectors can represent different particle numbers, spins, or point-group 
+quantum numbers. A molecular calculation must select the sector matching the intended physical system. 
+Sweeping all sectors is useful for reconstructing or debugging the full spectrum; taking the lowest value 
+across them may instead select an ion or a different spin state.
+
+manuscript/12-clifford-tapering.md:48
+> **On the name "symplectic":** The quantum computing literature calls this the *symplectic representation*, 
+and the commutativity check below a *symplectic inner product*. The word "symplectic" comes from Greek for 
+"intertwined" — it refers to the fact that commutativity depends on a *crosswise* pairing between the X-bits 
+of one string and the Z-bits of the other (and vice versa). This crosswise structure is what mathematicians 
+call a symplectic form. We'll use the name "binary Pauli representation" when the intuition matters and 
+"symplectic" when referencing the literature.
+
+manuscript/12-clifford-tapering.md:86
+The null space computation uses Gaussian elimination with XOR instead of subtraction — the same row-reduction 
+you learned in linear algebra, but in binary arithmetic. It runs in $O(L \cdot n^2)$ time, where $L$ is the 
+number of Hamiltonian terms and $n$ is the number of qubits. In practice, this is dominated by the $O(n^4)$ 
+cost of integral processing and is never the bottleneck. See Bravyi et al. (arXiv:1701.08213, §III) for the 
+formal analysis.
+
+manuscript/13-tapering-benchmarks.md:158
+The safe rule is: **use every verified symmetry whose sector you can identify and whose downstream 
+transformations you can validate.** Unlike basis-set truncation, correct tapering introduces no approximation 
+within that sector. But an invalid generator, a phase error, or the wrong sector changes the spectrum, and 
+transformed observables and state preparation may add practical overhead.
+
+manuscript/13-tapering-benchmarks.md:160
+The real questions are whether the generators form a valid independent commuting set, which physical sector 
+they label, and whether the implementation preserves phases and sector spectra. Diagonal tapering (Chapter 
+11) catches qubits that are individually frozen. Clifford tapering (Chapter 12) can expose symmetries hidden 
+across combinations of qubits, provided those checks pass.
+
+manuscript/13-tapering-benchmarks.md:162
+Could you do more? In principle, yes. The Hamiltonian has other symmetries beyond Z₂ — particle-number 
+conservation (U(1)), spin symmetry (SU(2)) — that could remove additional qubits. But exploiting them 
+requires different mathematical machinery (symmetry-adapted encodings, qubit-efficient mappings) that goes 
+beyond the stabiliser framework we've developed here. This is an active area of research; Chapter 23 touches 
+on it briefly.
+
+manuscript/13-tapering-benchmarks.md:164
+Encoding and tapering must be evaluated together. Starting from the same fermionic Hamiltonian, build each 
+candidate encoded Hamiltonian, identify its symmetry generators, map the target quantum numbers to sector 
+eigenvalues, taper, and only then compare circuit costs. You cannot taper a Jordan–Wigner Hamiltonian and 
+then re-encode the reduced Pauli operator with a different fermion mapping.
+
+manuscript/14-time-evolution.md:156
+In 2016, Dr Guang Hao Low and Isaac Chuang introduced **qubitization** — a fundamentally different approach 
+to Hamiltonian simulation that achieves optimal query complexity. Where Trotterization approximates 
+$e^{-iHt}$ as a product of easy rotations (with error that shrinks as you add more steps), qubitization 
+encodes the Hamiltonian directly into a quantum walk operator using a technique called the **Linear 
+Combination of Unitaries (LCU)**. The result: instead of error scaling as $O(t^2/N)$ or $O(t^3/N^2)$, 
+qubitization achieves error that scales *linearly* in the number of queries to the Hamiltonian — provably 
+optimal.
+
+manuscript/15-trotter-formulas.md:15
+In Chapter 14, we developed the Trotter formula in general terms: break $e^{-i\hat{H}t}$ into a product of 
+single-term rotations. The formula looked clean and abstract. Now let's apply it to the actual 15-term 
+Hamiltonian we've been carrying since Chapter 6 — the one we built integral by integral, verified against 
+eigenvalues, and (optionally) tapered.
+
+manuscript/16-cnot-staircase.md:17
+The intuition: a weight-$w$ Pauli rotation $e^{-i\theta P}$ applies a phase rotation that depends on the 
+*collective parity* of $w$ qubits. No single qubit carries enough information — we need to temporarily 
+entangle the $w$ qubits (using CNOTs) so that their joint parity lives on one qubit, apply the rotation 
+there, and then disentangle. The "staircase" is the entangling chain.
+
+manuscript/18-complete-pipeline.md:17
+In Chapter 1, we started with a molecule and asked: *what is its ground-state energy?* That question led us 
+through electronic structure (the integrals), second quantization (the ladder operators), encoding (the Pauli 
+strings), tapering (removing redundant qubits), Trotterization (turning operators into gates), and cost 
+analysis (counting the CNOTs). At each stage we introduced one mathematical transformation, implemented it, 
+and tested it on H₂.
+
+manuscript/19-bond-angle.md:182
+No. It means the basis set is too small for the correlation correction to land in the right place. In STO-3G, 
+both 101° and 99° are wrong because the basis functions cannot describe how the electron cloud deforms as the 
+molecule bends. Correlation shifts the angle by ~2° in a direction that happens to overshoot in this basis — 
+not because correlation is wrong, but because the basis is too inflexible to support the correction properly.
+
+manuscript/19-bond-angle.md:202
+The answer is already present at the Hartree–Fock level — no electron correlation required. HF, which by 
+definition uses a single Slater determinant and contains zero correlation energy, predicts a bent water 
+molecule at roughly 101° in STO-3G. The bend is fundamentally a mean-field effect: as the molecule departs 
+from linearity, the oxygen lone-pair orbitals hybridise in a way that lowers the kinetic and electron-nuclear 
+attraction energy. VSEPR theory's "lone pair repulsion" is a qualitative cartoon for this mean-field energy 
+landscape.
+
+manuscript/19-bond-angle.md:210
+This distinction matters: it illustrates what quantum simulation adds and what it doesn't. The *qualitative* 
+prediction (water bends) comes from mean-field theory, which any laptop can compute. The *quantitative* 
+refinement (exactly how much it bends, the precise curvature of the potential energy surface, the vibrational 
+frequencies) is where correlated methods — and ultimately quantum simulation — earn their keep.
+
+manuscript/19-bond-angle.md:240
+The potential energy surface scan we performed is the first step in a vibrational analysis. The *curvature* 
+of the energy curve near the minimum (the second derivative) determines the bending frequency. This is 
+obtained from the **Hessian matrix** of the PES — and computing that Hessian for molecules where classical 
+methods fail is one of the practical applications of quantum simulation.
+
+manuscript/20-algorithms.md:22
+This is fine for validation. It is not fine for the molecules that actually matter. For N₂ (20 qubits → 
+$2^{20} \approx 10^6$) or FeMo-co (108 qubits → $2^{108} \approx 10^{32}$), the matrix does not fit in any 
+existing memory. The pipeline still produces the Pauli Hamiltonian $\hat{H} = \sum_k c_k P_k$ — but we need a 
+different way to extract its ground-state energy.
+
+manuscript/20-algorithms.md:62
+Not every Pauli term needs its own circuit. Two Pauli operators can be measured simultaneously if they 
+**qubit-wise commute** — that is, if they commute on every individual qubit position. For example, $ZI$ and 
+$ZZ$ qubit-wise commute (both have $Z$ or $I$ at each position), so a single $Z$-basis measurement of all 
+qubits yields both expectation values.
+
+manuscript/20-algorithms.md:94
+This is the shot-count formula. The key quantity is the **1-norm** $\sum_k |c_k|$ — it determines the 
+measurement cost because terms with larger coefficients contribute more variance and demand more shots. This 
+estimate assumes each Pauli term is measured independently (or in qubit-wise commuting groups) and that the 
+dominant error source is finite sampling. In practice, correlated measurement strategies (classical shadows, 
+derandomisation) can improve the scaling, but the 1-norm estimate provides a useful and widely-cited baseline 
+(Wecker et al., Phys. Rev. A 92, 042303, 2015).
+
+manuscript/20-algorithms.md:266
+> **Barren plateaus**, briefly: as the number of qubits grows, randomly initialized VQE ansätze tend to 
+produce cost function landscapes where the gradient vanishes exponentially — a phenomenon called a barren 
+plateau. This is a fundamental challenge for VQE at scale, and it is one reason why adaptive methods 
+(ADAPT-VQE) and physically motivated ansätze (e.g., UCCSD) are preferred over hardware-efficient random 
+circuits.
+
+manuscript/23-whats-next.md:74
+- **Molecular vibrations**: the bond angle scan in Chapter 19 gives the equilibrium geometry; the *curvature* 
+of the PES gives vibrational frequencies. Concretely, a finite-difference Hessian — computed by running the 
+same pipeline at slightly displaced geometries — yields the force-constant matrix. Diagonalizing it 
+(mass-weighted) produces the normal modes and harmonic frequencies, which connect directly to infrared and 
+Raman spectroscopy. The entire calculation uses no machinery beyond what this book has already built: repeat 
+the pipeline at a few geometries, take numerical derivatives, and diagonalize a small matrix. This is real 
+computational chemistry — the same workflow that production codes use to predict molecular spectra.
+
+manuscript/23-whats-next.md:104
+The algebra is the same. The difference is intent: tapering exploits physical symmetries to reduce qubit 
+count, while error correction engineers artificial symmetries to detect and correct errors. A reader who has 
+understood Chapters 10–13 has already learned the algebraic foundation — the stabiliser formalism — that 
+quantum error correction builds upon.
+
+manuscript/23-whats-next.md:106
+This book didn't just teach you how to simulate molecules. It taught you the mathematics of quantum error 
+correction — without ever calling it that. The same Clifford gates, the same symplectic representation, the 
+same sector-selection algebra. When you encounter the surface code or the Steane code in the QEC literature, 
+you will recognise every move.
+
+manuscript/23-whats-next.md:114
+1. **Optimal encoding**: is there a provably optimal encoding for a given Hamiltonian? Binary and ternary 
+tree constructions both have $\Theta(\log n)$ worst-case weight, with different constants and finite-size 
+bounds. The best encoding may depend on the Hamiltonian's sparsity, symmetry, orbital ordering, and hardware 
+connectivity rather than on $n$ alone.
+
+manuscript/23-whats-next.md:126
+We'll end where we began. Chapter 1 asked: *given a molecule, what is its ground-state energy?* The machinery 
+in this book addresses the translation layer: molecular integrals become encoded Pauli Hamiltonians, symmetry 
+reductions, product-formula circuits, and portable circuit descriptions. That toolchain does not by itself 
+prepare a molecular ground state or guarantee an efficient energy estimate; those tasks still require a 
+validated VQE, QPE, or other state-preparation and measurement workflow.
+
+manuscript/23-whats-next.md:130
+The H₂ reference data in Chapter 18 test the construction at a scale where every matrix element can be 
+checked. The water calculation in Chapter 19 is a PySCF angular scan at fixed O–H length; it shows how 
+geometry changes the electronic problem without pretending that circuit construction alone solved the 
+molecular structure. With validated algorithms and sufficient hardware, the same translation machinery could 
+support studies of catalysts, photoactive molecules, and strongly correlated reaction mechanisms.

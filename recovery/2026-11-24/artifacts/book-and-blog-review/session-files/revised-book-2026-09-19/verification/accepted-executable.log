@@ -1,0 +1,261 @@
+bash scripts/check-executable-integrity.sh --imports
+H2/STO-3G reference verification (R = 0.74 Angstrom)
+  integral max error:    2.220e-16
+  PySCF version:         2.13.0
+  canonical source:      66ebdfe255c0cc6ba25a6d1b76b58401aee3ab06
+  canonical file SHA:    6539afb30a1c03ec89202a2960a06c6580a91afaebf13a6cadbcfd32c2d71812
+  tensor SHA-256:        d5d8e2f7c83b1d1322f10217198d125b7c7cae1f99fa09a6e1e232ee38dd098c
+  input entries:         4 one-body + 32 two-body
+  input threshold:       1.0e-15
+  Pauli reconstruction:  2.220e-16
+  Tr(H)/16 = IIII:       -0.8121706072 Ha
+  |XXYY|:                0.0453026155 Ha
+  nuclear repulsion:     0.7151043391 Ha
+  HF electronic row 3:   -1.8318636465 Ha
+  HF total:              -1.1167593074 Ha
+  FCI electronic:        -1.8523881736 Ha
+  FCI total:             -1.1372838345 Ha
+  correlation energy:    -0.0205245271 Ha
+  anticommuting pairs:   16
+  coefficient 1-norm:    2.6992778241 Ha
+  measurement 1-norm:    1.8871072169 Ha
+  commutator sum:        0.2861997180 Ha^2
+  HF displayed ket:      |1100>
+  HF occupation integer: 3 (0b0011)
+  HF matrix row:         3 (0b0011)
+  ground HF amplitude^2: 0.9873338735
+  a2 dagger FockMap:      ZZXI / ZZYI
+  external labels:       IXZZ / IYZZ
+  oracle verified:       h2_0.74_oracle.json (read-only)
+
+JW coefficients (FockMap signature order q0,q1,q2,q3):
+  IIII  -0.8121706072
+  IIIZ  -0.2234315369
+  IIZI  -0.2234315369
+  IIZZ  +0.1744128761
+  IZII  +0.1714128264
+  IZIZ  +0.1206252348
+  IZZI  +0.1659278503
+  XXYY  -0.0453026155
+  XYYX  +0.0453026155
+  YXXY  +0.0453026155
+  YYXX  -0.0453026155
+  ZIII  +0.1714128264
+  ZIIZ  +0.1659278503
+  ZIZI  +0.1206252348
+  ZZII  +0.1686889817
+
+Electronic spectra by particle number:
+  N=0: 0.0000000000
+  N=1: -1.2533097866, -1.2533097866, -0.4750688488, -0.4750688488
+  N=2: -1.8523881736, -1.2458776961, -1.2458776961, -1.2458776961, -0.8834567721, -0.2319616660
+  N=3: -1.1607201546, -1.1607201546, -0.3595836390, -0.3595836390
+  N=4: 0.2080748418
+Old moment diagnostic accepts split degeneracy: 1.409e-009
+Rejected: split degeneracy
+  Pauli Y                   eigenvalues pass (computed error 0.000e+000 Ha; including solver allowance 2.500e-013 Ha)
+Rejected: Y real-part projection
+Rejected: non-Hermitian
+Rejected: NaN
+Rejected: infinity
+Rejected: nonsquare
+Rejected: wrong spectrum dimension
+Rejected: mixed scale cannot certify 1e-7 absolute accuracy
+  mixed resolvable          eigenvalues pass (computed error 0.000e+000 Ha; including solver allowance 2.500e-008 Ha)
+Rejected: mixed-scale imaginary block omitted
+Rejected: accumulated rank-one roundoff
+Rejected: complex accumulated rank-one roundoff
+  resolvable complex rank one eigenvalues pass (computed error 2.220e-016 Ha; including solver allowance 2.500e-010 Ha)
+Rejected: solver allowance consumes comparison budget
+Rejected: global Hermiticity defect
+  budgeted Hermitian projection eigenvalues pass (computed error 0.000e+000 Ha; including solver allowance 2.500e-010 Ha)
+Chapter 3: Spin-Orbital Integrals
+=================================
+Source: h2_dissociation_integrals.json
+PySCF: 2.13.0
+R = 0.74 Angstrom, Vnn = 0.7151043391 Ha, E_HF = -1.1167593074 Ha
+One-body integrals (spin-orbital):
+  h(0,0) = -1.2533097866 Ha
+  h(1,1) = -1.2533097866 Ha
+  h(2,2) = -0.4750688488 Ha
+  h(3,3) = -0.4750688488 Ha
+
+Total two-body integrals in raw map: 32
+  Same-spin (αα + ββ): 16
+  Cross-spin (αβ + βα): 16
+
+Canonical raw tensor loaded; FockMap's primary builders apply the index order and 1/2.
+Run make verify-data for coefficient and dense-matrix parity.
+
+
+/Users/johnaz/PhD/copilot-worktrees/encodings-book/johnazariah-congenial-garbanzo/scripts/check-h2-contract.fsx(34,41): warning FS0044: This construct is deprecated. Since 0.9.0 the primary builders consume raw physicist integrals directly; pass the raw factory to computeHamiltonian/computeHamiltonianWith. This bridge is only needed to feed raw data into the legacy computeHamiltonianFromWeighted* functions.
+
+  Immutable raw-primary JW  dense matrix passes (max error 6.661e-016)
+  Literal N=0               eigenvalues pass (computed error 3.886e-016 Ha; including solver allowance 2.500e-010 Ha)
+  Literal N=1               eigenvalues pass (computed error 4.441e-016 Ha; including solver allowance 2.500e-010 Ha)
+  Literal N=2               eigenvalues pass (computed error 4.441e-016 Ha; including solver allowance 2.500e-010 Ha)
+  Literal N=3               eigenvalues pass (computed error 2.776e-016 Ha; including solver allowance 2.500e-010 Ha)
+  Literal N=4               eigenvalues pass (computed error 1.110e-016 Ha; including solver allowance 2.500e-010 Ha)
+Rejected: displayed ket treated as big-endian row
+Rejected: double raw/weighted adaptation
+Immutable NuGet DLL SHA-256: 0ba8ae967ea65d4945a336c1217f8939e41feb63b6f04af617b66537717d25c3
+Rejected without mutation: coefficient
+Rejected without mutation: spectrum
+Rejected without mutation: ordering
+Rejected without mutation: metadata
+Rejected without mutation: NaN
+Rejected without mutation: negative threshold
+Rejected without mutation: zero threshold
+Rejected without mutation: fractional count
+Read-only success/failure and explicit output regeneration passed.
+Nonconvergence rejected without promotion: ch18-generate-h2-integrals.py
+Nonconvergence rejected without promotion: ch18-dissociation-scan.py
+Nonconvergence rejected without promotion: ch19-bond-angle-scan.py
+  Written to: h2o_bond_angle_coarse.csv
+  Coarse minimum near: 60°
+Late water scan failure leaves the complete accepted batch unchanged.
+I/O promotion failure rolls back already promoted files.
+Rejected: missing geometry
+Rejected: wrong geometry
+Rejected: wrong ordering
+Rejected: changed one-body
+Rejected: changed raw provenance
+Rejected: wrong immutable source
+Rejected: duplicate water angle
+Chapter 18 output is isolated and canonical data are unchanged.
+j=0 U=set [1; 3; 7] P=set [] Occ=set [0]: 0.5 XXIXIIIX - (0.5 i) YXIXIIIX
+j=1 U=set [3; 7] P=set [0] Occ=set [0; 1]: (-0.5 i) IYIXIIIX + 0.5 ZXIXIIIX
+j=2 U=set [3; 7] P=set [1] Occ=set [2]: 0.5 IZXXIIIX - (0.5 i) IZYXIIIX
+j=3 U=set [7] P=set [1; 2] Occ=set [1; 2; 3]: (-0.5 i) IIIYIIIX + 0.5 IZZXIIIX
+j=4 U=set [5; 7] P=set [3] Occ=set [4]: 0.5 IIIZXXIX - (0.5 i) IIIZYXIX
+j=5 U=set [7] P=set [3; 4] Occ=set [4; 5]: (-0.5 i) IIIZIYIX + 0.5 IIIZZXIX
+j=6 U=set [7] P=set [3; 5] Occ=set [6]: 0.5 IIIZIZXX - (0.5 i) IIIZIZYX
+j=7 U=set [] P=set [3; 5; 6] Occ=set [3; 5; 6; 7]: (-0.5 i) IIIIIIIY + 0.5 IIIZIZZX
+Majorana assignments c3=[(3, X); (7, X); (1, Z); (2, Z)]; d3=[(3, Y); (7, X)]
+CAR/adjoints JW       n=2 max error 0.000e+000
+CAR/adjoints BK       n=2 max error 0.000e+000
+CAR/adjoints Parity   n=2 max error 0.000e+000
+CAR/adjoints Binary   n=2 max error 0.000e+000
+CAR/adjoints Ternary  n=2 max error 0.000e+000
+CAR/adjoints Vlasov   n=2 max error 0.000e+000
+CAR/adjoints JW       n=3 max error 0.000e+000
+CAR/adjoints BK       n=3 max error 0.000e+000
+CAR/adjoints Parity   n=3 max error 0.000e+000
+CAR/adjoints Binary   n=3 max error 0.000e+000
+CAR/adjoints Ternary  n=3 max error 0.000e+000
+CAR/adjoints Vlasov   n=3 max error 0.000e+000
+CAR/adjoints JW       n=4 max error 0.000e+000
+CAR/adjoints BK       n=4 max error 0.000e+000
+CAR/adjoints Parity   n=4 max error 0.000e+000
+CAR/adjoints Binary   n=4 max error 0.000e+000
+CAR/adjoints Ternary  n=4 max error 0.000e+000
+CAR/adjoints Vlasov   n=4 max error 0.000e+000
+CAR/adjoints JW       n=5 max error 0.000e+000
+CAR/adjoints BK       n=5 max error 0.000e+000
+CAR/adjoints Parity   n=5 max error 0.000e+000
+CAR/adjoints Binary   n=5 max error 0.000e+000
+CAR/adjoints Ternary  n=5 max error 0.000e+000
+CAR/adjoints Vlasov   n=5 max error 0.000e+000
+CAR/adjoints JW       n=6 max error 0.000e+000
+CAR/adjoints BK       n=6 max error 0.000e+000
+CAR/adjoints Parity   n=6 max error 0.000e+000
+CAR/adjoints Binary   n=6 max error 0.000e+000
+CAR/adjoints Ternary  n=6 max error 0.000e+000
+CAR/adjoints Vlasov   n=6 max error 0.000e+000
+Generic index-set n=3: chain CAR error 1.0; star 0.0 (constructor itself does not enforce this)
+Generic index-set n=4: chain CAR error 1.0; star 0.0 (constructor itself does not enforce this)
+Generic index-set n=5: chain CAR error 1.0; star 0.0 (constructor itself does not enforce this)
+Generic index-set n=6: chain CAR error 1.0; star 0.0 (constructor itself does not enforce this)
+Chapter 3: Spin-Orbital Integrals
+=================================
+Source: h2_dissociation_integrals.json
+PySCF: 2.13.0
+R = 0.74 Angstrom, Vnn = 0.7151043391 Ha, E_HF = -1.1167593074 Ha
+One-body integrals (spin-orbital):
+  h(0,0) = -1.2533097866 Ha
+  h(1,1) = -1.2533097866 Ha
+  h(2,2) = -0.4750688488 Ha
+  h(3,3) = -0.4750688488 Ha
+
+Total two-body integrals in raw map: 32
+  Same-spin (αα + ββ): 16
+  Cross-spin (αβ + βα): 16
+
+Canonical raw tensor loaded; FockMap's primary builders apply the index order and 1/2.
+Run make verify-data for coefficient and dense-matrix parity.
+  JW                        dense matrix passes (max error 6.661e-016)
+  Physical Nalpha=Nbeta=1   eigenvalues pass (computed error 6.661e-016 Ha; including solver allowance 2.500e-010 Ha)
+  Closed-shell pair (+1)    eigenvalues pass (computed error 6.661e-016 Ha; including solver allowance 2.500e-010 Ha)
+4q: -0.8121706072 IIII - 0.2234315369 IIIZ - 0.2234315369 IIZI + 0.1744128761 IIZZ + 0.1714128264 IZII + 0.1206252348 IZIZ + 0.1659278503 IZZI - 0.0453026155 XXYY + 0.0453026155 XYYX + 0.0453026155 YXXY - 0.0453026155 YYXX + 0.1714128264 ZIII + 0.1659278503 ZIIZ + 0.1206252348 ZIZI + 0.1686889817 ZZII; metrics=(15, 4, 32, 36)
+2q: -1.053421077 II + 0.3948443634 IZ - 0.181210462 YY + 0.3948443634 ZI + 0.01124615715 ZZ; metrics=(5, 2, 6, 4)
+1q: -1.04217492 I + 0.181210462 X + 0.7896887267 Z; metrics=(3, 1, 2, 0)
+Reduced rows [0;1;2;3] correspond to original rows [|12; 9; 6; 3|]. HF becomes row 3, then |1>.
+The optional closed-shell pair block is not the whole two-electron sector.
+Chapter 3: Spin-Orbital Integrals
+=================================
+Source: h2_dissociation_integrals.json
+PySCF: 2.13.0
+R = 0.74 Angstrom, Vnn = 0.7151043391 Ha, E_HF = -1.1167593074 Ha
+One-body integrals (spin-orbital):
+  h(0,0) = -1.2533097866 Ha
+  h(1,1) = -1.2533097866 Ha
+  h(2,2) = -0.4750688488 Ha
+  h(3,3) = -0.4750688488 Ha
+
+Total two-body integrals in raw map: 32
+  Same-spin (αα + ββ): 16
+  Cross-spin (αβ + βα): 16
+
+Canonical raw tensor loaded; FockMap's primary builders apply the index order and 1/2.
+Run make verify-data for coefficient and dense-matrix parity.
+ZZZZ: IIII, IIZI, IIIZ, IIZZ, ZIII, IZII, ZZII, ZIIZ, IZZI, ZIZI, IZIZ
+YXXY: YXXY
+YYXX: YYXX
+XXYY: XXYY
+XYYX: XYYX
+Pinned groupCommutingTerms is greedy QWC (not general commuting). Identity needs no shots.
+Pinned qpeResources multiplies UNCONTROLLED step CNOT/gate counts; it is not a controlled-QPE resource estimate.
+VQE angle=-0.112782832186; electronic energy=-1.852388173570 Ha
+Total energy=-1.137283834489 Ha; Vnn added once.
+QPE phase=0.374394205894514; peak=1534 (010111111110); probability=0.435828
+Decoded electronic energy=-1.853126528617 Ha; bin width=0.001533980788 Ha
+The peak is a probable outcome, not a deterministic energy or a confidence guarantee.
+Ideal powers represent 4095 base-U applications; no compiled controlled-gate or QFT resource count is claimed.
+Chapter 3: Spin-Orbital Integrals
+=================================
+Source: h2_dissociation_integrals.json
+PySCF: 2.13.0
+R = 0.74 Angstrom, Vnn = 0.7151043391 Ha, E_HF = -1.1167593074 Ha
+One-body integrals (spin-orbital):
+  h(0,0) = -1.2533097866 Ha
+  h(1,1) = -1.2533097866 Ha
+  h(2,2) = -0.4750688488 Ha
+  h(3,3) = -0.4750688488 Ha
+
+Total two-body integrals in raw map: 32
+  Same-spin (αα + ββ): 16
+  Cross-spin (αβ + βα): 16
+
+Canonical raw tensor loaded; FockMap's primary builders apply the index order and 1/2.
+Run make verify-data for coefficient and dense-matrix parity.
+  Export input              dense matrix passes (max error 6.661e-016)
+Exported QASM 2/3, Q#, JSON and ordered Pauli-product contract to /Users/johnaz/PhD/copilot-worktrees/encodings-book/johnazariah-congenial-garbanzo/_build/data/export
+FockMap register-width arguments are int; ladder modes/counts are uint32.
+15 factors, 14 Rz, 36 CNOT; identity phase is not emitted.
+/Users/johnaz/PhD/copilot-worktrees/encodings-book/johnazariah-congenial-garbanzo/code/ch21-import-check.py:13: DeprecationWarning: Using Qiskit with Python 3.9 is deprecated as of the 2.1.0 release. Support for running Qiskit with Python 3.9 will be removed in the 2.3.0 release, which coincides with when Python 3.9 goes end of life.
+  from qiskit import QuantumCircuit, qasm2, qasm3, transpile
+QASM 2 Qiskit: all labelled columns agree, max error 2.887e-15
+QASM 3 Qiskit: all labelled columns agree, max error 2.887e-15
+JSON Qiskit: all labelled columns agree, max error 2.896e-15
+QASM 2 Qiskit transpiled: all labelled columns agree, max error 4.601e-15
+QASM 3 Qiskit transpiled: all labelled columns agree, max error 4.601e-15
+JSON Qiskit transpiled: all labelled columns agree, max error 3.935e-15
+Q# compiled/simulated: all labelled columns agree, max error 2.735e-15
+Controlled imported step with restored identity phase: all labelled columns agree, max error 9.112e-15
+Compiled controlled step: all labelled columns agree, max error 2.267e-14
+Controlled ONE step, Qiskit u/cx logical basis, no routing: {'qubits': 5, 'cnots': 308, 'total_gates': 683, 'depth': 546}
+These measured controlled-step resources are not FockMap's uncontrolled proxy or a full QPE budget.
+First-order product vs exact evolution error (separate from import): 1.430e-03
+Identity/global phase is omitted by the export and restored only for the full/controlled product.
+Unknown JSON gates rejected; no silent fallback.
+Bounded executable-integrity gate passed; no canonical regeneration performed.

@@ -1,0 +1,39 @@
+Chapter 3: Spin-Orbital Integrals
+=================================
+Source: h2_dissociation_integrals.json
+PySCF: 2.13.0
+R = 0.74 Angstrom, Vnn = 0.7151043391 Ha, E_HF = -1.1167593074 Ha
+One-body integrals (spin-orbital):
+  h(0,0) = -1.2533097866 Ha
+  h(1,1) = -1.2533097866 Ha
+  h(2,2) = -0.4750688488 Ha
+  h(3,3) = -0.4750688488 Ha
+
+Total two-body integrals in raw map: 32
+  Same-spin (αα + ββ): 16
+  Cross-spin (αβ + βα): 16
+
+Canonical raw tensor loaded; FockMap's primary builders apply the index order and 1/2.
+Run make verify-data for coefficient and dense-matrix parity.
+
+Chapter 7: Six Encodings, One Interface
+=========================================
+
+Pauli weight scaling (worst-case weight of a†_j):
+
+  n     JW    BK    TT    JW/TT
+  ──    ──    ──    ──    ─────
+   4     4     3     2    2.0×
+   8     8     4     3    2.7×
+  16    16     5     4    4.0×
+  32    32     6     5    6.4×
+  64    64     7     6    10.7×
+
+CNOT cost per Pauli rotation [2(w-1)]:
+
+  weight   1 →   0 CNOTs
+  weight   2 →   2 CNOTs
+  weight   4 →   6 CNOTs
+  weight   5 →   8 CNOTs
+  weight  12 →  22 CNOTs
+  weight 100 → 198 CNOTs

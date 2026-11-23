@@ -1,0 +1,236 @@
+- generic [ref=f1e1]:
+  - generic "skip to content options":
+    - link "Skip to article frontmatter" [ref=f1e2] [cursor=pointer]:
+      - /url: "#skip-to-frontmatter"
+    - link "Skip to article content" [ref=f1e3] [cursor=pointer]:
+      - /url: "#skip-to-article"
+  - navigation [ref=f1e5]:
+    - generic [ref=f1e6]:
+      - button "Open Menu" [active] [ref=f1e8] [cursor=pointer]
+      - link "From Molecules to Quantum Circuits" [ref=f1e12] [cursor=pointer]:
+        - /url: /molecules-to-circuits/
+    - generic [ref=f1e14]:
+      - button "Search" [ref=f1e15] [cursor=pointer]:
+        - generic [aria-hidden] [ref=f1e19]:
+          - generic [ref=f1e20]: ⌘
+          - generic [ref=f1e21]: K
+      - button "Toggle theme between light and dark mode" [ref=f1e22] [cursor=pointer]
+  - generic [ref=f1e181]:
+    - navigation "Table of Contents" [ref=f1e183]:
+      - generic [ref=f1e184]:
+        - link "From Molecules to Quantum Circuits" [ref=f1e185] [cursor=pointer]:
+          - /url: /molecules-to-circuits/
+        - generic [ref=f1e187]:
+          - 'generic "Part I: The Molecule" [ref=f1e188] [cursor=pointer]'
+          - button "Open Folder" [ref=f1e189] [cursor=pointer]
+        - generic [ref=f1e193]:
+          - 'generic "Part II: The Machine" [ref=f1e194] [cursor=pointer]'
+          - button "Open Folder" [ref=f1e195] [cursor=pointer]
+        - generic [ref=f1e199]:
+          - 'generic "Part III: Encoding" [ref=f1e200] [cursor=pointer]'
+          - button "Open Folder" [ref=f1e201] [cursor=pointer]
+        - generic [ref=f1e205]:
+          - 'generic "Part IV: Tapering" [ref=f1e206] [cursor=pointer]'
+          - button "Open Folder" [ref=f1e207] [cursor=pointer]
+        - generic [ref=f1e211]:
+          - 'generic "Part V: Circuits" [ref=f1e212] [cursor=pointer]'
+          - button "Open Folder" [ref=f1e213] [cursor=pointer]
+        - generic [ref=f1e217]:
+          - 'generic "Part VI: The Pipeline" [ref=f1e218] [cursor=pointer]'
+          - button "Open Folder" [ref=f1e219] [cursor=pointer]
+        - generic [ref=f1e223]:
+          - 'generic "Part VII: Horizons" [ref=f1e224] [cursor=pointer]'
+          - button "Open Folder" [ref=f1e225] [cursor=pointer]
+        - generic [ref=f1e229]:
+          - generic "Appendices" [ref=f1e230] [cursor=pointer]
+          - button "Open Folder" [ref=f1e231] [cursor=pointer]
+        - link "References" [ref=f1e234] [cursor=pointer]:
+          - /url: /molecules-to-circuits/references
+    - link "Made with MyST" [ref=f1e236] [cursor=pointer]:
+      - /url: https://mystmd.org/made-with-myst
+  - main [ref=f1e25]:
+    - article [ref=f1e26]:
+      - generic "article frontmatter" [ref=f1e27]:
+        - button "Downloads" [ref=f1e30] [cursor=pointer]
+        - heading "From Molecules to Quantum Circuits" [level=1] [ref=f1e34]
+        - generic [ref=f1e36]:
+          - button "Author Details" [ref=f1e39] [cursor=pointer]: John S Azariah
+          - generic [ref=f1e40]: Centre for Quantum Software & Information, University of Technology Sydney
+      - navigation "Document Outline" [ref=f1e160]:
+        - generic [ref=f1e161]:
+          - text: Contents
+          - button "Open Contents" [expanded] [ref=f1e162] [cursor=pointer]
+        - list [ref=f1e166]:
+          - listitem [ref=f1e167]:
+            - link "Preface" [ref=f1e168] [cursor=pointer]:
+              - /url: "#preface"
+          - listitem [ref=f1e169]:
+            - link "Who This Book Is For" [ref=f1e170] [cursor=pointer]:
+              - /url: "#who-this-book-is-for"
+          - listitem [ref=f1e171]:
+            - link "What You Need to Know" [ref=f1e172] [cursor=pointer]:
+              - /url: "#what-you-need-to-know"
+          - listitem [ref=f1e173]:
+            - link "How to Read This Book" [ref=f1e174] [cursor=pointer]:
+              - /url: "#how-to-read-this-book"
+          - listitem [ref=f1e175]:
+            - link "The Companion Software" [ref=f1e176] [cursor=pointer]:
+              - /url: "#the-companion-software"
+          - listitem [ref=f1e177]:
+            - link "About the Author" [ref=f1e178] [cursor=pointer]:
+              - /url: "#about-the-author"
+      - paragraph [ref=f1e42]:
+        - emphasis [ref=f1e43]: A Computational Guide to Fermion-to-Qubit Encodings
+      - paragraph [ref=f1e44]:
+        - strong [ref=f1e45]: John S Azariah
+      - paragraph [ref=f1e46]: Centre for Quantum Software and Information, University of Technology Sydney
+      - blockquote [ref=f1e47]:
+        - paragraph [ref=f1e48]:
+          - strong [ref=f1e49]: "Rights:"
+          - text: Manuscript and rendered book © 2026 John S Azariah. All rights reserved. Companion source code is available under the MIT License; see
+          - code [ref=f1e50]: LICENSE-CODE
+          - text: .
+      - separator [ref=f1e51]
+      - paragraph [ref=f1e52]:
+        - emphasis [ref=f1e53]: For my parents, who believed before I did.
+      - separator [ref=f1e54]
+      - heading "Preface Link to this Section" [level=2] [ref=f1e55]:
+        - text: Preface
+        - link "Link to this Section":
+          - /url: "#preface"
+          - text: ¶
+      - paragraph [ref=f1e56]:
+        - text: Every chemistry textbook tells you that water’s bond angle is 104.5° and waves at VSEPR theory. Every quantum computing textbook tells you that fermions need to be encoded as qubits and shows you the Jordan-Wigner transform. Very few resources connect these two worlds with enough detail that you could actually
+        - emphasis [ref=f1e57]: compute
+        - text: the bond angle from the quantum simulation, or understand
+        - emphasis [ref=f1e58]: why
+        - text: the encoding choice matters for the circuit you’ll run on a quantum computer.
+      - paragraph [ref=f1e59]: This book fills that gap.
+      - paragraph [ref=f1e60]: "We walk through the translation from molecular data to logical quantum circuits with two running examples: the hydrogen molecule (H₂), because it is the simplest system that exhibits all the essential structure, and the water molecule (H₂O), because it is the most important molecule on Earth and rich enough to make the engineering trade-offs tangible."
+      - paragraph [ref=f1e61]: Core transformations have executable FockMap companions, while PySCF scripts produce the independent chemistry references. The companions expose signs, coefficients, and intermediate Pauli strings and fail closed when a live package does not reproduce the canonical matrix. Exercises remain at the end of each chapter for readers who want to deepen their understanding.
+      - paragraph [ref=f1e62]: "The book follows a deliberate pedagogical ordering: chemistry and physics first, mathematical formalism second, executable code third. We believe the question “why does this matter?” should always be answered before the question “how does this work?” — and both should be answered before “how do I compute it?”"
+      - heading "Who This Book Is For Link to this Section" [level=3] [ref=f1e63]:
+        - text: Who This Book Is For
+        - link "Link to this Section":
+          - /url: "#who-this-book-is-for"
+          - text: ¶
+      - list [ref=f1e64]:
+        - listitem [ref=f1e65]:
+          - paragraph [ref=f1e66]:
+            - strong [ref=f1e67]: Graduate students
+            - text: starting in quantum chemistry simulation who need to understand the encoding layer between chemistry and circuits
+        - listitem [ref=f1e68]:
+          - paragraph [ref=f1e69]:
+            - strong [ref=f1e70]: Physicists
+            - text: crossing into quantum computing who know Hamiltonians but not encodings
+        - listitem [ref=f1e71]:
+          - paragraph [ref=f1e72]:
+            - strong [ref=f1e73]: Software engineers
+            - text: building quantum simulation pipelines who need the physics explained carefully
+        - listitem [ref=f1e74]:
+          - paragraph [ref=f1e75]:
+            - strong [ref=f1e76]: Lecturers
+            - text: building a course module on quantum simulation who want homework exercises with verifiable answers
+      - heading "What You Need to Know Link to this Section" [level=3] [ref=f1e77]:
+        - text: What You Need to Know
+        - link "Link to this Section":
+          - /url: "#what-you-need-to-know"
+          - text: ¶
+      - paragraph [ref=f1e78]:
+        - text: We assume familiarity with linear algebra (vectors, matrices, eigenvalues) and introductory quantum mechanics (wavefunctions, bra-ket notation, the hydrogen atom). We do
+        - emphasis [ref=f1e79]: not
+        - text: "assume prior knowledge of:"
+      - list [ref=f1e80]:
+        - listitem [ref=f1e81]:
+          - paragraph [ref=f1e82]: Second quantization or Fock space
+        - listitem [ref=f1e83]:
+          - paragraph [ref=f1e84]: Pauli algebra or qubit representations
+        - listitem [ref=f1e85]:
+          - paragraph [ref=f1e86]: Fermion-to-qubit encodings
+        - listitem [ref=f1e87]:
+          - paragraph [ref=f1e88]: F# or functional programming
+      - paragraph [ref=f1e89]: All of these are developed from scratch within the book.
+      - heading "How to Read This Book Link to this Section" [level=3] [ref=f1e90]:
+        - text: How to Read This Book
+        - link "Link to this Section":
+          - /url: "#how-to-read-this-book"
+          - text: ¶
+      - paragraph [ref=f1e91]: "The 23 chapters are organized into seven stages, following the quantum simulation pipeline:"
+      - list [ref=f1e92]:
+        - listitem [ref=f1e93]:
+          - paragraph [ref=f1e94]:
+            - strong [ref=f1e95]: The Molecule
+            - text: (Chapters 1–3) — from molecules to integrals
+        - listitem [ref=f1e96]:
+          - paragraph [ref=f1e97]:
+            - strong [ref=f1e98]: The Machine
+            - text: (Chapter 4) — qubits, gates, and circuits
+        - listitem [ref=f1e99]:
+          - paragraph [ref=f1e100]:
+            - strong [ref=f1e101]: Encoding
+            - text: (Chapters 5–9) — from fermions to qubits
+        - listitem [ref=f1e102]:
+          - paragraph [ref=f1e103]:
+            - strong [ref=f1e104]: Tapering
+            - text: (Chapters 10–13) — removing redundant qubits
+        - listitem [ref=f1e105]:
+          - paragraph [ref=f1e106]:
+            - strong [ref=f1e107]: Circuits
+            - text: (Chapters 14–17) — Trotterization and cost analysis
+        - listitem [ref=f1e108]:
+          - paragraph [ref=f1e109]:
+            - strong [ref=f1e110]: The Pipeline
+            - text: (Chapters 18–21) — integration, fixed-bond scan, algorithms, export
+        - listitem [ref=f1e111]:
+          - paragraph [ref=f1e112]:
+            - strong [ref=f1e113]: Horizons
+            - text: (Chapters 22–23) — scaling and what comes next
+      - paragraph [ref=f1e114]: You can read straight through (recommended for first reading), or jump to a specific stage if you already know the earlier material. Each chapter begins with “In This Chapter” learning objectives and ends with “Key Takeaways” and exercises.
+      - heading "The Companion Software Link to this Section" [level=3] [ref=f1e115]:
+        - text: The Companion Software
+        - link "Link to this Section":
+          - /url: "#the-companion-software"
+          - text: ¶
+      - paragraph [ref=f1e116]: "All computations in this book are reproducible using the FockMap library:"
+      - list [ref=f1e117]:
+        - listitem [ref=f1e118]:
+          - paragraph [ref=f1e119]:
+            - strong [ref=f1e120]: "Source code:"
+            - link "https://github.com/johnazariah/encodings" [ref=f1e121] [cursor=pointer]:
+              - /url: https://github.com/johnazariah/encodings
+        - listitem [ref=f1e125]:
+          - paragraph [ref=f1e126]:
+            - strong [ref=f1e127]: "NuGet package:"
+            - code [ref=f1e128]: dotnet add package FockMap --version 0.9.0
+        - listitem [ref=f1e129]:
+          - paragraph [ref=f1e130]:
+            - strong [ref=f1e131]: "Web documentation:"
+            - link "https://johnazariah.github.io/encodings/" [ref=f1e132] [cursor=pointer]:
+              - /url: https://johnazariah.github.io/encodings/
+      - paragraph [ref=f1e136]: The library is open-source (MIT license), runs on Windows, macOS, and Linux via .NET 10, and has no third-party dependencies.
+      - separator [ref=f1e137]
+      - heading "About the Author Link to this Section" [level=3] [ref=f1e138]:
+        - text: About the Author
+        - link "Link to this Section":
+          - /url: "#about-the-author"
+          - text: ¶
+      - paragraph [ref=f1e139]: John S Azariah is a software engineer, language designer, and quantum computing researcher whose work sits at the intersection of chemistry, computation, and executable mathematics. He earned a BA in Computer Science and Chemistry from Dartmouth College, a combination that now finds a natural expression in quantum simulation.
+      - paragraph [ref=f1e140]: Over more than three decades in professional software development, he has worked through successive technology shifts including desktop software, the internet, cloud computing, quantum programming, and AI. His career has included roles on Microsoft Excel and Microsoft Project, early SharePoint prototypes, Visual J#.NET, large-scale Azure systems, and principal engineering work across Azure Batch, Azure Kubernetes Service, and AI systems in APAC. He was also compiler lead and one of the language designers behind Microsoft Q#.
+      - paragraph [ref=f1e141]: Alongside industry work, he has maintained a longstanding interest in functional programming, scientific computing, and software craft. He is currently a Principal AI SME at Microsoft and is pursuing a PhD in Quantum Computing at the University of Technology Sydney under Dr. Chris Ferrie.
+      - generic [ref=f1e143]:
+        - heading [level=2] [ref=f1e144]:
+          - text: Acknowledgments
+          - link "Link to Acknowledgments" [ref=f1e145] [cursor=pointer]:
+            - /url: "#acknowledgments"
+            - text: ¶
+        - generic [ref=f1e146]:
+          - paragraph [ref=f1e147]: This work grew out of research at the Centre for Quantum Software and Information at the University of Technology Sydney.
+          - paragraph [ref=f1e148]: I am grateful to Dr Chris Ferrie for his patient guidance of my exploration, to Dr Guang Hao Low for sparking the journey, and to Dr Stephen Jordan and Dr Helmut Katzgraber for their continued encouragement.
+          - paragraph [ref=f1e149]: And to my family, for bearing all my burdens.
+          - paragraph [ref=f1e150]:
+            - emphasis [ref=f1e151]: Sydney, March 2026
+      - 'link "Next: Chapter 1: The Electronic Structure Problem" [ref=f1e153] [cursor=pointer]':
+        - /url: /molecules-to-circuits/electronic-structure
+        - generic [ref=f1e155]:
+          - generic [ref=f1e156]: "Part I: The Molecule"
+          - text: "Chapter 1: The Electronic Structure Problem"

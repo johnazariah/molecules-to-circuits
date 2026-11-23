@@ -1,0 +1,40 @@
+test_blockquote_fences_are_supported (test_book_contract.BookContractTests) ... ok
+test_code_bridge_must_precede_first_factory (test_book_contract.BookContractTests) ... ok
+test_complete_book_passes_without_mutation (test_book_contract.BookContractTests) ... ok
+test_duplicate_or_reordered_chapters_fail (test_book_contract.BookContractTests) ... ok
+test_exercise_heading_inside_code_does_not_count (test_book_contract.BookContractTests) ... ok
+test_external_links_are_not_fetched (test_book_contract.BookContractTests) ... ok
+test_failure_does_not_modify_source (test_book_contract.BookContractTests) ... ok
+test_links_in_fences_are_not_resource_dependencies (test_book_contract.BookContractTests) ... ok
+test_local_reference_link_and_url_escaping (test_book_contract.BookContractTests) ... ok
+test_manifest_escape_fails (test_book_contract.BookContractTests) ... ok
+test_missing_exercises_fails (test_book_contract.BookContractTests) ... ok
+test_missing_file_fails (test_book_contract.BookContractTests) ... ok
+test_missing_relative_resource_fails (test_book_contract.BookContractTests) ... ok
+test_support_and_orphan_chapters_fail (test_book_contract.BookContractTests) ... ok
+test_wrong_fence_kind_cannot_close (test_book_contract.BookContractTests) ... ok
+
+----------------------------------------------------------------------
+Ran 15 tests in 0.091s
+
+OK
+Book assembly contract passed: 23 chapters, supporting sections, exercises and resources.
+This structural check does not certify mathematical correctness or definition order.
+python3 scripts/check-book-manifests.py
+Manifests agree: 23 chapters, 6 supporting files, 5 sample bodies
+python3 scripts/check-publication-tooling.py
+...........
+----------------------------------------------------------------------
+Ran 11 tests in 4.533s
+
+OK
+python3 scripts/check-support-examples.py
+0,1,0,1 -> present: real=0.6 imaginary=0
+0,1 -> present: real=0 imaginary=0
+1,0 -> absent (declared zero in this toy table)
+raw: all four coefficients agree
+weighted: all four coefficients agree
+migrated: all four coefficients agree
+skeleton: all four coefficients agree
+One rotation: 2 CNOTs, 5 total logical gates
+Executed 3 complete supporting-matter examples

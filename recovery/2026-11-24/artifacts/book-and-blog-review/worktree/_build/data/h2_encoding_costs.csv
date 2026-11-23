@@ -1,0 +1,7 @@
+encoding,qubits,hamiltonian_factors,nonidentity_rotations,cnots_per_step,total_gates
+Jordan-Wigner,4,15,14,36,98
+Bravyi-Kitaev,4,15,14,44,82
+Parity,4,15,14,40,78
+Binary Tree,4,15,14,40,78
+Ternary Tree,4,15,14,44,102
+Vlasov Tree,4,15,14,44,110

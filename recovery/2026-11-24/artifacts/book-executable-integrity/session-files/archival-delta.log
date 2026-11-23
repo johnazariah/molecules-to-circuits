@@ -1,0 +1,11 @@
+/Users/johnaz/Library/Python/3.9/lib/python/site-packages/pyscf/lib/misc.py:149: UserWarning: OpenMP is not available. Setting omp_threads to 1 has no effects.
+  warnings.warn('OpenMP is not available. '
+/Users/johnaz/Library/Python/3.9/lib/python/site-packages/pyscf/lib/misc.py:149: UserWarning: OpenMP is not available. Setting omp_threads to 1 has no effects.
+  warnings.warn('OpenMP is not available. '
+/Users/johnaz/Library/Python/3.9/lib/python/site-packages/pyscf/lib/misc.py:149: UserWarning: OpenMP is not available. Setting omp_threads to 1 has no effects.
+  warnings.warn('OpenMP is not available. '
+/Users/johnaz/Library/Python/3.9/lib/python/site-packages/pyscf/lib/misc.py:149: UserWarning: OpenMP is not available. Setting omp_threads to 1 has no effects.
+  warnings.warn('OpenMP is not available. '
+Portable parity passes: complete H2 matrices/coefficients/spectra, scan energies, grids and bound provenance.
+PNG byte equality and regenerated floating-point hashes are deliberately not scientific tolerance tests.
+ERROR: archival byte reproduction differs for code/h2_dissociation_integrals.json (portable parity is a separate contract)

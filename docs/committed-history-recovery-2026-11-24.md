@@ -54,10 +54,12 @@ The GitHub default branch was `main` at
 `c5cf9dfc4543d35c9936fa1b39307e782016fe11`, an ancestor of the accepted parent
 review tip. The primary local `main`,
 `e3bb6fa9f47c1d3c12b271d0734f3a54fe9f7698`, is also an ancestor.
-The consolidation branch is `recovery/2026-11-24/consolidated`, comprising the
-accepted parent history plus this manifest. It is suitable for a non-force,
-fast-forward update of `main`; the actual published branch hashes must be
-checked after pushing. Other GitHub branches are left unchanged.
+The first consolidation was published at
+`6bc9cde7d58e69fead1e2eba873850b991950abf` on `main` and
+`recovery/2026-11-24/consolidated`, using a normal fast-forward update.
+A fresh GitHub-only clone verified all six original recovery tips, both
+consolidation refs, reachable objects and child patch coverage.
+Other pre-existing GitHub branches were left unchanged.
 
 Checks passed in the independent recovery clone:
 
@@ -75,11 +77,34 @@ Checks passed in the independent recovery clone:
 No canonical chemistry data were regenerated. This recovery did not run external
 circuit importers, all numbered labs, full publication builds or long experiments.
 
-## Missing content and deletion restriction
+## Mounted-volume follow-up
 
-The external `mac_workspace` volume was unavailable. Worktree directories behind
-the missing volume could not be inspected. This operation preserves the six
-surviving committed histories only; it does not recover or establish the safety
-of uncommitted changes, untracked files, unsaved drafts or ignored build products.
-It does not establish that local deletion is safe. No files or sessions were
-removed or archived, and no symlinks or worktree registrations were repaired.
+The external `mac_workspace` volume was unavailable during the first recovery,
+then became readable. A follow-up inspected all six source worktrees and the
+primary checkout read-only. There were no staged or unstaged content edits in
+any of them. The six worktrees had no untracked files. Mount-induced executable
+bits were not applied to the book. The primary checkout's untracked
+`manuscript/sample.pdf` was preserved.
+
+The [mounted artifact archive](../recovery/2026-11-24/README.md) and its
+[machine-readable inventory](../recovery/2026-11-24/mounted-content-inventory.json)
+account for 568 selected source files: 405 new unique payloads, 64 exact
+duplicates mapped to those payloads and 99 files already present in GitHub
+history. Preserved material includes the accepted full PDF, sample and EPUB,
+historical previews, figures, circuit/data exports, verification evidence and
+durable session check scripts. The accepted publication hashes match the
+original output acceptance record. No additional source integration was needed.
+
+## Remaining exclusions and deletion restriction
+
+The repository is public. Private proposal documents and a CV in the additional
+Apress proposal worktree were not opened or uploaded and remain unpreserved.
+Reinstallable dependencies, vendor runtimes/templates, intermediate caches and
+Finder metadata were excluded with locations and reasons recorded in the
+inventory. Session research directories were empty; checkpoint directories
+contained only empty-history indexes. Application conversations, databases,
+runtime state and unsaved editor buffers were not exported.
+
+This recovery does not establish that all local book-related material can be
+deleted. No files or sessions were removed or archived, and no symlinks or
+worktree registrations were repaired.

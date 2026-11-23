@@ -1,0 +1,204 @@
+- generic [active] [ref=e1]:
+  - generic "skip to content options":
+    - link "Skip to article frontmatter" [ref=e2] [cursor=pointer]:
+      - /url: "#skip-to-frontmatter"
+    - link "Skip to article content" [ref=e3] [cursor=pointer]:
+      - /url: "#skip-to-article"
+  - navigation [ref=e5]:
+    - generic [ref=e6]:
+      - button "Open Menu" [ref=e8] [cursor=pointer]
+      - link "From Molecules to Quantum Circuits" [ref=e12] [cursor=pointer]:
+        - /url: /
+    - generic [ref=e14]:
+      - button "Search" [ref=e15] [cursor=pointer]:
+        - generic [aria-hidden] [ref=e19]:
+          - generic [ref=e20]: ⌘
+          - generic [ref=e21]: K
+      - button "Toggle theme between light and dark mode" [ref=e22] [cursor=pointer]
+  - main [ref=e25]:
+    - article [ref=e26]:
+      - generic "article frontmatter" [ref=e27]:
+        - button "Downloads" [ref=e30] [cursor=pointer]
+        - heading "From Molecules to Quantum Circuits" [level=1] [ref=e34]
+        - generic [ref=e36]:
+          - button "Author Details" [ref=e39] [cursor=pointer]: John S Azariah
+          - generic [ref=e40]: Centre for Quantum Software & Information, University of Technology Sydney
+      - generic:
+        - navigation
+      - paragraph [ref=e42]:
+        - emphasis [ref=e43]: A Computational Guide to Fermion-to-Qubit Encodings
+      - paragraph [ref=e44]:
+        - strong [ref=e45]: John S Azariah
+      - paragraph [ref=e46]: Centre for Quantum Software and Information, University of Technology Sydney
+      - blockquote [ref=e47]:
+        - paragraph [ref=e48]:
+          - strong [ref=e49]: "Rights:"
+          - text: Manuscript and rendered book © 2026 John S Azariah. All rights reserved. Companion source code is available under the MIT License; see
+          - code [ref=e50]: LICENSE-CODE
+          - text: .
+      - separator [ref=e51]
+      - paragraph [ref=e52]:
+        - emphasis [ref=e53]: For my parents, who believed before I did.
+      - separator [ref=e54]
+      - heading "Preface Link to this Section" [level=2] [ref=e55]:
+        - text: Preface
+        - link "Link to this Section":
+          - /url: "#preface"
+          - text: ¶
+      - paragraph [ref=e56]: Every chemistry textbook tells you that water’s bond angle is 104.5° and waves at VSEPR theory. Every quantum computing textbook tells you that fermions need to be encoded as qubits and shows you the Jordan-Wigner transform. Very few resources connect these two worlds with enough detail to show what has to happen between a chemistry calculation and a circuit, or which part of that work an encoding library actually does.
+      - paragraph [ref=e57]: This book follows that translation layer. It does not turn circuit construction into an energy measurement by giving it a more ambitious name.
+      - paragraph [ref=e58]: "We walk through the translation from molecular data to logical quantum circuits with two running examples: the hydrogen molecule (H₂), because it is the simplest system that exhibits all the essential structure, and the water molecule (H₂O), because it gives us a useful, larger chemistry reference against which to ask what remains."
+      - paragraph [ref=e59]: For H₂ in the STO-3G basis at a bond length of 0.74 Å, generated integrals lead to a checked Jordan-Wigner Hamiltonian, comparisons between encodings, and logical product-formula circuits. Nuclear repulsion is a separate energy contribution. State preparation and energy estimation are separate algorithmic tasks, not hidden services supplied by the Hamiltonian builder.
+      - paragraph [ref=e60]:
+        - text: For water, the supplied calculation is a
+        - strong [ref=e61]: classical PySCF FCI angular scan at fixed experimental O–H length, 0.9584 Å
+        - text: ". Its sampled minimum is conditional on that length, basis and grid. It is neither a full geometry optimisation nor a water energy calculated by running a FockMap circuit. The distinction matters: a reference calculation can teach us what a quantum pipeline would have to reproduce without pretending that the pipeline has already done it."
+      - paragraph [ref=e62]: Core transformations have executable FockMap companions, while PySCF scripts produce the independent chemistry references. The companions expose signs, coefficients, and intermediate Pauli strings and fail closed when a live package does not reproduce the canonical matrix. Exercises remain at the end of each chapter for readers who want to deepen their understanding.
+      - paragraph [ref=e63]: "The book follows a deliberate pedagogical ordering: chemistry and physics first, mathematical formalism second, executable code third. We believe the question “why does this matter?” should always be answered before the question “how does this work?” — and both should be answered before “how do I compute it?”"
+      - heading "Who This Book Is For Link to this Section" [level=3] [ref=e64]:
+        - text: Who This Book Is For
+        - link "Link to this Section":
+          - /url: "#who-this-book-is-for"
+          - text: ¶
+      - list [ref=e65]:
+        - listitem [ref=e66]:
+          - paragraph [ref=e67]:
+            - strong [ref=e68]: Graduate students
+            - text: starting in quantum chemistry simulation who need to understand the encoding layer between chemistry and circuits
+        - listitem [ref=e69]:
+          - paragraph [ref=e70]:
+            - strong [ref=e71]: Physicists
+            - text: crossing into quantum computing who know Hamiltonians but not encodings
+        - listitem [ref=e72]:
+          - paragraph [ref=e73]:
+            - strong [ref=e74]: Software engineers
+            - text: building quantum simulation pipelines who need the physics explained carefully
+        - listitem [ref=e75]:
+          - paragraph [ref=e76]:
+            - strong [ref=e77]: Lecturers
+            - text: building a course module on quantum simulation who want homework exercises with verifiable answers
+      - heading "What You Need to Know Link to this Section" [level=3] [ref=e78]:
+        - text: What You Need to Know
+        - link "Link to this Section":
+          - /url: "#what-you-need-to-know"
+          - text: ¶
+      - paragraph [ref=e79]:
+        - text: We assume familiarity with linear algebra (vectors, matrices, eigenvalues) and introductory quantum mechanics (wavefunctions, bra-ket notation, the hydrogen atom). We do
+        - emphasis [ref=e80]: not
+        - text: "assume prior knowledge of:"
+      - list [ref=e81]:
+        - listitem [ref=e82]:
+          - paragraph [ref=e83]: Chemistry, including molecular orbitals and electronic-structure methods
+        - listitem [ref=e84]:
+          - paragraph [ref=e85]: Second quantization or Fock space
+        - listitem [ref=e86]:
+          - paragraph [ref=e87]: Pauli algebra or qubit representations
+        - listitem [ref=e88]:
+          - paragraph [ref=e89]: Fermion-to-qubit encodings
+        - listitem [ref=e90]:
+          - paragraph [ref=e91]: F# or functional programming
+        - listitem [ref=e92]:
+          - paragraph [ref=e93]: Measurement statistics
+      - paragraph [ref=e94]:
+        - text: The chapters introduce these as they become useful. Read the unnumbered
+        - strong [ref=e95]: Reading and Running the Code
+        - text: bridge between Chapters 1 and 2 before the first coefficient factory. Later chapters explain the particular tree, record, circuit and statistical constructions they need; the bridge is not a requirement to learn a programming language in advance.
+      - heading "How to Read This Book Link to this Section" [level=3] [ref=e96]:
+        - text: How to Read This Book
+        - link "Link to this Section":
+          - /url: "#how-to-read-this-book"
+          - text: ¶
+      - paragraph [ref=e97]: "The 23 chapters are organized into seven stages, following the quantum simulation pipeline:"
+      - list [ref=e98]:
+        - listitem [ref=e99]:
+          - paragraph [ref=e100]:
+            - strong [ref=e101]: The Molecule
+            - text: (Chapters 1–3) — from molecules to integrals
+        - listitem [ref=e102]:
+          - paragraph [ref=e103]:
+            - strong [ref=e104]: The Machine
+            - text: (Chapter 4) — qubits, gates, and circuits
+        - listitem [ref=e105]:
+          - paragraph [ref=e106]:
+            - strong [ref=e107]: Encoding
+            - text: (Chapters 5–9) — from fermions to qubits
+        - listitem [ref=e108]:
+          - paragraph [ref=e109]:
+            - strong [ref=e110]: Tapering
+            - text: (Chapters 10–13) — removing redundant qubits
+        - listitem [ref=e111]:
+          - paragraph [ref=e112]:
+            - strong [ref=e113]: Circuits
+            - text: (Chapters 14–17) — Trotterization and cost analysis
+        - listitem [ref=e114]:
+          - paragraph [ref=e115]:
+            - strong [ref=e116]: The Pipeline
+            - text: (Chapters 18–21) — integration, fixed-bond scan, algorithms, export
+        - listitem [ref=e117]:
+          - paragraph [ref=e118]:
+            - strong [ref=e119]: Horizons
+            - text: (Chapters 22–23) — scaling and what comes next
+      - paragraph [ref=e120]: "You can read straight through (recommended for first reading), or jump to a specific stage if you already know the earlier material. Each chapter begins with “In This Chapter” learning objectives and ends with a summary and exercises. The appendices are retrieval aids: Appendix A collects selected API contracts and complete small programs; Appendix B collects notation and conventions. Neither is a store of prerequisites that you were expected to read before Chapter 1."
+      - paragraph [ref=e121]: For a first reading, work through the derivations and trace the small examples before running the longer companions. For a practical reading, keep the repository beside the book and compare the named intermediate results, not just the last printed energy. A successful execution tells you that a program ran; the physical sector, matrix ordering and energy convention tell you what its result means.
+      - paragraph [ref=e122]:
+        - text: Exercises range from a hand calculation to a bounded programming task. Try the calculation first, then use the companion to inspect the result.
+        - strong [ref=e123]: Selected Worked Solutions
+        - text: gives reasoning for selected questions, identified by chapter title and exercise name rather than just a number. It is not a complete instructor answer key. An open-ended investigation does not acquire a unique answer merely because it appears at the end of a chapter.
+      - heading "The Companion Software Link to this Section" [level=3] [ref=e124]:
+        - text: The Companion Software
+        - link "Link to this Section":
+          - /url: "#the-companion-software"
+          - text: ¶
+      - paragraph [ref=e125]: "The F# encoding and circuit companions use the pinned FockMap library:"
+      - list [ref=e126]:
+        - listitem [ref=e127]:
+          - paragraph [ref=e128]:
+            - strong [ref=e129]: "Source code:"
+            - link "https://github.com/johnazariah/encodings" [ref=e130] [cursor=pointer]:
+              - /url: https://github.com/johnazariah/encodings
+        - listitem [ref=e134]:
+          - paragraph [ref=e135]:
+            - strong [ref=e136]: "NuGet package:"
+            - code [ref=e137]: dotnet add package FockMap --version 0.9.0
+        - listitem [ref=e138]:
+          - paragraph [ref=e139]:
+            - strong [ref=e140]: "Web documentation:"
+            - link "https://johnazariah.github.io/encodings/" [ref=e141] [cursor=pointer]:
+              - /url: https://johnazariah.github.io/encodings/
+      - paragraph [ref=e145]:
+        - text: The library is open-source (MIT license) and runs on Windows, macOS, and Linux via .NET 10. The book repository, including the Python chemistry references and F# entry points, is at
+        - link "https://github.com/johnazariah/molecules-to-circuits" [ref=e146] [cursor=pointer]:
+          - /url: https://github.com/johnazariah/molecules-to-circuits
+        - text: . Python/PySCF dependencies are listed separately in
+        - code [ref=e150]: requirements-data.txt
+        - text: ; installing FockMap does not install them.
+      - paragraph [ref=e151]:
+        - text: Run scripts from the repository root, for example
+        - code [ref=e152]: dotnet fsi labs/01-first-encoding.fsx
+        - text: . The code-reading bridge explains package restoration, paths and the distinction between a complete script, a contextual excerpt and pseudocode. Numerical agreement within a stated tolerance is the portable target; reproducing archived bytes additionally requires the recorded numerical environment.
+      - separator [ref=e153]
+      - heading "About the Author Link to this Section" [level=3] [ref=e154]:
+        - text: About the Author
+        - link "Link to this Section":
+          - /url: "#about-the-author"
+          - text: ¶
+      - paragraph [ref=e155]: John S Azariah is a software engineer, language designer, and quantum computing researcher whose work sits at the intersection of chemistry, computation, and executable mathematics. He earned a BA in Computer Science and Chemistry from Dartmouth College, a combination that now finds a natural expression in quantum simulation.
+      - paragraph [ref=e156]: Over more than three decades in professional software development, he has worked through successive technology shifts including desktop software, the internet, cloud computing, quantum programming, and AI. His career has included roles on Microsoft Excel and Microsoft Project, early SharePoint prototypes, Visual J#.NET, large-scale Azure systems, and principal engineering work across Azure Batch, Azure Kubernetes Service, and AI systems in APAC. He was also compiler lead and one of the language designers behind Microsoft Q#.
+      - paragraph [ref=e157]: Alongside industry work, he has maintained a longstanding interest in functional programming, scientific computing, and software craft. He is currently a Principal AI SME at Microsoft and is pursuing a PhD in Quantum Computing at the University of Technology Sydney under Dr. Chris Ferrie.
+      - generic [ref=e159]:
+        - heading [level=2] [ref=e160]:
+          - text: Acknowledgments
+          - link "Link to Acknowledgments" [ref=e161] [cursor=pointer]:
+            - /url: "#acknowledgments"
+            - text: ¶
+        - generic [ref=e162]:
+          - paragraph [ref=e163]: This work grew out of research at the Centre for Quantum Software and Information at the University of Technology Sydney.
+          - paragraph [ref=e164]: I am grateful to Dr Chris Ferrie for his patient guidance of my exploration, to Dr Guang Hao Low for sparking the journey, and to Dr Stephen Jordan and Dr Helmut Katzgraber for their continued encouragement.
+          - paragraph [ref=e165]: And to my family, for bearing all my burdens.
+          - paragraph [ref=e166]:
+            - emphasis [ref=e167]: Sydney, March 2026
+      - 'link "Next: Chapter 1: The Electronic Structure Problem" [ref=e169] [cursor=pointer]':
+        - /url: /electronic-structure
+        - generic [ref=e171]:
+          - generic [ref=e172]: "Part I: The Molecule"
+          - text: "Chapter 1: The Electronic Structure Problem"

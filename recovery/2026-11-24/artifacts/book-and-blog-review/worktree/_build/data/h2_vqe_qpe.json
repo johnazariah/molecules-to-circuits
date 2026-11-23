@@ -1,0 +1,18 @@
+{
+  "vqe_angle": -0.11278283218615297,
+  "electronic_energy_Ha": -1.8523881735695826,
+  "basis_rows": [
+    3,
+    12
+  ],
+  "phase_bits": 12,
+  "shift_Ha": 0.5,
+  "base_time_au": 1.0,
+  "phase": 0.3743942058945145,
+  "peak_integer": 1534,
+  "peak_probability": 0.43582798323174626,
+  "decoded_energy_Ha": -1.8531265286165737,
+  "energy_bin_width_Ha": 0.0015339807878856412,
+  "controlled_identity_phase_angle": 1.3121706072487134,
+  "model": "exact controlled 2x2 evolution, no noise or product-formula approximation"
+}

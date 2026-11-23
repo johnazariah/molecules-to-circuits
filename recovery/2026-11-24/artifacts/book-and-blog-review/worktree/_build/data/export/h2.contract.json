@@ -1,0 +1,69 @@
+{
+  "decimal_places": 15,
+  "fockmap": "0.9.0",
+  "qubits": 4,
+  "rotations": [
+    {
+      "angle": -0.0812170607248713,
+      "signature": "IIII"
+    },
+    {
+      "angle": 0.017141282644776913,
+      "signature": "ZIII"
+    },
+    {
+      "angle": 0.01714128264477691,
+      "signature": "IZII"
+    },
+    {
+      "angle": -0.02234315369081336,
+      "signature": "IIZI"
+    },
+    {
+      "angle": -0.02234315369081336,
+      "signature": "IIIZ"
+    },
+    {
+      "angle": 0.01686889817036121,
+      "signature": "ZZII"
+    },
+    {
+      "angle": 0.004530261550379918,
+      "signature": "YXXY"
+    },
+    {
+      "angle": -0.004530261550379918,
+      "signature": "YYXX"
+    },
+    {
+      "angle": -0.004530261550379918,
+      "signature": "XXYY"
+    },
+    {
+      "angle": 0.004530261550379918,
+      "signature": "XYYX"
+    },
+    {
+      "angle": 0.01206252348339041,
+      "signature": "ZIZI"
+    },
+    {
+      "angle": 0.01659278503377033,
+      "signature": "ZIIZ"
+    },
+    {
+      "angle": 0.01659278503377033,
+      "signature": "IZZI"
+    },
+    {
+      "angle": 0.01206252348339041,
+      "signature": "IZIZ"
+    },
+    {
+      "angle": 0.01744128761226153,
+      "signature": "IIZZ"
+    }
+  ],
+  "schema": "book-export-contract-v1",
+  "time_step": 0.1
+}

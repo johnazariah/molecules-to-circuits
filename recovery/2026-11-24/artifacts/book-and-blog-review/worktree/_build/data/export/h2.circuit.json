@@ -1,0 +1,454 @@
+{
+  "numQubits": 4,
+  "gateCount": 98,
+  "metadata": {
+    "FockMap": "0.9.0",
+    "RzConvention": "exp(-i angle Z/2)",
+    "identityPhase": "omitted from uncontrolled exported circuit",
+    "signatureOrder": "q0-leftmost"
+  },
+  "gates": [
+    {
+      "gate": "Rz",
+      "qubit": 0,
+      "angle": 0.034282565289553826
+    },
+    {
+      "gate": "Rz",
+      "qubit": 1,
+      "angle": 0.03428256528955382
+    },
+    {
+      "gate": "Rz",
+      "qubit": 2,
+      "angle": -0.04468630738162672
+    },
+    {
+      "gate": "Rz",
+      "qubit": 3,
+      "angle": -0.04468630738162672
+    },
+    {
+      "gate": "CNOT",
+      "control": 0,
+      "target": 1
+    },
+    {
+      "gate": "Rz",
+      "qubit": 1,
+      "angle": 0.03373779634072242
+    },
+    {
+      "gate": "CNOT",
+      "control": 0,
+      "target": 1
+    },
+    {
+      "gate": "Sdg",
+      "qubit": 0
+    },
+    {
+      "gate": "H",
+      "qubit": 0
+    },
+    {
+      "gate": "H",
+      "qubit": 1
+    },
+    {
+      "gate": "H",
+      "qubit": 2
+    },
+    {
+      "gate": "Sdg",
+      "qubit": 3
+    },
+    {
+      "gate": "H",
+      "qubit": 3
+    },
+    {
+      "gate": "CNOT",
+      "control": 0,
+      "target": 1
+    },
+    {
+      "gate": "CNOT",
+      "control": 1,
+      "target": 2
+    },
+    {
+      "gate": "CNOT",
+      "control": 2,
+      "target": 3
+    },
+    {
+      "gate": "Rz",
+      "qubit": 3,
+      "angle": 0.009060523100759835
+    },
+    {
+      "gate": "CNOT",
+      "control": 2,
+      "target": 3
+    },
+    {
+      "gate": "CNOT",
+      "control": 1,
+      "target": 2
+    },
+    {
+      "gate": "CNOT",
+      "control": 0,
+      "target": 1
+    },
+    {
+      "gate": "H",
+      "qubit": 0
+    },
+    {
+      "gate": "S",
+      "qubit": 0
+    },
+    {
+      "gate": "H",
+      "qubit": 1
+    },
+    {
+      "gate": "H",
+      "qubit": 2
+    },
+    {
+      "gate": "H",
+      "qubit": 3
+    },
+    {
+      "gate": "S",
+      "qubit": 3
+    },
+    {
+      "gate": "Sdg",
+      "qubit": 0
+    },
+    {
+      "gate": "H",
+      "qubit": 0
+    },
+    {
+      "gate": "Sdg",
+      "qubit": 1
+    },
+    {
+      "gate": "H",
+      "qubit": 1
+    },
+    {
+      "gate": "H",
+      "qubit": 2
+    },
+    {
+      "gate": "H",
+      "qubit": 3
+    },
+    {
+      "gate": "CNOT",
+      "control": 0,
+      "target": 1
+    },
+    {
+      "gate": "CNOT",
+      "control": 1,
+      "target": 2
+    },
+    {
+      "gate": "CNOT",
+      "control": 2,
+      "target": 3
+    },
+    {
+      "gate": "Rz",
+      "qubit": 3,
+      "angle": -0.009060523100759835
+    },
+    {
+      "gate": "CNOT",
+      "control": 2,
+      "target": 3
+    },
+    {
+      "gate": "CNOT",
+      "control": 1,
+      "target": 2
+    },
+    {
+      "gate": "CNOT",
+      "control": 0,
+      "target": 1
+    },
+    {
+      "gate": "H",
+      "qubit": 0
+    },
+    {
+      "gate": "S",
+      "qubit": 0
+    },
+    {
+      "gate": "H",
+      "qubit": 1
+    },
+    {
+      "gate": "S",
+      "qubit": 1
+    },
+    {
+      "gate": "H",
+      "qubit": 2
+    },
+    {
+      "gate": "H",
+      "qubit": 3
+    },
+    {
+      "gate": "H",
+      "qubit": 0
+    },
+    {
+      "gate": "H",
+      "qubit": 1
+    },
+    {
+      "gate": "Sdg",
+      "qubit": 2
+    },
+    {
+      "gate": "H",
+      "qubit": 2
+    },
+    {
+      "gate": "Sdg",
+      "qubit": 3
+    },
+    {
+      "gate": "H",
+      "qubit": 3
+    },
+    {
+      "gate": "CNOT",
+      "control": 0,
+      "target": 1
+    },
+    {
+      "gate": "CNOT",
+      "control": 1,
+      "target": 2
+    },
+    {
+      "gate": "CNOT",
+      "control": 2,
+      "target": 3
+    },
+    {
+      "gate": "Rz",
+      "qubit": 3,
+      "angle": -0.009060523100759835
+    },
+    {
+      "gate": "CNOT",
+      "control": 2,
+      "target": 3
+    },
+    {
+      "gate": "CNOT",
+      "control": 1,
+      "target": 2
+    },
+    {
+      "gate": "CNOT",
+      "control": 0,
+      "target": 1
+    },
+    {
+      "gate": "H",
+      "qubit": 0
+    },
+    {
+      "gate": "H",
+      "qubit": 1
+    },
+    {
+      "gate": "H",
+      "qubit": 2
+    },
+    {
+      "gate": "S",
+      "qubit": 2
+    },
+    {
+      "gate": "H",
+      "qubit": 3
+    },
+    {
+      "gate": "S",
+      "qubit": 3
+    },
+    {
+      "gate": "H",
+      "qubit": 0
+    },
+    {
+      "gate": "Sdg",
+      "qubit": 1
+    },
+    {
+      "gate": "H",
+      "qubit": 1
+    },
+    {
+      "gate": "Sdg",
+      "qubit": 2
+    },
+    {
+      "gate": "H",
+      "qubit": 2
+    },
+    {
+      "gate": "H",
+      "qubit": 3
+    },
+    {
+      "gate": "CNOT",
+      "control": 0,
+      "target": 1
+    },
+    {
+      "gate": "CNOT",
+      "control": 1,
+      "target": 2
+    },
+    {
+      "gate": "CNOT",
+      "control": 2,
+      "target": 3
+    },
+    {
+      "gate": "Rz",
+      "qubit": 3,
+      "angle": 0.009060523100759835
+    },
+    {
+      "gate": "CNOT",
+      "control": 2,
+      "target": 3
+    },
+    {
+      "gate": "CNOT",
+      "control": 1,
+      "target": 2
+    },
+    {
+      "gate": "CNOT",
+      "control": 0,
+      "target": 1
+    },
+    {
+      "gate": "H",
+      "qubit": 0
+    },
+    {
+      "gate": "H",
+      "qubit": 1
+    },
+    {
+      "gate": "S",
+      "qubit": 1
+    },
+    {
+      "gate": "H",
+      "qubit": 2
+    },
+    {
+      "gate": "S",
+      "qubit": 2
+    },
+    {
+      "gate": "H",
+      "qubit": 3
+    },
+    {
+      "gate": "CNOT",
+      "control": 0,
+      "target": 2
+    },
+    {
+      "gate": "Rz",
+      "qubit": 2,
+      "angle": 0.02412504696678082
+    },
+    {
+      "gate": "CNOT",
+      "control": 0,
+      "target": 2
+    },
+    {
+      "gate": "CNOT",
+      "control": 0,
+      "target": 3
+    },
+    {
+      "gate": "Rz",
+      "qubit": 3,
+      "angle": 0.03318557006754066
+    },
+    {
+      "gate": "CNOT",
+      "control": 0,
+      "target": 3
+    },
+    {
+      "gate": "CNOT",
+      "control": 1,
+      "target": 2
+    },
+    {
+      "gate": "Rz",
+      "qubit": 2,
+      "angle": 0.03318557006754066
+    },
+    {
+      "gate": "CNOT",
+      "control": 1,
+      "target": 2
+    },
+    {
+      "gate": "CNOT",
+      "control": 1,
+      "target": 3
+    },
+    {
+      "gate": "Rz",
+      "qubit": 3,
+      "angle": 0.02412504696678082
+    },
+    {
+      "gate": "CNOT",
+      "control": 1,
+      "target": 3
+    },
+    {
+      "gate": "CNOT",
+      "control": 2,
+      "target": 3
+    },
+    {
+      "gate": "Rz",
+      "qubit": 3,
+      "angle": 0.03488257522452306
+    },
+    {
+      "gate": "CNOT",
+      "control": 2,
+      "target": 3
+    }
+  ]
+}

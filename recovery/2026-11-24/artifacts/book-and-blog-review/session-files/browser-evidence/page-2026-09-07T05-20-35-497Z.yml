@@ -1,0 +1,2551 @@
+- generic [active] [ref=f2e1]:
+  - generic "skip to content options":
+    - link "Skip to article frontmatter" [ref=f2e2] [cursor=pointer]:
+      - /url: "#skip-to-frontmatter"
+    - link "Skip to article content" [ref=f2e3] [cursor=pointer]:
+      - /url: "#skip-to-article"
+  - navigation [ref=f2e5]:
+    - generic [ref=f2e6]:
+      - button "Open Menu" [ref=f2e8] [cursor=pointer]
+      - link "From Molecules to Quantum Circuits" [ref=f2e12] [cursor=pointer]:
+        - /url: /molecules-to-circuits/
+    - generic [ref=f2e14]:
+      - button "Search" [ref=f2e15] [cursor=pointer]:
+        - generic [aria-hidden] [ref=f2e19]:
+          - generic [ref=f2e20]: ⌘
+          - generic [ref=f2e21]: K
+      - button "Toggle theme between light and dark mode" [ref=f2e22] [cursor=pointer]
+  - main [ref=f2e25]:
+    - article [ref=f2e26]:
+      - generic "article frontmatter" [ref=f2e27]:
+        - button "Downloads" [ref=f2e30] [cursor=pointer]
+        - 'heading "Chapter 5: A Visual Guide to Encodings" [level=1] [ref=f2e34]'
+        - generic [ref=f2e36]:
+          - button "Author Details" [ref=f2e39] [cursor=pointer]: John S Azariah
+          - generic [ref=f2e40]: Centre for Quantum Software & Information, University of Technology Sydney
+      - navigation "Document Outline" [ref=f2e43]:
+        - generic [ref=f2e44]:
+          - text: Contents
+          - button "Open Contents" [expanded] [ref=f2e45] [cursor=pointer]
+        - list [ref=f2e49]:
+          - listitem [ref=f2e50]:
+            - link "In This Chapter" [ref=f2e51] [cursor=pointer]:
+              - /url: "#in-this-chapter"
+          - listitem [ref=f2e52]:
+            - link "Where We Stand" [ref=f2e53] [cursor=pointer]:
+              - /url: "#where-we-stand"
+          - listitem [ref=f2e54]:
+            - link "The problem with wavefunctions" [ref=f2e55] [cursor=pointer]:
+              - /url: "#the-problem-with-wavefunctions"
+          - listitem [ref=f2e56]:
+            - link "Why operators instead of wavefunctions" [ref=f2e57] [cursor=pointer]:
+              - /url: "#why-operators-instead-of-wavefunctions"
+          - listitem [ref=f2e58]:
+            - link "Why quantum computing" [ref=f2e59] [cursor=pointer]:
+              - /url: "#why-quantum-computing"
+          - listitem [ref=f2e60]:
+            - link "The Tempting (Wrong) Idea" [ref=f2e61] [cursor=pointer]:
+              - /url: "#the-tempting-wrong-idea"
+          - listitem [ref=f2e62]:
+            - link "What Makes Electrons Different from Qubits" [ref=f2e63] [cursor=pointer]:
+              - /url: "#what-makes-electrons-different-from-qubits"
+          - listitem [ref=f2e64]:
+            - 'link "Jordan–Wigner: The Z-Chain" [ref=f2e65] [cursor=pointer]':
+              - /url: "#jordan-wigner-the-z-chain"
+          - listitem [ref=f2e66]:
+            - link "How the Z-chain works" [ref=f2e67] [cursor=pointer]:
+              - /url: "#how-the-z-chain-works"
+          - listitem [ref=f2e68]:
+            - link "JW Pauli weight for all four orbitals" [ref=f2e69] [cursor=pointer]:
+              - /url: "#jw-pauli-weight-for-all-four-orbitals"
+          - listitem [ref=f2e70]:
+            - link "When JW is the right choice" [ref=f2e71] [cursor=pointer]:
+              - /url: "#when-jw-is-the-right-choice"
+          - listitem [ref=f2e72]:
+            - 'link "Bravyi–Kitaev: Partial Parity Sums" [ref=f2e73] [cursor=pointer]':
+              - /url: "#bravyi-kitaev-partial-parity-sums"
+          - listitem [ref=f2e74]:
+            - link "The key insight" [ref=f2e75] [cursor=pointer]:
+              - /url: "#the-key-insight"
+          - listitem [ref=f2e76]:
+            - link "How BK stores information" [ref=f2e77] [cursor=pointer]:
+              - /url: "#how-bk-stores-information"
+          - listitem [ref=f2e78]:
+            - link "The three questions every encoding answers" [ref=f2e79] [cursor=pointer]:
+              - /url: "#the-three-questions-every-encoding-answers"
+          - listitem [ref=f2e80]:
+            - link "Weight comparison at scale" [ref=f2e81] [cursor=pointer]:
+              - /url: "#weight-comparison-at-scale"
+          - listitem [ref=f2e82]:
+            - 'link "Tree Encodings: Improving the Logarithmic Constant" [ref=f2e83] [cursor=pointer]':
+              - /url: "#tree-encodings-improving-the-logarithmic-constant"
+          - listitem [ref=f2e84]:
+            - link "Beyond binary" [ref=f2e85] [cursor=pointer]:
+              - /url: "#beyond-binary"
+          - listitem [ref=f2e86]:
+            - link "The Complete Picture" [ref=f2e87] [cursor=pointer]:
+              - /url: "#the-complete-picture"
+          - listitem [ref=f2e88]:
+            - 'link "One More Thing: Number Operators Stay Cheap" [ref=f2e89] [cursor=pointer]':
+              - /url: "#one-more-thing-number-operators-stay-cheap"
+          - listitem [ref=f2e90]:
+            - 'link "Choosing an Encoding: A Decision Guide" [ref=f2e91] [cursor=pointer]':
+              - /url: "#choosing-an-encoding-a-decision-guide"
+          - listitem [ref=f2e92]:
+            - link "Key Takeaways" [ref=f2e93] [cursor=pointer]:
+              - /url: "#key-takeaways"
+          - listitem [ref=f2e94]:
+            - link "Common Mistakes" [ref=f2e95] [cursor=pointer]:
+              - /url: "#common-mistakes"
+          - listitem [ref=f2e96]:
+            - link "Exercises" [ref=f2e97] [cursor=pointer]:
+              - /url: "#exercises"
+          - listitem [ref=f2e98]:
+            - link "Further Reading" [ref=f2e99] [cursor=pointer]:
+              - /url: "#further-reading"
+      - paragraph [ref=f2e100]:
+        - emphasis [ref=f2e101]: We have a Hamiltonian written in terms of electrons and orbitals. A quantum computer only has qubits. This chapter explains why the translation is not as obvious as it looks, and introduces three ways to do it.
+      - heading "In This Chapter Link to this Section" [level=2] [ref=f2e102]:
+        - text: In This Chapter
+        - link "Link to this Section":
+          - /url: "#in-this-chapter"
+          - text: ¶
+      - list [ref=f2e103]:
+        - listitem [ref=f2e104]:
+          - paragraph [ref=f2e105]:
+            - strong [ref=f2e106]: "What you’ll learn:"
+            - text: Why occupation vectors cannot be mapped directly to qubits, how the Jordan–Wigner encoding solves the problem but at a cost, and how Bravyi–Kitaev and tree-based encodings reduce that cost.
+        - listitem [ref=f2e107]:
+          - paragraph [ref=f2e108]:
+            - strong [ref=f2e109]: "Why this matters:"
+            - text: The encoding choice directly determines circuit depth, CNOT count, and measurement cost — and therefore whether a quantum simulation is feasible on a given device.
+        - listitem [ref=f2e110]:
+          - paragraph [ref=f2e111]:
+            - strong [ref=f2e112]: "Prerequisites:"
+            - text: Chapters 1–3 (you know the second-quantized Hamiltonian and the spin-orbital integral tables).
+      - separator [ref=f2e113]
+      - heading "Where We Stand Link to this Section" [level=2] [ref=f2e114]:
+        - text: Where We Stand
+        - link "Link to this Section":
+          - /url: "#where-we-stand"
+          - text: ¶
+      - blockquote [ref=f2e115]:
+        - paragraph [ref=f2e116]:
+          - strong [ref=f2e117]: "Ordering convention:"
+          - text: In
+          - code [ref=f2e118]: PauliRegister.Signature
+          - text: ", character position"
+          - generic [ref=f2e120]:
+            - math [ref=f2e122]:
+              - generic [ref=f2e123]: i
+            - generic [ref=f2e127]: i
+          - text: is qubit
+          - generic [ref=f2e129]:
+            - math [ref=f2e131]:
+              - generic [ref=f2e132]: i
+            - generic [ref=f2e136]: i
+          - text: ", so qubit 0 is leftmost:"
+          - code [ref=f2e137]: ABCD
+          - text: means
+          - generic [ref=f2e139]:
+            - math [ref=f2e141]:
+              - generic [ref=f2e143]:
+                - generic [ref=f2e144]:
+                  - generic [ref=f2e145]: A
+                  - generic [ref=f2e146]: "0"
+                - generic [ref=f2e147]:
+                  - generic [ref=f2e148]: B
+                  - generic [ref=f2e149]: "1"
+                - generic [ref=f2e150]:
+                  - generic [ref=f2e151]: C
+                  - generic [ref=f2e152]: "2"
+                - generic [ref=f2e153]:
+                  - generic [ref=f2e154]: D
+                  - generic [ref=f2e155]: "3"
+            - generic [ref=f2e157]:
+              - generic [ref=f2e158]:
+                - text: A
+                - generic [ref=f2e159]: "0"
+              - generic [ref=f2e167]:
+                - text: B
+                - generic [ref=f2e168]: "1"
+              - generic [ref=f2e176]:
+                - text: C
+                - generic [ref=f2e177]: "2"
+              - generic [ref=f2e185]:
+                - text: D
+                - generic [ref=f2e186]: "3"
+          - text: . For example,
+          - generic [ref=f2e195]:
+            - math [ref=f2e197]:
+              - generic [ref=f2e199]:
+                - generic [ref=f2e200]:
+                  - generic [ref=f2e201]: a
+                  - generic [ref=f2e202]: "2"
+                  - generic [ref=f2e203]: †
+                - generic [ref=f2e204]: =
+                - generic [ref=f2e205]:
+                  - generic [ref=f2e206]: "1"
+                  - generic [ref=f2e207]: "2"
+                - generic [ref=f2e208]:
+                  - generic [ref=f2e209]: Z
+                  - generic [ref=f2e210]: Z
+                  - generic [ref=f2e211]: X
+                  - generic [ref=f2e212]: I
+                - generic [ref=f2e213]: −
+                - generic [ref=f2e214]:
+                  - generic [ref=f2e215]: i
+                  - generic [ref=f2e216]: "2"
+                - generic [ref=f2e217]:
+                  - generic [ref=f2e218]: Z
+                  - generic [ref=f2e219]: Z
+                  - generic [ref=f2e220]: "Y"
+                  - generic [ref=f2e221]: I
+            - generic [aria-hidden] [ref=f2e222]:
+              - generic [ref=f2e223]:
+                - generic [ref=f2e224]:
+                  - text: a
+                  - generic [ref=f2e228]:
+                    - generic [ref=f2e229]: "2"
+                    - generic [ref=f2e230]: †
+                - text: =
+              - generic [ref=f2e234]:
+                - generic [ref=f2e239]:
+                  - generic [ref=f2e240]: "2"
+                  - generic [ref=f2e243]: "1"
+                - generic [ref=f2e248]: ZZXI
+                - text: −
+              - generic [ref=f2e249]:
+                - generic [ref=f2e254]:
+                  - generic [ref=f2e255]: "2"
+                  - generic [ref=f2e258]: i
+                - generic [ref=f2e263]: ZZYI
+          - text: . Separately, this book displays occupation labels as
+          - generic [ref=f2e265]:
+            - math [ref=f2e267]:
+              - generic [ref=f2e269]:
+                - generic [ref=f2e270]: ∣
+                - generic [ref=f2e271]:
+                  - generic [ref=f2e272]: "n"
+                  - generic [ref=f2e273]: "0"
+                - generic [ref=f2e274]:
+                  - generic [ref=f2e275]: "n"
+                  - generic [ref=f2e276]: "1"
+                - generic [ref=f2e277]:
+                  - generic [ref=f2e278]: "n"
+                  - generic [ref=f2e279]: "2"
+                - generic [ref=f2e280]:
+                  - generic [ref=f2e281]: "n"
+                  - generic [ref=f2e282]: "3"
+                - generic [ref=f2e283]: ⟩
+            - generic [ref=f2e285]:
+              - text: ∣
+              - generic [ref=f2e286]:
+                - text: "n"
+                - generic [ref=f2e287]: "0"
+              - generic [ref=f2e295]:
+                - text: "n"
+                - generic [ref=f2e296]: "1"
+              - generic [ref=f2e304]:
+                - text: "n"
+                - generic [ref=f2e305]: "2"
+              - generic [ref=f2e313]:
+                - text: "n"
+                - generic [ref=f2e314]: "3"
+              - text: ⟩
+          - text: ", also with index 0 leftmost. An occupation integer is different: mode"
+          - generic [ref=f2e323]:
+            - math [ref=f2e325]:
+              - generic [ref=f2e326]: j
+            - generic [ref=f2e330]: j
+          - text: has place value
+          - generic [ref=f2e332]:
+            - math [ref=f2e334]:
+              - generic [ref=f2e337]:
+                - generic [ref=f2e338]: "2"
+                - generic [ref=f2e339]: j
+            - generic [ref=f2e342]:
+              - text: "2"
+              - generic [ref=f2e343]: j
+          - text: . Thus the H₂ HF occupation is displayed as
+          - generic [ref=f2e349]:
+            - math [ref=f2e351]:
+              - generic [ref=f2e353]:
+                - generic [ref=f2e354]: ∣
+                - generic [ref=f2e355]: "1100"
+                - generic [ref=f2e356]: ⟩
+            - generic [ref=f2e358]: ∣1100⟩
+          - text: but has integer value
+          - generic [ref=f2e360]:
+            - math [ref=f2e362]:
+              - generic [ref=f2e364]:
+                - generic [ref=f2e365]:
+                  - generic [ref=f2e366]: "2"
+                  - generic [ref=f2e367]: "0"
+                - generic [ref=f2e368]: +
+                - generic [ref=f2e369]:
+                  - generic [ref=f2e370]: "2"
+                  - generic [ref=f2e371]: "1"
+                - generic [ref=f2e372]: =
+                - generic [ref=f2e373]: "3"
+            - generic [aria-hidden] [ref=f2e374]:
+              - generic [ref=f2e375]:
+                - generic [ref=f2e376]:
+                  - text: "2"
+                  - generic [ref=f2e377]: "0"
+                - text: +
+              - generic [ref=f2e382]:
+                - generic [ref=f2e383]:
+                  - text: "2"
+                  - generic [ref=f2e384]: "1"
+                - text: =
+              - generic [ref=f2e389]: "3"
+          - text: ", conventionally printed"
+          - code [ref=f2e390]: "0b0011"
+          - text: ". To make dense matrix rows use that same occupation integer, reverse a displayed signature when forming the Kronecker product:"
+          - generic [ref=f2e392]:
+            - math [ref=f2e394]:
+              - generic [ref=f2e396]:
+                - generic [ref=f2e397]:
+                  - generic [ref=f2e398]: P
+                  - generic [ref=f2e399]:
+                    - generic [ref=f2e400]: "n"
+                    - generic [ref=f2e401]: −
+                    - generic [ref=f2e402]: "1"
+                - generic [ref=f2e403]: ⊗
+                - generic [ref=f2e404]: ⋯
+                - generic [ref=f2e405]: ⊗
+                - generic [ref=f2e406]:
+                  - generic [ref=f2e407]: P
+                  - generic [ref=f2e408]: "0"
+            - generic [aria-hidden] [ref=f2e409]:
+              - generic [ref=f2e410]:
+                - generic [ref=f2e411]:
+                  - text: P
+                  - generic [ref=f2e412]: n−1
+                - text: ⊗
+              - generic [ref=f2e421]: ⋯ ⊗
+              - generic [ref=f2e423]:
+                - text: P
+                - generic [ref=f2e424]: "0"
+          - text: . The displayed HF ket is therefore matrix row 3. Qiskit-style Pauli labels likewise put qubit 0 at the rightmost character; reverse FockMap signatures explicitly at that boundary. Always name the index and place-value rule explicitly.
+      - paragraph [ref=f2e432]: Let’s take stock of what the first three chapters gave us.
+      - paragraph [ref=f2e433]:
+        - strong [ref=f2e434]: Chapter 1
+        - text: "told us the chemistry: a molecule is a collection of charged particles, and its ground-state energy is the lowest eigenvalue of the electronic Hamiltonian. We introduced a finite basis set (STO-3G) that turned the continuous problem into a finite one: 2 spatial orbitals, 4 spin-orbitals, 6 two-electron configurations."
+      - paragraph [ref=f2e435]:
+        - strong [ref=f2e436]: Chapters 2–3
+        - text: "told us the numbers: one-body integrals"
+        - generic [ref=f2e438]:
+          - math [ref=f2e440]:
+            - generic [ref=f2e443]:
+              - generic [ref=f2e444]: h
+              - generic [ref=f2e445]:
+                - generic [ref=f2e446]: p
+                - generic [ref=f2e447]: q
+          - generic [ref=f2e450]:
+            - text: h
+            - generic [ref=f2e451]: pq
+        - text: ", two-body integrals"
+        - generic [ref=f2e461]:
+          - math [ref=f2e463]:
+            - generic [ref=f2e465]:
+              - generic [ref=f2e466]: ⟨
+              - generic [ref=f2e467]: p
+              - generic [ref=f2e468]: q
+              - generic [ref=f2e469]: ∣
+              - generic [ref=f2e470]: r
+              - generic [ref=f2e471]: s
+              - generic [ref=f2e472]: ⟩
+          - generic [aria-hidden] [ref=f2e473]:
+            - generic [ref=f2e474]: ⟨pq ∣
+            - generic [ref=f2e475]: rs⟩
+        - text: ", and the nuclear repulsion constant"
+        - generic [ref=f2e477]:
+          - math [ref=f2e479]:
+            - generic [ref=f2e482]:
+              - generic [ref=f2e483]: V
+              - generic [ref=f2e484]:
+                - generic [ref=f2e485]: "n"
+                - generic [ref=f2e486]: "n"
+          - generic [ref=f2e489]:
+            - text: V
+            - generic [ref=f2e490]: nn
+        - text: . We navigated the notation minefield, expanded to spin-orbitals, and ended up with a complete set of tables.
+      - paragraph [ref=f2e499]: But we glossed over something important. Let’s go back and address it now.
+      - heading "The problem with wavefunctions Link to this Section" [level=3] [ref=f2e500]:
+        - text: The problem with wavefunctions
+        - link "Link to this Section":
+          - /url: "#the-problem-with-wavefunctions"
+          - text: ¶
+      - paragraph [ref=f2e501]:
+        - text: The
+        - emphasis [ref=f2e502]: natural
+        - text: "way to describe the quantum state of two electrons in four spin-orbitals is as a superposition of configurations:"
+      - generic [ref=f2e503]:
+        - generic [ref=f2e506]:
+          - math [ref=f2e508]:
+            - generic [ref=f2e510]:
+              - generic [ref=f2e511]: ∣
+              - generic [ref=f2e512]: Ψ
+              - generic [ref=f2e513]: ⟩
+              - generic [ref=f2e514]: =
+              - generic [ref=f2e515]:
+                - generic [ref=f2e516]: c
+                - generic [ref=f2e517]: "1100"
+              - generic [ref=f2e518]: ∣
+              - generic [ref=f2e519]: "1100"
+              - generic [ref=f2e520]: ⟩
+              - generic [ref=f2e521]: +
+              - generic [ref=f2e522]:
+                - generic [ref=f2e523]: c
+                - generic [ref=f2e524]: "1010"
+              - generic [ref=f2e525]: ∣
+              - generic [ref=f2e526]: "1010"
+              - generic [ref=f2e527]: ⟩
+              - generic [ref=f2e528]: +
+              - generic [ref=f2e529]:
+                - generic [ref=f2e530]: c
+                - generic [ref=f2e531]: "1001"
+              - generic [ref=f2e532]: ∣
+              - generic [ref=f2e533]: "1001"
+              - generic [ref=f2e534]: ⟩
+              - generic [ref=f2e535]: +
+              - generic [ref=f2e536]: ⋯
+          - generic [aria-hidden] [ref=f2e537]:
+            - generic [ref=f2e538]: ∣Ψ⟩ =
+            - generic [ref=f2e539]:
+              - generic [ref=f2e540]:
+                - text: c
+                - generic [ref=f2e541]: "1100"
+              - text: ∣1100⟩ +
+            - generic [ref=f2e550]:
+              - generic [ref=f2e551]:
+                - text: c
+                - generic [ref=f2e552]: "1010"
+              - text: ∣1010⟩ +
+            - generic [ref=f2e561]:
+              - generic [ref=f2e562]:
+                - text: c
+                - generic [ref=f2e563]: "1001"
+              - text: ∣1001⟩ +
+            - generic [ref=f2e572]: ⋯
+        - link "Link to this Equation" [ref=f2e574] [cursor=pointer]:
+          - /url: "#oXBHzf4sFz"
+          - text: (1)
+      - paragraph [ref=f2e575]:
+        - text: where each
+        - generic [ref=f2e577]:
+          - math [ref=f2e579]:
+            - generic [ref=f2e581]:
+              - generic [ref=f2e582]: ∣
+              - generic [ref=f2e583]:
+                - generic [ref=f2e584]: "n"
+                - generic [ref=f2e585]: "0"
+              - generic [ref=f2e586]:
+                - generic [ref=f2e587]: "n"
+                - generic [ref=f2e588]: "1"
+              - generic [ref=f2e589]:
+                - generic [ref=f2e590]: "n"
+                - generic [ref=f2e591]: "2"
+              - generic [ref=f2e592]:
+                - generic [ref=f2e593]: "n"
+                - generic [ref=f2e594]: "3"
+              - generic [ref=f2e595]: ⟩
+          - generic [ref=f2e597]:
+            - text: ∣
+            - generic [ref=f2e598]:
+              - text: "n"
+              - generic [ref=f2e599]: "0"
+            - generic [ref=f2e607]:
+              - text: "n"
+              - generic [ref=f2e608]: "1"
+            - generic [ref=f2e616]:
+              - text: "n"
+              - generic [ref=f2e617]: "2"
+            - generic [ref=f2e625]:
+              - text: "n"
+              - generic [ref=f2e626]: "3"
+            - text: ⟩
+        - text: is an
+        - strong [ref=f2e634]: occupation vector
+        - text: — a list of 0s and 1s telling us which spin-orbitals have an electron and which don’t. The
+        - generic [ref=f2e636]:
+          - math [ref=f2e638]:
+            - generic [ref=f2e639]: c
+          - generic [ref=f2e643]: c
+        - text: coefficients are complex amplitudes. Finding the ground state means finding the
+        - generic [ref=f2e645]:
+          - math [ref=f2e647]:
+            - generic [ref=f2e648]: c
+          - generic [ref=f2e652]: c
+        - text: values that minimize the energy.
+      - paragraph [ref=f2e653]:
+        - text: For H₂ with 4 spin-orbitals, this is a vector with 6 components (the 6 two-electron configurations from Chapter 1). We could write down the
+        - generic [ref=f2e655]:
+          - math [ref=f2e657]:
+            - generic [ref=f2e659]:
+              - generic [ref=f2e660]: "6"
+              - generic [ref=f2e661]: ×
+              - generic [ref=f2e662]: "6"
+          - generic [aria-hidden] [ref=f2e663]:
+            - generic [ref=f2e664]: 6 ×
+            - generic [ref=f2e665]: "6"
+        - text: Hamiltonian matrix, plug in our integrals, and diagonalize it. Done. No quantum computer needed.
+      - paragraph [ref=f2e666]:
+        - text: For H₂O with 14 spin-orbitals and 10 electrons, the number of configurations is
+        - generic [ref=f2e668]:
+          - math [ref=f2e670]:
+            - generic [ref=f2e672]:
+              - generic [ref=f2e673]:
+                - generic [ref=f2e674]: (
+                - generic [ref=f2e675]:
+                  - generic [ref=f2e676]: "14"
+                  - generic [ref=f2e677]: "10"
+                - generic [ref=f2e678]: )
+              - generic [ref=f2e679]: =
+              - generic [ref=f2e680]: "1"
+              - generic [ref=f2e681]: ","
+              - generic [ref=f2e682]: "001"
+          - generic [aria-hidden] [ref=f2e683]:
+            - generic [ref=f2e684]:
+              - generic [ref=f2e685]:
+                - generic [ref=f2e686]: (
+                - generic [ref=f2e690]:
+                  - generic [ref=f2e691]: "10"
+                  - generic [ref=f2e693]: "14"
+                - generic [ref=f2e698]: )
+              - text: =
+            - generic [ref=f2e699]:
+              - text: "1"
+              - generic [ref=f2e700]: ","
+              - text: "001"
+        - text: . A
+        - generic [ref=f2e702]:
+          - math [ref=f2e704]:
+            - generic [ref=f2e706]:
+              - generic [ref=f2e707]: "1"
+              - generic [ref=f2e708]: ","
+              - generic [ref=f2e709]: "001"
+              - generic [ref=f2e710]: ×
+              - generic [ref=f2e711]: "1"
+              - generic [ref=f2e712]: ","
+              - generic [ref=f2e713]: "001"
+          - generic [aria-hidden] [ref=f2e714]:
+            - generic [ref=f2e715]:
+              - text: "1"
+              - generic [ref=f2e716]: ","
+              - text: 001 ×
+            - generic [ref=f2e717]:
+              - text: "1"
+              - generic [ref=f2e718]: ","
+              - text: "001"
+        - text: matrix is trivial for a laptop.
+      - paragraph [ref=f2e719]:
+        - text: "For a modest catalyst with 50 electrons in 100 spin-orbitals:"
+        - generic [ref=f2e721]:
+          - math [ref=f2e723]:
+            - generic [ref=f2e725]:
+              - generic [ref=f2e726]:
+                - generic [ref=f2e727]: (
+                - generic [ref=f2e728]:
+                  - generic [ref=f2e729]: "100"
+                  - generic [ref=f2e730]: "50"
+                - generic [ref=f2e731]: )
+              - generic [ref=f2e732]: ≈
+              - generic [ref=f2e733]: "1"
+              - generic [ref=f2e734]:
+                - generic [ref=f2e735]: "0"
+                - generic [ref=f2e736]: "29"
+          - generic [aria-hidden] [ref=f2e737]:
+            - generic [ref=f2e738]:
+              - generic [ref=f2e739]:
+                - generic [ref=f2e740]: (
+                - generic [ref=f2e744]:
+                  - generic [ref=f2e745]: "50"
+                  - generic [ref=f2e747]: "100"
+                - generic [ref=f2e752]: )
+              - text: ≈
+            - generic [ref=f2e753]:
+              - text: "1"
+              - generic [ref=f2e754]:
+                - text: "0"
+                - generic [ref=f2e755]: "29"
+        - text: configurations. That matrix will not fit in any computer that will ever be built.
+      - paragraph [ref=f2e761]:
+        - text: This is the
+        - strong [ref=f2e762]: exponential wall
+        - text: ": the dimension of the configuration space grows combinatorially with the number of orbitals. Classical methods (Hartree–Fock, DFT, coupled cluster) get around this by approximating — they never build the full matrix. But those approximations break down for strongly correlated systems, which are precisely the systems where quantum simulation promises an advantage."
+      - heading "Why operators instead of wavefunctions Link to this Section" [level=3] [ref=f2e763]:
+        - text: Why operators instead of wavefunctions
+        - link "Link to this Section":
+          - /url: "#why-operators-instead-of-wavefunctions"
+          - text: ¶
+      - paragraph [ref=f2e764]:
+        - text: Rather than tracking the full wavefunction vector (exponentially many coefficients),
+        - strong [ref=f2e765]: second quantization
+        - text: "lets us write the Hamiltonian as a polynomial in creation and annihilation operators:"
+      - generic [ref=f2e766]:
+        - generic [ref=f2e769]:
+          - math [ref=f2e771]:
+            - generic [ref=f2e773]:
+              - generic [ref=f2e774]:
+                - generic [ref=f2e775]: H
+                - generic [ref=f2e776]: ^
+              - generic [ref=f2e777]: =
+              - generic [ref=f2e778]:
+                - generic [ref=f2e779]: ∑
+                - generic [ref=f2e780]:
+                  - generic [ref=f2e781]: p
+                  - generic [ref=f2e782]: q
+              - generic [ref=f2e783]:
+                - generic [ref=f2e784]: h
+                - generic [ref=f2e785]:
+                  - generic [ref=f2e786]: p
+                  - generic [ref=f2e787]: q
+              - generic [ref=f2e788]:
+                - generic [ref=f2e789]: a
+                - generic [ref=f2e790]: p
+                - generic [ref=f2e791]: †
+              - generic [ref=f2e792]:
+                - generic [ref=f2e793]: a
+                - generic [ref=f2e794]: q
+              - generic [ref=f2e795]: +
+              - generic [ref=f2e796]:
+                - generic [ref=f2e797]: "1"
+                - generic [ref=f2e798]: "2"
+              - generic [ref=f2e799]:
+                - generic [ref=f2e800]: ∑
+                - generic [ref=f2e801]:
+                  - generic [ref=f2e802]: p
+                  - generic [ref=f2e803]: q
+                  - generic [ref=f2e804]: r
+                  - generic [ref=f2e805]: s
+              - generic [ref=f2e806]: ⟨
+              - generic [ref=f2e807]: p
+              - generic [ref=f2e808]: q
+              - generic [ref=f2e809]: ∣
+              - generic [ref=f2e810]: r
+              - generic [ref=f2e811]: s
+              - generic [ref=f2e812]: ⟩
+              - generic [ref=f2e813]:
+                - generic [ref=f2e814]: a
+                - generic [ref=f2e815]: p
+                - generic [ref=f2e816]: †
+              - generic [ref=f2e817]:
+                - generic [ref=f2e818]: a
+                - generic [ref=f2e819]: q
+                - generic [ref=f2e820]: †
+              - generic [ref=f2e821]:
+                - generic [ref=f2e822]: a
+                - generic [ref=f2e823]: s
+              - generic [ref=f2e824]:
+                - generic [ref=f2e825]: a
+                - generic [ref=f2e826]: r
+          - generic [aria-hidden] [ref=f2e827]:
+            - generic [ref=f2e828]:
+              - generic [ref=f2e832]:
+                - generic [ref=f2e833]: H
+                - text: ^
+              - text: =
+            - generic [ref=f2e834]:
+              - generic [ref=f2e838]:
+                - generic [ref=f2e839]: pq
+                - generic [ref=f2e841]: ∑
+              - generic [ref=f2e845]:
+                - text: h
+                - generic [ref=f2e846]: pq
+              - generic [ref=f2e855]:
+                - text: a
+                - generic [ref=f2e859]:
+                  - generic [ref=f2e860]: p
+                  - generic [ref=f2e861]: †
+              - generic [ref=f2e865]:
+                - text: a
+                - generic [ref=f2e866]: q
+              - text: +
+            - generic [ref=f2e874]:
+              - generic [ref=f2e879]:
+                - generic [ref=f2e880]: "2"
+                - generic [ref=f2e882]: "1"
+              - generic [ref=f2e889]:
+                - generic [ref=f2e890]: pqrs
+                - generic [ref=f2e892]: ∑
+              - text: ⟨pq ∣
+            - generic [ref=f2e896]:
+              - text: rs⟩
+              - generic [ref=f2e897]:
+                - text: a
+                - generic [ref=f2e901]:
+                  - generic [ref=f2e902]: p
+                  - generic [ref=f2e903]: †
+              - generic [ref=f2e907]:
+                - text: a
+                - generic [ref=f2e911]:
+                  - generic [ref=f2e912]: q
+                  - generic [ref=f2e913]: †
+              - generic [ref=f2e917]:
+                - text: a
+                - generic [ref=f2e918]: s
+              - generic [ref=f2e926]:
+                - text: a
+                - generic [ref=f2e927]: r
+        - link "Link to this Equation" [ref=f2e936] [cursor=pointer]:
+          - /url: "#hWUhC5N8mc"
+          - text: (2)
+      - paragraph [ref=f2e937]:
+        - text: The operators
+        - generic [ref=f2e939]:
+          - math [ref=f2e941]:
+            - generic [ref=f2e944]:
+              - generic [ref=f2e945]: a
+              - generic [ref=f2e946]: p
+              - generic [ref=f2e947]: †
+          - generic [ref=f2e950]:
+            - text: a
+            - generic [ref=f2e954]:
+              - generic [ref=f2e955]: p
+              - generic [ref=f2e956]: †
+        - text: (create an electron in spin-orbital
+        - generic [ref=f2e961]:
+          - math [ref=f2e963]:
+            - generic [ref=f2e964]: p
+          - generic [ref=f2e968]: p
+        - text: ) and
+        - generic [ref=f2e970]:
+          - math [ref=f2e972]:
+            - generic [ref=f2e975]:
+              - generic [ref=f2e976]: a
+              - generic [ref=f2e977]: p
+          - generic [ref=f2e980]:
+            - text: a
+            - generic [ref=f2e981]: p
+        - text: (remove one) obey the
+        - strong [ref=f2e989]: canonical anti-commutation relations
+        - text: ":"
+      - generic [ref=f2e990]:
+        - generic [ref=f2e993]:
+          - math [ref=f2e995]:
+            - generic [ref=f2e997]:
+              - generic [ref=f2e998]: "{"
+              - generic [ref=f2e999]:
+                - generic [ref=f2e1000]: a
+                - generic [ref=f2e1001]: p
+                - generic [ref=f2e1002]: †
+              - generic [ref=f2e1003]: ","
+              - generic [ref=f2e1004]:
+                - generic [ref=f2e1005]: a
+                - generic [ref=f2e1006]: q
+              - generic [ref=f2e1007]: "}"
+              - generic [ref=f2e1008]: =
+              - generic [ref=f2e1009]:
+                - generic [ref=f2e1010]: δ
+                - generic [ref=f2e1011]:
+                  - generic [ref=f2e1012]: p
+                  - generic [ref=f2e1013]: q
+              - generic [ref=f2e1014]: ","
+              - generic [ref=f2e1015]: "{"
+              - generic [ref=f2e1016]:
+                - generic [ref=f2e1017]: a
+                - generic [ref=f2e1018]: p
+                - generic [ref=f2e1019]: †
+              - generic [ref=f2e1020]: ","
+              - generic [ref=f2e1021]:
+                - generic [ref=f2e1022]: a
+                - generic [ref=f2e1023]: q
+                - generic [ref=f2e1024]: †
+              - generic [ref=f2e1025]: "}"
+              - generic [ref=f2e1026]: =
+              - generic [ref=f2e1027]: "0"
+              - generic [ref=f2e1028]: ","
+              - generic [ref=f2e1029]: "{"
+              - generic [ref=f2e1030]:
+                - generic [ref=f2e1031]: a
+                - generic [ref=f2e1032]: p
+              - generic [ref=f2e1033]: ","
+              - generic [ref=f2e1034]:
+                - generic [ref=f2e1035]: a
+                - generic [ref=f2e1036]: q
+              - generic [ref=f2e1037]: "}"
+              - generic [ref=f2e1038]: =
+              - generic [ref=f2e1039]: "0"
+          - generic [aria-hidden] [ref=f2e1040]:
+            - generic [ref=f2e1041]:
+              - text: "{"
+              - generic [ref=f2e1042]:
+                - text: a
+                - generic [ref=f2e1046]:
+                  - generic [ref=f2e1047]: p
+                  - generic [ref=f2e1048]: †
+              - text: ","
+              - generic [ref=f2e1052]:
+                - text: a
+                - generic [ref=f2e1053]: q
+              - text: "} ="
+            - generic [ref=f2e1061]:
+              - generic [ref=f2e1062]:
+                - text: δ
+                - generic [ref=f2e1063]: pq
+              - text: ", {"
+              - generic [ref=f2e1072]:
+                - text: a
+                - generic [ref=f2e1076]:
+                  - generic [ref=f2e1077]: p
+                  - generic [ref=f2e1078]: †
+              - text: ","
+              - generic [ref=f2e1082]:
+                - text: a
+                - generic [ref=f2e1086]:
+                  - generic [ref=f2e1087]: q
+                  - generic [ref=f2e1088]: †
+              - text: "} ="
+            - generic [ref=f2e1092]:
+              - text: "0, {"
+              - generic [ref=f2e1093]:
+                - text: a
+                - generic [ref=f2e1094]: p
+              - text: ","
+              - generic [ref=f2e1102]:
+                - text: a
+                - generic [ref=f2e1103]: q
+              - text: "} ="
+            - generic [ref=f2e1111]: "0"
+        - link "Link to this Equation" [ref=f2e1113] [cursor=pointer]:
+          - /url: "#TdwMDR9mAS"
+          - text: (3)
+      - paragraph [ref=f2e1114]:
+        - text: "These three rules encode the Pauli exclusion principle algebraically: you can’t create two electrons in the same orbital ("
+        - generic [ref=f2e1116]:
+          - math [ref=f2e1118]:
+            - generic [ref=f2e1120]:
+              - generic [ref=f2e1121]:
+                - generic [ref=f2e1122]: a
+                - generic [ref=f2e1123]: p
+                - generic [ref=f2e1124]: †
+              - generic [ref=f2e1125]:
+                - generic [ref=f2e1126]: a
+                - generic [ref=f2e1127]: p
+                - generic [ref=f2e1128]: †
+              - generic [ref=f2e1129]: =
+              - generic [ref=f2e1130]: "0"
+          - generic [aria-hidden] [ref=f2e1131]:
+            - generic [ref=f2e1132]:
+              - generic [ref=f2e1133]:
+                - text: a
+                - generic [ref=f2e1137]:
+                  - generic [ref=f2e1138]: p
+                  - generic [ref=f2e1139]: †
+              - generic [ref=f2e1143]:
+                - text: a
+                - generic [ref=f2e1147]:
+                  - generic [ref=f2e1148]: p
+                  - generic [ref=f2e1149]: †
+              - text: =
+            - generic [ref=f2e1153]: "0"
+        - text: ), and swapping the order of two creation operators flips a sign (
+        - generic [ref=f2e1155]:
+          - math [ref=f2e1157]:
+            - generic [ref=f2e1159]:
+              - generic [ref=f2e1160]:
+                - generic [ref=f2e1161]: a
+                - generic [ref=f2e1162]: p
+                - generic [ref=f2e1163]: †
+              - generic [ref=f2e1164]:
+                - generic [ref=f2e1165]: a
+                - generic [ref=f2e1166]: q
+                - generic [ref=f2e1167]: †
+              - generic [ref=f2e1168]: =
+              - generic [ref=f2e1169]: −
+              - generic [ref=f2e1170]:
+                - generic [ref=f2e1171]: a
+                - generic [ref=f2e1172]: q
+                - generic [ref=f2e1173]: †
+              - generic [ref=f2e1174]:
+                - generic [ref=f2e1175]: a
+                - generic [ref=f2e1176]: p
+                - generic [ref=f2e1177]: †
+          - generic [aria-hidden] [ref=f2e1178]:
+            - generic [ref=f2e1179]:
+              - generic [ref=f2e1180]:
+                - text: a
+                - generic [ref=f2e1184]:
+                  - generic [ref=f2e1185]: p
+                  - generic [ref=f2e1186]: †
+              - generic [ref=f2e1190]:
+                - text: a
+                - generic [ref=f2e1194]:
+                  - generic [ref=f2e1195]: q
+                  - generic [ref=f2e1196]: †
+              - text: =
+            - generic [ref=f2e1200]:
+              - text: −
+              - generic [ref=f2e1201]:
+                - text: a
+                - generic [ref=f2e1205]:
+                  - generic [ref=f2e1206]: q
+                  - generic [ref=f2e1207]: †
+              - generic [ref=f2e1211]:
+                - text: a
+                - generic [ref=f2e1215]:
+                  - generic [ref=f2e1216]: p
+                  - generic [ref=f2e1217]: †
+        - text: ).
+      - paragraph [ref=f2e1221]:
+        - text: The beauty of this formulation is that the Hamiltonian is written as a sum of
+        - generic [ref=f2e1223]:
+          - math [ref=f2e1225]:
+            - generic [ref=f2e1227]:
+              - generic [ref=f2e1228]: O
+              - generic [ref=f2e1229]: (
+              - generic [ref=f2e1230]:
+                - generic [ref=f2e1231]: "n"
+                - generic [ref=f2e1232]: "4"
+              - generic [ref=f2e1233]: )
+          - generic [ref=f2e1235]:
+            - text: O(
+            - generic [ref=f2e1236]:
+              - text: "n"
+              - generic [ref=f2e1237]: "4"
+            - text: )
+        - text: terms — polynomial in the number of orbitals, not exponential. A classical computer can
+        - emphasis [ref=f2e1242]: write down
+        - text: the Hamiltonian easily. The hard part is
+        - emphasis [ref=f2e1243]: solving
+        - text: it — finding the eigenvalues of the operator that this polynomial represents.
+      - heading "Why quantum computing Link to this Section" [level=3] [ref=f2e1244]:
+        - text: Why quantum computing
+        - link "Link to this Section":
+          - /url: "#why-quantum-computing"
+          - text: ¶
+      - paragraph [ref=f2e1245]:
+        - text: A quantum computer can represent the exponentially large state vector
+        - generic [ref=f2e1247]:
+          - math [ref=f2e1249]:
+            - generic [ref=f2e1251]:
+              - generic [ref=f2e1252]: ∣
+              - generic [ref=f2e1253]: Ψ
+              - generic [ref=f2e1254]: ⟩
+          - generic [ref=f2e1256]: ∣Ψ⟩
+        - text: using only
+        - generic [ref=f2e1258]:
+          - math [ref=f2e1260]:
+            - generic [ref=f2e1261]: "n"
+          - generic [ref=f2e1265]: "n"
+        - text: qubits — one per spin-orbital. The
+        - generic [ref=f2e1267]:
+          - math [ref=f2e1269]:
+            - generic [ref=f2e1272]:
+              - generic [ref=f2e1273]: "2"
+              - generic [ref=f2e1274]: "n"
+          - generic [ref=f2e1277]:
+            - text: "2"
+            - generic [ref=f2e1278]: "n"
+        - text: "-dimensional Hilbert space of"
+        - generic [ref=f2e1284]:
+          - math [ref=f2e1286]:
+            - generic [ref=f2e1287]: "n"
+          - generic [ref=f2e1291]: "n"
+        - text: qubits matches the
+        - generic [ref=f2e1293]:
+          - math [ref=f2e1295]:
+            - generic [ref=f2e1297]:
+              - generic [ref=f2e1298]: (
+              - generic [ref=f2e1299]:
+                - generic [ref=f2e1300]: "n"
+                - generic [ref=f2e1301]:
+                  - generic [ref=f2e1302]: "N"
+                  - generic [ref=f2e1303]: e
+              - generic [ref=f2e1304]: )
+          - generic [ref=f2e1307]:
+            - generic [ref=f2e1308]: (
+            - generic [ref=f2e1312]:
+              - generic [ref=f2e1315]:
+                - text: "N"
+                - generic [ref=f2e1316]: e
+              - generic [ref=f2e1324]: "n"
+            - generic [ref=f2e1329]: )
+        - text: "-dimensional configuration space (embedded in the full"
+        - generic [ref=f2e1331]:
+          - math [ref=f2e1333]:
+            - generic [ref=f2e1336]:
+              - generic [ref=f2e1337]: "2"
+              - generic [ref=f2e1338]: "n"
+          - generic [ref=f2e1341]:
+            - text: "2"
+            - generic [ref=f2e1342]: "n"
+        - text: "-dimensional space). Superpositions of configurations are"
+        - emphasis [ref=f2e1347]: native
+        - text: to quantum hardware.
+      - paragraph [ref=f2e1348]:
+        - text: "But there’s a catch: the operators"
+        - generic [ref=f2e1350]:
+          - math [ref=f2e1352]:
+            - generic [ref=f2e1355]:
+              - generic [ref=f2e1356]: a
+              - generic [ref=f2e1357]: p
+              - generic [ref=f2e1358]: †
+          - generic [ref=f2e1361]:
+            - text: a
+            - generic [ref=f2e1365]:
+              - generic [ref=f2e1366]: p
+              - generic [ref=f2e1367]: †
+        - text: and
+        - generic [ref=f2e1372]:
+          - math [ref=f2e1374]:
+            - generic [ref=f2e1377]:
+              - generic [ref=f2e1378]: a
+              - generic [ref=f2e1379]: p
+          - generic [ref=f2e1382]:
+            - text: a
+            - generic [ref=f2e1383]: p
+        - text: anti-commute, and qubit operations don’t. We need a
+        - strong [ref=f2e1391]: translation
+        - text: — an encoding — that maps the fermionic operators to qubit operators while preserving the anti-commutation relations.
+      - paragraph [ref=f2e1392]: That’s what this chapter is about.
+      - separator [ref=f2e1393]
+      - heading "The Tempting (Wrong) Idea Link to this Section" [level=2] [ref=f2e1394]:
+        - text: The Tempting (Wrong) Idea
+        - link "Link to this Section":
+          - /url: "#the-tempting-wrong-idea"
+          - text: ¶
+      - paragraph [ref=f2e1395]:
+        - text: "At the end of Chapter 1, we noticed something suggestive: the occupation vector"
+        - generic [ref=f2e1397]:
+          - math [ref=f2e1399]:
+            - generic [ref=f2e1401]:
+              - generic [ref=f2e1402]: ∣
+              - generic [ref=f2e1403]: "1100"
+              - generic [ref=f2e1404]: ⟩
+          - generic [ref=f2e1406]: ∣1100⟩
+        - text: — the Hartree–Fock ground state of H₂, with both electrons in the bonding orbital
+        - generic [ref=f2e1408]:
+          - math [ref=f2e1410]:
+            - generic [ref=f2e1413]:
+              - generic [ref=f2e1414]: σ
+              - generic [ref=f2e1415]: g
+          - generic [ref=f2e1418]:
+            - text: σ
+            - generic [ref=f2e1419]: g
+        - text: — looks exactly like a 4-qubit computational basis state. Four spin-orbitals, four qubits, each qubit storing the occupation of one orbital. Simple.
+      - figure
+      - paragraph [ref=f2e1427]:
+        - text: This mapping is correct for the
+        - strong [ref=f2e1428]: basis states
+        - text: . But it is wrong for the
+        - strong [ref=f2e1429]: operators
+        - text: .
+      - paragraph [ref=f2e1430]:
+        - text: The creation operator
+        - generic [ref=f2e1432]:
+          - math [ref=f2e1434]:
+            - generic [ref=f2e1437]:
+              - generic [ref=f2e1438]: a
+              - generic [ref=f2e1439]: "2"
+              - generic [ref=f2e1440]: †
+          - generic [ref=f2e1443]:
+            - text: a
+            - generic [ref=f2e1447]:
+              - generic [ref=f2e1448]: "2"
+              - generic [ref=f2e1449]: †
+        - text: does not simply flip qubit 2 from
+        - generic [ref=f2e1454]:
+          - math [ref=f2e1456]:
+            - generic [ref=f2e1458]:
+              - generic [ref=f2e1459]: ∣
+              - generic [ref=f2e1460]: "0"
+              - generic [ref=f2e1461]: ⟩
+          - generic [ref=f2e1463]: ∣0⟩
+        - text: to
+        - generic [ref=f2e1465]:
+          - math [ref=f2e1467]:
+            - generic [ref=f2e1469]:
+              - generic [ref=f2e1470]: ∣
+              - generic [ref=f2e1471]: "1"
+              - generic [ref=f2e1472]: ⟩
+          - generic [ref=f2e1474]: ∣1⟩
+        - text: . It must also check how many electrons are in orbitals 0 and 1, and apply a minus sign if that count is odd. This is the
+        - strong [ref=f2e1475]: fermion sign
+        - text: — the physical consequence of the anti-commutation relations from Chapter 1.
+      - paragraph [ref=f2e1476]: Qubits don’t anti-commute. If we flip qubit 2 without tracking the fermion sign, we get the wrong quantum state. The encoding exists to inject those signs.
+      - separator [ref=f2e1477]
+      - heading "What Makes Electrons Different from Qubits Link to this Section" [level=2] [ref=f2e1478]:
+        - text: What Makes Electrons Different from Qubits
+        - link "Link to this Section":
+          - /url: "#what-makes-electrons-different-from-qubits"
+          - text: ¶
+      - paragraph [ref=f2e1479]: "When we swap two electrons, the quantum state picks up a factor of -1:"
+      - generic [ref=f2e1480]:
+        - generic [ref=f2e1483]:
+          - math [ref=f2e1485]:
+            - generic [ref=f2e1487]:
+              - generic [ref=f2e1488]: ∣
+              - generic [ref=f2e1489]: A
+              - generic [ref=f2e1490]: ","
+              - generic [ref=f2e1491]: B
+              - generic [ref=f2e1492]:
+                - generic [ref=f2e1493]: ⟩
+                - generic [ref=f2e1494]: fermion
+              - generic [ref=f2e1495]: =
+              - generic [ref=f2e1496]: −
+              - generic [ref=f2e1497]: ∣
+              - generic [ref=f2e1498]: B
+              - generic [ref=f2e1499]: ","
+              - generic [ref=f2e1500]: A
+              - generic [ref=f2e1501]:
+                - generic [ref=f2e1502]: ⟩
+                - generic [ref=f2e1503]: fermion
+          - generic [aria-hidden] [ref=f2e1504]:
+            - generic [ref=f2e1505]:
+              - text: ∣A, B
+              - generic [ref=f2e1506]:
+                - text: ⟩
+                - generic [ref=f2e1507]: fermion
+              - text: =
+            - generic [ref=f2e1517]:
+              - text: −∣B, A
+              - generic [ref=f2e1518]:
+                - text: ⟩
+                - generic [ref=f2e1519]: fermion
+        - link "Link to this Equation" [ref=f2e1530] [cursor=pointer]:
+          - /url: "#PdjL5nahjY"
+          - text: (4)
+      - paragraph [ref=f2e1531]: "When we swap two qubits, nothing happens to the sign:"
+      - generic [ref=f2e1532]:
+        - generic [ref=f2e1535]:
+          - math [ref=f2e1537]:
+            - generic [ref=f2e1539]:
+              - generic [ref=f2e1540]: ∣
+              - generic [ref=f2e1541]: "0"
+              - generic [ref=f2e1542]: ","
+              - generic [ref=f2e1543]: "1"
+              - generic [ref=f2e1544]:
+                - generic [ref=f2e1545]: ⟩
+                - generic [ref=f2e1546]: qubit
+              - generic [ref=f2e1547]: =
+              - generic [ref=f2e1548]: +
+              - generic [ref=f2e1549]: ∣
+              - generic [ref=f2e1550]: "0"
+              - generic [ref=f2e1551]: ","
+              - generic [ref=f2e1552]: "1"
+              - generic [ref=f2e1553]:
+                - generic [ref=f2e1554]: ⟩
+                - generic [ref=f2e1555]: qubit
+          - generic [aria-hidden] [ref=f2e1556]:
+            - generic [ref=f2e1557]:
+              - text: ∣0, 1
+              - generic [ref=f2e1558]:
+                - text: ⟩
+                - generic [ref=f2e1559]: qubit
+              - text: =
+            - generic [ref=f2e1569]:
+              - text: +∣0, 1
+              - generic [ref=f2e1570]:
+                - text: ⟩
+                - generic [ref=f2e1571]: qubit
+        - link "Link to this Equation" [ref=f2e1582] [cursor=pointer]:
+          - /url: "#Gqb4izVmQN"
+          - text: (5)
+      - paragraph [ref=f2e1583]: This minus sign is not optional bookkeeping. It affects interference patterns, bonding energies, and reaction rates. A faithful encoding must reproduce it.
+      - blockquote [ref=f2e1584]:
+        - paragraph [ref=f2e1585]:
+          - strong [ref=f2e1586]: "The fermion sign, operationally:"
+          - text: Consider the occupation state
+          - generic [ref=f2e1588]:
+            - math [ref=f2e1590]:
+              - generic [ref=f2e1592]:
+                - generic [ref=f2e1593]: ∣
+                - generic [ref=f2e1594]: "1010"
+                - generic [ref=f2e1595]: ⟩
+            - generic [ref=f2e1597]: ∣1010⟩
+          - text: (orbitals 0 and 2 occupied). To create an electron in orbital 3, we apply
+          - generic [ref=f2e1599]:
+            - math [ref=f2e1601]:
+              - generic [ref=f2e1604]:
+                - generic [ref=f2e1605]: a
+                - generic [ref=f2e1606]: "3"
+                - generic [ref=f2e1607]: †
+            - generic [ref=f2e1610]:
+              - text: a
+              - generic [ref=f2e1614]:
+                - generic [ref=f2e1615]: "3"
+                - generic [ref=f2e1616]: †
+          - text: ". The Z-chain scans all orbitals below 3 (orbitals 0, 1, 2): two are occupied, so the sign is"
+          - generic [ref=f2e1621]:
+            - math [ref=f2e1623]:
+              - generic [ref=f2e1625]:
+                - generic [ref=f2e1626]: (
+                - generic [ref=f2e1627]: −
+                - generic [ref=f2e1628]: "1"
+                - generic [ref=f2e1629]:
+                  - generic [ref=f2e1630]: )
+                  - generic [ref=f2e1631]: "2"
+                - generic [ref=f2e1632]: =
+                - generic [ref=f2e1633]: +
+                - generic [ref=f2e1634]: "1"
+            - generic [aria-hidden] [ref=f2e1635]:
+              - generic [ref=f2e1636]:
+                - text: (−1
+                - generic [ref=f2e1637]:
+                  - text: )
+                  - generic [ref=f2e1638]: "2"
+                - text: =
+              - generic [ref=f2e1643]: "+1"
+          - text: ". To create an electron in orbital 1, the Z-chain scans orbitals below 1 (only orbital 0): one is occupied, so the sign is"
+          - generic [ref=f2e1645]:
+            - math [ref=f2e1647]:
+              - generic [ref=f2e1649]:
+                - generic [ref=f2e1650]: (
+                - generic [ref=f2e1651]: −
+                - generic [ref=f2e1652]: "1"
+                - generic [ref=f2e1653]:
+                  - generic [ref=f2e1654]: )
+                  - generic [ref=f2e1655]: "1"
+                - generic [ref=f2e1656]: =
+                - generic [ref=f2e1657]: −
+                - generic [ref=f2e1658]: "1"
+            - generic [aria-hidden] [ref=f2e1659]:
+              - generic [ref=f2e1660]:
+                - text: (−1
+                - generic [ref=f2e1661]:
+                  - text: )
+                  - generic [ref=f2e1662]: "1"
+                - text: =
+              - generic [ref=f2e1667]: −1
+          - text: . This is the
+          - strong [ref=f2e1668]: fermion sign
+          - text: — the net parity of all occupied orbitals with index below the target position. Every encoding must inject this sign into the qubit representation.
+      - paragraph [ref=f2e1669]: "The mathematical statement is the anti-commutation relation:"
+      - generic [ref=f2e1670]:
+        - generic [ref=f2e1673]:
+          - math [ref=f2e1675]:
+            - generic [ref=f2e1677]:
+              - generic [ref=f2e1678]:
+                - generic [ref=f2e1679]: a
+                - generic [ref=f2e1680]: p
+                - generic [ref=f2e1681]: †
+              - generic [ref=f2e1682]:
+                - generic [ref=f2e1683]: a
+                - generic [ref=f2e1684]: q
+                - generic [ref=f2e1685]: †
+              - generic [ref=f2e1686]: =
+              - generic [ref=f2e1687]: −
+              - generic [ref=f2e1688]:
+                - generic [ref=f2e1689]: a
+                - generic [ref=f2e1690]: q
+                - generic [ref=f2e1691]: †
+              - generic [ref=f2e1692]:
+                - generic [ref=f2e1693]: a
+                - generic [ref=f2e1694]: p
+                - generic [ref=f2e1695]: †
+          - generic [aria-hidden] [ref=f2e1696]:
+            - generic [ref=f2e1697]:
+              - generic [ref=f2e1698]:
+                - text: a
+                - generic [ref=f2e1702]:
+                  - generic [ref=f2e1703]: p
+                  - generic [ref=f2e1704]: †
+              - generic [ref=f2e1708]:
+                - text: a
+                - generic [ref=f2e1712]:
+                  - generic [ref=f2e1713]: q
+                  - generic [ref=f2e1714]: †
+              - text: =
+            - generic [ref=f2e1718]:
+              - text: −
+              - generic [ref=f2e1719]:
+                - text: a
+                - generic [ref=f2e1723]:
+                  - generic [ref=f2e1724]: q
+                  - generic [ref=f2e1725]: †
+              - generic [ref=f2e1729]:
+                - text: a
+                - generic [ref=f2e1733]:
+                  - generic [ref=f2e1734]: p
+                  - generic [ref=f2e1735]: †
+        - link "Link to this Equation" [ref=f2e1740] [cursor=pointer]:
+          - /url: "#XQHIeLt8By"
+          - text: (6)
+      - paragraph [ref=f2e1741]:
+        - text: Creating an electron in orbital
+        - generic [ref=f2e1743]:
+          - math [ref=f2e1745]:
+            - generic [ref=f2e1746]: p
+          - generic [ref=f2e1750]: p
+        - text: and then orbital
+        - generic [ref=f2e1752]:
+          - math [ref=f2e1754]:
+            - generic [ref=f2e1755]: q
+          - generic [ref=f2e1759]: q
+        - text: gives the opposite sign from creating in
+        - generic [ref=f2e1761]:
+          - math [ref=f2e1763]:
+            - generic [ref=f2e1764]: q
+          - generic [ref=f2e1768]: q
+        - text: then
+        - generic [ref=f2e1770]:
+          - math [ref=f2e1772]:
+            - generic [ref=f2e1773]: p
+          - generic [ref=f2e1777]: p
+        - text: . On a qubit register, flipping qubit
+        - generic [ref=f2e1779]:
+          - math [ref=f2e1781]:
+            - generic [ref=f2e1782]: p
+          - generic [ref=f2e1786]: p
+        - text: then qubit
+        - generic [ref=f2e1788]:
+          - math [ref=f2e1790]:
+            - generic [ref=f2e1791]: q
+          - generic [ref=f2e1795]: q
+        - text: gives the
+        - emphasis [ref=f2e1796]: same
+        - text: result as flipping
+        - generic [ref=f2e1798]:
+          - math [ref=f2e1800]:
+            - generic [ref=f2e1801]: q
+          - generic [ref=f2e1805]: q
+        - text: then
+        - generic [ref=f2e1807]:
+          - math [ref=f2e1809]:
+            - generic [ref=f2e1810]: p
+          - generic [ref=f2e1814]: p
+        - text: . The encoding must bridge this gap.
+      - separator [ref=f2e1815]
+      - 'heading "Jordan–Wigner: The Z-Chain Link to this Section" [level=2] [ref=f2e1816]':
+        - text: "Jordan–Wigner: The Z-Chain"
+        - link "Link to this Section":
+          - /url: "#jordan-wigner-the-z-chain"
+          - text: ¶
+      - paragraph [ref=f2e1817]:
+        - text: The Jordan–Wigner encoding (1928) is the oldest and simplest solution. Each qubit directly stores the occupation of one orbital — same as the “tempting idea” — but every creation or annihilation operator carries a
+        - strong [ref=f2e1818]: chain of Z gates
+        - text: that enforces the fermion sign.
+      - heading "How the Z-chain works Link to this Section" [level=3] [ref=f2e1819]:
+        - text: How the Z-chain works
+        - link "Link to this Section":
+          - /url: "#how-the-z-chain-works"
+          - text: ¶
+      - paragraph [ref=f2e1820]:
+        - text: The
+        - generic [ref=f2e1822]:
+          - math [ref=f2e1824]:
+            - generic [ref=f2e1825]: Z
+          - generic [ref=f2e1829]: Z
+        - text: "gate acts on a qubit as a parity detector:"
+      - list [ref=f2e1830]:
+        - listitem [ref=f2e1831]:
+          - paragraph [ref=f2e1832]:
+            - text: "On"
+            - generic [ref=f2e1834]:
+              - math [ref=f2e1836]:
+                - generic [ref=f2e1838]:
+                  - generic [ref=f2e1839]: ∣
+                  - generic [ref=f2e1840]: "0"
+                  - generic [ref=f2e1841]: ⟩
+              - generic [ref=f2e1843]: ∣0⟩
+            - text: "(empty orbital):"
+            - generic [ref=f2e1845]:
+              - math [ref=f2e1847]:
+                - generic [ref=f2e1848]: Z
+              - generic [ref=f2e1852]: Z
+            - text: gives +1
+        - listitem [ref=f2e1853]:
+          - paragraph [ref=f2e1854]:
+            - text: "On"
+            - generic [ref=f2e1856]:
+              - math [ref=f2e1858]:
+                - generic [ref=f2e1860]:
+                  - generic [ref=f2e1861]: ∣
+                  - generic [ref=f2e1862]: "1"
+                  - generic [ref=f2e1863]: ⟩
+              - generic [ref=f2e1865]: ∣1⟩
+            - text: "(occupied orbital):"
+            - generic [ref=f2e1867]:
+              - math [ref=f2e1869]:
+                - generic [ref=f2e1870]: Z
+              - generic [ref=f2e1874]: Z
+            - text: gives -1
+      - paragraph [ref=f2e1875]:
+        - text: To create an electron in orbital
+        - generic [ref=f2e1877]:
+          - math [ref=f2e1879]:
+            - generic [ref=f2e1880]: j
+          - generic [ref=f2e1884]: j
+        - text: ", we apply"
+        - generic [ref=f2e1886]:
+          - math [ref=f2e1888]:
+            - generic [ref=f2e1889]: Z
+          - generic [ref=f2e1893]: Z
+        - text: to every qubit below
+        - generic [ref=f2e1895]:
+          - math [ref=f2e1897]:
+            - generic [ref=f2e1898]: j
+          - generic [ref=f2e1902]: j
+        - text: and then flip qubit
+        - generic [ref=f2e1904]:
+          - math [ref=f2e1906]:
+            - generic [ref=f2e1907]: j
+          - generic [ref=f2e1911]: j
+        - text: . The product of all those
+        - generic [ref=f2e1913]:
+          - math [ref=f2e1915]:
+            - generic [ref=f2e1916]: Z
+          - generic [ref=f2e1920]: Z
+        - text: values gives
+        - generic [ref=f2e1922]:
+          - math [ref=f2e1924]:
+            - generic [ref=f2e1926]:
+              - generic [ref=f2e1927]: (
+              - generic [ref=f2e1928]: −
+              - generic [ref=f2e1929]: "1"
+              - generic [ref=f2e1930]:
+                - generic [ref=f2e1931]: )
+                - generic [ref=f2e1932]:
+                  - generic [ref=f2e1933]: count of occupied orbitals below
+                  - generic [ref=f2e1934]: j
+          - generic [ref=f2e1936]:
+            - text: (−1
+            - generic [ref=f2e1937]:
+              - text: )
+              - generic [ref=f2e1943]:
+                - generic [ref=f2e1944]: count of occupied orbitals below
+                - text: j
+        - text: — exactly the fermion sign.
+      - figure
+      - paragraph [ref=f2e1945]:
+        - text: "The Z-chain grows linearly: for orbital"
+        - generic [ref=f2e1947]:
+          - math [ref=f2e1949]:
+            - generic [ref=f2e1950]: j
+          - generic [ref=f2e1954]: j
+        - text: ", we need"
+        - generic [ref=f2e1956]:
+          - math [ref=f2e1958]:
+            - generic [ref=f2e1959]: j
+          - generic [ref=f2e1963]: j
+        - text: extra Z operations. This is the
+        - strong [ref=f2e1964]: Pauli weight
+        - text: of the encoded operator — the number of qubits it touches.
+      - heading "JW Pauli weight for all four orbitals Link to this Section" [level=3] [ref=f2e1965]:
+        - text: JW Pauli weight for all four orbitals
+        - link "Link to this Section":
+          - /url: "#jw-pauli-weight-for-all-four-orbitals"
+          - text: ¶
+      - generic "table content" [ref=f2e1966]:
+        - table [ref=f2e1967]:
+          - rowgroup [ref=f2e1968]:
+            - row [ref=f2e1969]:
+              - columnheader "Operator" [ref=f2e1970]
+              - columnheader "q0" [ref=f2e1971]
+              - columnheader "q1" [ref=f2e1972]
+              - columnheader "q2" [ref=f2e1973]
+              - columnheader "q3" [ref=f2e1974]
+              - columnheader "Weight" [ref=f2e1975]
+            - row [ref=f2e1976]:
+              - cell [ref=f2e1977]:
+                - generic [ref=f2e1979]:
+                  - math [ref=f2e1981]:
+                    - generic [ref=f2e1984]:
+                      - generic [ref=f2e1985]: a
+                      - generic [ref=f2e1986]: "0"
+                      - generic [ref=f2e1987]: †
+                  - generic [ref=f2e1990]:
+                    - text: a
+                    - generic [ref=f2e1994]:
+                      - generic [ref=f2e1995]: "0"
+                      - generic [ref=f2e1996]: †
+              - cell [ref=f2e2000]:
+                - strong [ref=f2e2001]: X/Y
+              - cell "I" [ref=f2e2002]
+              - cell "I" [ref=f2e2003]
+              - cell "I" [ref=f2e2004]
+              - cell "1" [ref=f2e2005]
+            - row [ref=f2e2006]:
+              - cell [ref=f2e2007]:
+                - generic [ref=f2e2009]:
+                  - math [ref=f2e2011]:
+                    - generic [ref=f2e2014]:
+                      - generic [ref=f2e2015]: a
+                      - generic [ref=f2e2016]: "1"
+                      - generic [ref=f2e2017]: †
+                  - generic [ref=f2e2020]:
+                    - text: a
+                    - generic [ref=f2e2024]:
+                      - generic [ref=f2e2025]: "1"
+                      - generic [ref=f2e2026]: †
+              - cell "Z" [ref=f2e2030]
+              - cell [ref=f2e2031]:
+                - strong [ref=f2e2032]: X/Y
+              - cell "I" [ref=f2e2033]
+              - cell "I" [ref=f2e2034]
+              - cell "2" [ref=f2e2035]
+            - row [ref=f2e2036]:
+              - cell [ref=f2e2037]:
+                - generic [ref=f2e2039]:
+                  - math [ref=f2e2041]:
+                    - generic [ref=f2e2044]:
+                      - generic [ref=f2e2045]: a
+                      - generic [ref=f2e2046]: "2"
+                      - generic [ref=f2e2047]: †
+                  - generic [ref=f2e2050]:
+                    - text: a
+                    - generic [ref=f2e2054]:
+                      - generic [ref=f2e2055]: "2"
+                      - generic [ref=f2e2056]: †
+              - cell "Z" [ref=f2e2060]
+              - cell "Z" [ref=f2e2061]
+              - cell [ref=f2e2062]:
+                - strong [ref=f2e2063]: X/Y
+              - cell "I" [ref=f2e2064]
+              - cell "3" [ref=f2e2065]
+            - row [ref=f2e2066]:
+              - cell [ref=f2e2067]:
+                - generic [ref=f2e2069]:
+                  - math [ref=f2e2071]:
+                    - generic [ref=f2e2074]:
+                      - generic [ref=f2e2075]: a
+                      - generic [ref=f2e2076]: "3"
+                      - generic [ref=f2e2077]: †
+                  - generic [ref=f2e2080]:
+                    - text: a
+                    - generic [ref=f2e2084]:
+                      - generic [ref=f2e2085]: "3"
+                      - generic [ref=f2e2086]: †
+              - cell "Z" [ref=f2e2090]
+              - cell "Z" [ref=f2e2091]
+              - cell "Z" [ref=f2e2092]
+              - cell [ref=f2e2093]:
+                - strong [ref=f2e2094]: X/Y
+              - cell "4" [ref=f2e2095]
+      - paragraph [ref=f2e2096]:
+        - text: For
+        - generic [ref=f2e2098]:
+          - math [ref=f2e2100]:
+            - generic [ref=f2e2101]: "n"
+          - generic [ref=f2e2105]: "n"
+        - text: spin-orbitals, the worst-case JW ladder operator has weight
+        - generic [ref=f2e2107]:
+          - math [ref=f2e2109]:
+            - generic [ref=f2e2110]: "n"
+          - generic [ref=f2e2114]: "n"
+        - text: . At
+        - generic [ref=f2e2116]:
+          - math [ref=f2e2118]:
+            - generic [ref=f2e2120]:
+              - generic [ref=f2e2121]: "n"
+              - generic [ref=f2e2122]: =
+              - generic [ref=f2e2123]: "100"
+          - generic [aria-hidden] [ref=f2e2124]:
+            - generic [ref=f2e2125]: n =
+            - generic [ref=f2e2126]: "100"
+        - text: ", the last mode carries a 99-qubit parity chain. That is an operator-level worst case; a molecular circuit cost still depends on which terms occur and how they compile."
+      - paragraph [ref=f2e2127]: "You can see this directly in FockMap:"
+      - generic [ref=f2e2128]:
+        - generic "code block content" [ref=f2e2129]:
+          - code [ref=f2e2131]:
+            - generic [ref=f2e2132]: open Encodings
+            - generic [ref=f2e2133]: open Encodings.JordanWigner
+            - generic [ref=f2e2134]: // Encode creation operator for orbital 2 under JW (4 qubits)
+            - generic [ref=f2e2135]: let a2_dag = jordanWignerTerms Raise 2u 4u
+            - generic [ref=f2e2136]: printfn "a₂† = %A" a2_dag
+            - generic [ref=f2e2137]: "// Output: a₂† = 0.5 ZZXI + (-0.5i) ZZYI"
+            - generic [ref=f2e2138]: "// Weight 3: two Z-chain qubits + one X/Y flip"
+        - button "Copy code to clipboard" [ref=f2e2139] [cursor=pointer]
+      - paragraph [ref=f2e2142]:
+        - text: The output shows
+        - generic [ref=f2e2144]:
+          - math [ref=f2e2146]:
+            - generic [ref=f2e2149]:
+              - generic [ref=f2e2150]: a
+              - generic [ref=f2e2151]: "2"
+              - generic [ref=f2e2152]: †
+          - generic [ref=f2e2155]:
+            - text: a
+            - generic [ref=f2e2159]:
+              - generic [ref=f2e2160]: "2"
+              - generic [ref=f2e2161]: †
+        - text: as a sum of two Pauli strings, each with weight 3 — two Z gates for the parity chain and one X (or Y) for the orbital flip. This is the cost of creating an electron in orbital 2 under JW.
+      - heading "When JW is the right choice Link to this Section" [level=3] [ref=f2e2165]:
+        - text: When JW is the right choice
+        - link "Link to this Section":
+          - /url: "#when-jw-is-the-right-choice"
+          - text: ¶
+      - paragraph [ref=f2e2166]:
+        - text: Despite the linear scaling, JW excels when interactions are
+        - strong [ref=f2e2167]: local
+        - text: — between neighboring orbitals. A hopping term
+        - generic [ref=f2e2169]:
+          - math [ref=f2e2171]:
+            - generic [ref=f2e2173]:
+              - generic [ref=f2e2174]:
+                - generic [ref=f2e2175]: a
+                - generic [ref=f2e2176]: "2"
+                - generic [ref=f2e2177]: †
+              - generic [ref=f2e2178]:
+                - generic [ref=f2e2179]: a
+                - generic [ref=f2e2180]: "3"
+              - generic [ref=f2e2181]: +
+              - generic [ref=f2e2182]:
+                - generic [ref=f2e2183]: a
+                - generic [ref=f2e2184]: "3"
+                - generic [ref=f2e2185]: †
+              - generic [ref=f2e2186]:
+                - generic [ref=f2e2187]: a
+                - generic [ref=f2e2188]: "2"
+          - generic [aria-hidden] [ref=f2e2189]:
+            - generic [ref=f2e2190]:
+              - generic [ref=f2e2191]:
+                - text: a
+                - generic [ref=f2e2195]:
+                  - generic [ref=f2e2196]: "2"
+                  - generic [ref=f2e2197]: †
+              - generic [ref=f2e2201]:
+                - text: a
+                - generic [ref=f2e2202]: "3"
+              - text: +
+            - generic [ref=f2e2210]:
+              - generic [ref=f2e2211]:
+                - text: a
+                - generic [ref=f2e2215]:
+                  - generic [ref=f2e2216]: "3"
+                  - generic [ref=f2e2217]: †
+              - generic [ref=f2e2221]:
+                - text: a
+                - generic [ref=f2e2222]: "2"
+        - text: only needs a short Z-chain because the two orbitals are adjacent. For 1D molecular chains or systems with sequential orbital numbering, JW often has the lowest
+        - emphasis [ref=f2e2230]: average
+        - text: weight even if its worst case is high.
+      - separator [ref=f2e2231]
+      - 'heading "Bravyi–Kitaev: Partial Parity Sums Link to this Section" [level=2] [ref=f2e2232]':
+        - text: "Bravyi–Kitaev: Partial Parity Sums"
+        - link "Link to this Section":
+          - /url: "#bravyi-kitaev-partial-parity-sums"
+          - text: ¶
+      - heading "The key insight Link to this Section" [level=3] [ref=f2e2233]:
+        - text: The key insight
+        - link "Link to this Section":
+          - /url: "#the-key-insight"
+          - text: ¶
+      - paragraph [ref=f2e2234]:
+        - text: "The JW Z-chain answers the question: “what is the parity (odd/even count) of electrons in orbitals"
+        - generic [ref=f2e2236]:
+          - math [ref=f2e2238]:
+            - generic [ref=f2e2240]:
+              - generic [ref=f2e2241]: "0"
+              - generic [ref=f2e2242]: ","
+              - generic [ref=f2e2243]: "1"
+              - generic [ref=f2e2244]: ","
+              - generic [ref=f2e2245]: …
+              - generic [ref=f2e2246]: ","
+              - generic [ref=f2e2247]: j
+              - generic [ref=f2e2248]: −
+              - generic [ref=f2e2249]: "1"
+          - generic [aria-hidden] [ref=f2e2250]:
+            - generic [ref=f2e2251]: 0, 1, … , j −
+            - generic [ref=f2e2252]: "1"
+        - text: "?” It answers this by checking every orbital individually — an"
+        - generic [ref=f2e2254]:
+          - math [ref=f2e2256]:
+            - generic [ref=f2e2258]:
+              - generic [ref=f2e2259]: O
+              - generic [ref=f2e2260]: (
+              - generic [ref=f2e2261]: "n"
+              - generic [ref=f2e2262]: )
+          - generic [ref=f2e2264]: O(n)
+        - text: scan.
+      - paragraph [ref=f2e2265]:
+        - text: What if some qubits pre-computed
+        - strong [ref=f2e2266]: partial parity sums
+        - text: "? Then we could answer the question by reading"
+        - generic [ref=f2e2268]:
+          - math [ref=f2e2270]:
+            - generic [ref=f2e2272]:
+              - generic [ref=f2e2273]: O
+              - generic [ref=f2e2274]: (
+              - generic [ref=f2e2275]: log
+              - generic: ⁡
+              - generic [ref=f2e2276]: "n"
+              - generic [ref=f2e2277]: )
+          - generic [ref=f2e2279]:
+            - text: O(
+            - generic [ref=f2e2280]: log
+            - text: n)
+        - text: qubits instead of
+        - generic [ref=f2e2282]:
+          - math [ref=f2e2284]:
+            - generic [ref=f2e2286]:
+              - generic [ref=f2e2287]: O
+              - generic [ref=f2e2288]: (
+              - generic [ref=f2e2289]: "n"
+              - generic [ref=f2e2290]: )
+          - generic [ref=f2e2292]: O(n)
+        - text: .
+      - paragraph [ref=f2e2293]:
+        - text: This is the Bravyi–Kitaev (BK) encoding. It uses a data structure from computer science — the
+        - strong [ref=f2e2294]: Fenwick tree
+        - text: (binary indexed tree) — to organize partial sums.
+      - heading "How BK stores information Link to this Section" [level=3] [ref=f2e2295]:
+        - text: How BK stores information
+        - link "Link to this Section":
+          - /url: "#how-bk-stores-information"
+          - text: ¶
+      - paragraph [ref=f2e2296]: "In JW, each qubit stores one orbital’s occupation:"
+      - figure
+      - paragraph [ref=f2e2297]:
+        - text: In BK, some qubits store
+        - strong [ref=f2e2298]: cumulative parity
+        - text: "— the XOR of multiple orbital occupations:"
+      - figure
+      - paragraph [ref=f2e2299]: "The pattern comes from a Fenwick tree. Each node stores the parity of the orbitals in its subtree:"
+      - figure
+      - paragraph [ref=f2e2300]:
+        - text: To find the parity of orbitals 0 through
+        - generic [ref=f2e2302]:
+          - math [ref=f2e2304]:
+            - generic [ref=f2e2306]:
+              - generic [ref=f2e2307]: j
+              - generic [ref=f2e2308]: −
+              - generic [ref=f2e2309]: "1"
+          - generic [aria-hidden] [ref=f2e2310]:
+            - generic [ref=f2e2311]: j −
+            - generic [ref=f2e2312]: "1"
+        - text: ", you read the nodes on the"
+        - emphasis [ref=f2e2313]: path
+        - text: from node
+        - generic [ref=f2e2315]:
+          - math [ref=f2e2317]:
+            - generic [ref=f2e2318]: j
+          - generic [ref=f2e2322]: j
+        - text: up to the root — at most
+        - generic [ref=f2e2324]:
+          - math [ref=f2e2326]:
+            - generic [ref=f2e2328]:
+              - generic [ref=f2e2329]:
+                - generic [ref=f2e2330]:
+                  - generic [ref=f2e2331]: log
+                  - generic: ⁡
+                - generic [ref=f2e2332]: "2"
+              - generic [ref=f2e2333]: "n"
+          - generic [ref=f2e2335]:
+            - generic [ref=f2e2336]:
+              - generic [ref=f2e2337]: log
+              - generic [ref=f2e2338]: "2"
+            - text: "n"
+        - text: nodes.
+      - heading "The three questions every encoding answers Link to this Section" [level=3] [ref=f2e2346]:
+        - text: The three questions every encoding answers
+        - link "Link to this Section":
+          - /url: "#the-three-questions-every-encoding-answers"
+          - text: ¶
+      - paragraph [ref=f2e2347]:
+        - text: For each orbital
+        - generic [ref=f2e2349]:
+          - math [ref=f2e2351]:
+            - generic [ref=f2e2352]: j
+          - generic [ref=f2e2356]: j
+        - text: ", the encoding must answer three questions:"
+      - generic "table content" [ref=f2e2357]:
+        - table [ref=f2e2358]:
+          - rowgroup [ref=f2e2359]:
+            - row [ref=f2e2360]:
+              - columnheader "Question" [ref=f2e2361]
+              - columnheader "JW answer" [ref=f2e2362]
+              - columnheader "BK answer" [ref=f2e2363]
+            - row [ref=f2e2364]:
+              - cell [ref=f2e2365]:
+                - strong [ref=f2e2366]: "Parity:"
+                - text: which qubits encode the fermion sign?
+              - cell [ref=f2e2367]:
+                - text: All qubits
+                - generic [ref=f2e2369]:
+                  - math [ref=f2e2371]:
+                    - generic [ref=f2e2373]:
+                      - generic [ref=f2e2374]: "0"
+                      - generic [ref=f2e2375]: …
+                      - generic [ref=f2e2376]: j
+                      - generic [ref=f2e2377]: −
+                      - generic [ref=f2e2378]: "1"
+                  - generic [aria-hidden] [ref=f2e2379]:
+                    - generic [ref=f2e2380]: 0 … j −
+                    - generic [ref=f2e2381]: "1"
+                - text: (
+                - generic [ref=f2e2383]:
+                  - math [ref=f2e2385]:
+                    - generic [ref=f2e2387]:
+                      - generic [ref=f2e2388]: O
+                      - generic [ref=f2e2389]: (
+                      - generic [ref=f2e2390]: "n"
+                      - generic [ref=f2e2391]: )
+                  - generic [ref=f2e2393]: O(n)
+                - text: )
+              - cell [ref=f2e2394]:
+                - generic [ref=f2e2396]:
+                  - math [ref=f2e2398]:
+                    - generic [ref=f2e2400]:
+                      - generic [ref=f2e2401]: ≤
+                      - generic [ref=f2e2402]:
+                        - generic [ref=f2e2403]:
+                          - generic [ref=f2e2404]: log
+                          - generic: ⁡
+                        - generic [ref=f2e2405]: "2"
+                      - generic [ref=f2e2406]: "n"
+                  - generic [aria-hidden] [ref=f2e2407]:
+                    - generic [ref=f2e2408]: ≤
+                    - generic [ref=f2e2409]:
+                      - generic [ref=f2e2410]:
+                        - generic [ref=f2e2411]: log
+                        - generic [ref=f2e2412]: "2"
+                      - text: "n"
+                - text: qubits on the Fenwick path
+            - row [ref=f2e2420]:
+              - cell [ref=f2e2421]:
+                - strong [ref=f2e2422]: "Update:"
+                - text: which qubits must change when orbital
+                - generic [ref=f2e2424]:
+                  - math [ref=f2e2426]:
+                    - generic [ref=f2e2427]: j
+                  - generic [ref=f2e2431]: j
+                - text: is filled/emptied?
+              - cell [ref=f2e2432]:
+                - text: Just qubit
+                - generic [ref=f2e2434]:
+                  - math [ref=f2e2436]:
+                    - generic [ref=f2e2437]: j
+                  - generic [ref=f2e2441]: j
+              - cell [ref=f2e2442]:
+                - generic [ref=f2e2444]:
+                  - math [ref=f2e2446]:
+                    - generic [ref=f2e2448]:
+                      - generic [ref=f2e2449]: ≤
+                      - generic [ref=f2e2450]:
+                        - generic [ref=f2e2451]:
+                          - generic [ref=f2e2452]: log
+                          - generic: ⁡
+                        - generic [ref=f2e2453]: "2"
+                      - generic [ref=f2e2454]: "n"
+                  - generic [aria-hidden] [ref=f2e2455]:
+                    - generic [ref=f2e2456]: ≤
+                    - generic [ref=f2e2457]:
+                      - generic [ref=f2e2458]:
+                        - generic [ref=f2e2459]: log
+                        - generic [ref=f2e2460]: "2"
+                      - text: "n"
+                - text: ancestor qubits
+            - row [ref=f2e2468]:
+              - cell [ref=f2e2469]:
+                - strong [ref=f2e2470]: "Occupation:"
+                - text: which qubits reveal whether orbital
+                - generic [ref=f2e2472]:
+                  - math [ref=f2e2474]:
+                    - generic [ref=f2e2475]: j
+                  - generic [ref=f2e2479]: j
+                - text: is occupied?
+              - cell [ref=f2e2480]:
+                - text: Just qubit
+                - generic [ref=f2e2482]:
+                  - math [ref=f2e2484]:
+                    - generic [ref=f2e2485]: j
+                  - generic [ref=f2e2489]: j
+              - cell [ref=f2e2490]:
+                - generic [ref=f2e2492]:
+                  - math [ref=f2e2494]:
+                    - generic [ref=f2e2496]:
+                      - generic [ref=f2e2497]: ≤
+                      - generic [ref=f2e2498]:
+                        - generic [ref=f2e2499]:
+                          - generic [ref=f2e2500]: log
+                          - generic: ⁡
+                        - generic [ref=f2e2501]: "2"
+                      - generic [ref=f2e2502]: "n"
+                  - generic [aria-hidden] [ref=f2e2503]:
+                    - generic [ref=f2e2504]: ≤
+                    - generic [ref=f2e2505]:
+                      - generic [ref=f2e2506]:
+                        - generic [ref=f2e2507]: log
+                        - generic [ref=f2e2508]: "2"
+                      - text: "n"
+                - text: descendant qubits
+      - paragraph [ref=f2e2516]:
+        - text: Every answer in BK involves at most
+        - generic [ref=f2e2518]:
+          - math [ref=f2e2520]:
+            - generic [ref=f2e2522]:
+              - generic [ref=f2e2523]:
+                - generic [ref=f2e2524]:
+                  - generic [ref=f2e2525]: log
+                  - generic: ⁡
+                - generic [ref=f2e2526]: "2"
+              - generic [ref=f2e2527]: "n"
+          - generic [ref=f2e2529]:
+            - generic [ref=f2e2530]:
+              - generic [ref=f2e2531]: log
+              - generic [ref=f2e2532]: "2"
+            - text: "n"
+        - text: qubits. That’s the advantage.
+      - heading "Weight comparison at scale Link to this Section" [level=3] [ref=f2e2540]:
+        - text: Weight comparison at scale
+        - link "Link to this Section":
+          - /url: "#weight-comparison-at-scale"
+          - text: ¶
+      - generic "table content" [ref=f2e2541]:
+        - table [ref=f2e2542]:
+          - rowgroup [ref=f2e2543]:
+            - row [ref=f2e2544]:
+              - columnheader [ref=f2e2545]:
+                - text: Spin-orbitals (
+                - generic [ref=f2e2547]:
+                  - math [ref=f2e2549]:
+                    - generic [ref=f2e2550]: "n"
+                  - generic [ref=f2e2554]: "n"
+                - text: )
+              - columnheader "JW worst-case weight" [ref=f2e2555]
+              - columnheader "BK worst-case weight" [ref=f2e2556]
+              - columnheader "Ratio" [ref=f2e2557]
+            - row [ref=f2e2558]:
+              - cell "4" [ref=f2e2559]
+              - cell "4" [ref=f2e2560]
+              - cell "3" [ref=f2e2561]
+              - cell "1.3×" [ref=f2e2562]
+            - row [ref=f2e2563]:
+              - cell "8" [ref=f2e2564]
+              - cell "8" [ref=f2e2565]
+              - cell "4" [ref=f2e2566]
+              - cell "2×" [ref=f2e2567]
+            - row [ref=f2e2568]:
+              - cell "16" [ref=f2e2569]
+              - cell "16" [ref=f2e2570]
+              - cell "5" [ref=f2e2571]
+              - cell "3.2×" [ref=f2e2572]
+            - row [ref=f2e2573]:
+              - cell "64" [ref=f2e2574]
+              - cell "64" [ref=f2e2575]
+              - cell "7" [ref=f2e2576]
+              - cell "9×" [ref=f2e2577]
+            - row [ref=f2e2578]:
+              - cell "100" [ref=f2e2579]
+              - cell "100" [ref=f2e2580]
+              - cell "7" [ref=f2e2581]
+              - cell "14×" [ref=f2e2582]
+      - paragraph [ref=f2e2583]: At 100 spin-orbitals, the reproduced operator-level maxima are much smaller for BK than JW. Full circuit and hardware feasibility still require the molecular term distribution and a compiled backend-specific model.
+      - separator [ref=f2e2584]
+      - 'heading "Tree Encodings: Improving the Logarithmic Constant Link to this Section" [level=2] [ref=f2e2585]':
+        - text: "Tree Encodings: Improving the Logarithmic Constant"
+        - link "Link to this Section":
+          - /url: "#tree-encodings-improving-the-logarithmic-constant"
+          - text: ¶
+      - heading "Beyond binary Link to this Section" [level=3] [ref=f2e2586]:
+        - text: Beyond binary
+        - link "Link to this Section":
+          - /url: "#beyond-binary"
+          - text: ¶
+      - paragraph [ref=f2e2587]:
+        - text: The Fenwick tree is a
+        - emphasis [ref=f2e2588]: binary
+        - text: tree — each node has at most two children. What if we used a
+        - strong [ref=f2e2589]: ternary
+        - text: tree instead? Each internal node would have three children, the tree would be shallower, and the path lengths (and hence Pauli weights) would be shorter.
+      - paragraph [ref=f2e2590]:
+        - text: This is the insight behind the ternary tree encoding (Jiang et al., 2020). Binary- and ternary-tree depths are both
+        - generic [ref=f2e2592]:
+          - math [ref=f2e2594]:
+            - generic [ref=f2e2596]:
+              - generic [ref=f2e2597]: Θ
+              - generic [ref=f2e2598]: (
+              - generic [ref=f2e2599]: log
+              - generic: ⁡
+              - generic [ref=f2e2600]: "n"
+              - generic [ref=f2e2601]: )
+          - generic [ref=f2e2603]:
+            - text: Θ(
+            - generic [ref=f2e2604]: log
+            - text: n)
+        - text: "because changing the logarithm’s base changes only a constant:"
+      - generic [ref=f2e2605]:
+        - generic [ref=f2e2608]:
+          - math [ref=f2e2610]:
+            - generic [ref=f2e2612]:
+              - generic [ref=f2e2613]:
+                - generic [ref=f2e2614]:
+                  - generic [ref=f2e2615]: log
+                  - generic: ⁡
+                - generic [ref=f2e2616]: "3"
+              - generic [ref=f2e2617]: "n"
+              - generic [ref=f2e2618]: =
+              - generic [ref=f2e2619]:
+                - generic [ref=f2e2620]:
+                  - generic [ref=f2e2621]:
+                    - generic [ref=f2e2622]:
+                      - generic [ref=f2e2623]: log
+                      - generic: ⁡
+                    - generic [ref=f2e2624]: "2"
+                  - generic [ref=f2e2625]: "n"
+                - generic [ref=f2e2626]:
+                  - generic [ref=f2e2627]:
+                    - generic [ref=f2e2628]:
+                      - generic [ref=f2e2629]: log
+                      - generic: ⁡
+                    - generic [ref=f2e2630]: "2"
+                  - generic [ref=f2e2631]: "3"
+              - generic [ref=f2e2632]: .
+          - generic [aria-hidden] [ref=f2e2633]:
+            - generic [ref=f2e2634]:
+              - generic [ref=f2e2635]:
+                - generic [ref=f2e2636]: log
+                - generic [ref=f2e2637]: "3"
+              - text: n =
+            - generic [ref=f2e2645]:
+              - generic [ref=f2e2650]:
+                - generic [ref=f2e2651]:
+                  - generic [ref=f2e2652]:
+                    - generic [ref=f2e2653]: log
+                    - generic [ref=f2e2654]: "2"
+                  - text: "3"
+                - generic [ref=f2e2663]:
+                  - generic [ref=f2e2664]:
+                    - generic [ref=f2e2665]: log
+                    - generic [ref=f2e2666]: "2"
+                  - text: "n"
+              - text: .
+        - link "Link to this Equation" [ref=f2e2678] [cursor=pointer]:
+          - /url: "#KnRLXfISij"
+          - text: (7)
+      - paragraph [ref=f2e2679]: The ternary construction improves that depth constant and the corresponding exact weight bound; it does not define a smaller asymptotic class.
+      - paragraph [ref=f2e2680]:
+        - text: Jiang, Kalev, Mruczkiewicz, and Neven construct mapped Majorana operators of weight
+        - generic [ref=f2e2682]:
+          - math [ref=f2e2684]:
+            - generic [ref=f2e2686]:
+              - generic [ref=f2e2687]: ⌈
+              - generic [ref=f2e2688]:
+                - generic [ref=f2e2689]:
+                  - generic [ref=f2e2690]: log
+                  - generic: ⁡
+                - generic [ref=f2e2691]: "3"
+              - generic [ref=f2e2692]: (
+              - generic [ref=f2e2693]: "2"
+              - generic [ref=f2e2694]: "n"
+              - generic [ref=f2e2695]: +
+              - generic [ref=f2e2696]: "1"
+              - generic [ref=f2e2697]: )
+              - generic [ref=f2e2698]: ⌉
+          - generic [aria-hidden] [ref=f2e2699]:
+            - generic [ref=f2e2700]:
+              - text: ⌈
+              - generic [ref=f2e2701]:
+                - generic [ref=f2e2702]: log
+                - generic [ref=f2e2703]: "3"
+              - text: (2n +
+            - generic [ref=f2e2711]: 1)⌉
+        - text: and prove that no Pauli mapping can have average Majorana weight below
+        - generic [ref=f2e2713]:
+          - math [ref=f2e2715]:
+            - generic [ref=f2e2717]:
+              - generic [ref=f2e2718]:
+                - generic [ref=f2e2719]:
+                  - generic [ref=f2e2720]: log
+                  - generic: ⁡
+                - generic [ref=f2e2721]: "3"
+              - generic [ref=f2e2722]: (
+              - generic [ref=f2e2723]: "2"
+              - generic [ref=f2e2724]: "n"
+              - generic [ref=f2e2725]: )
+          - generic [ref=f2e2727]:
+            - generic [ref=f2e2728]:
+              - generic [ref=f2e2729]: log
+              - generic [ref=f2e2730]: "3"
+            - text: (2n)
+        - text: "[Jiang et al., 2020]."
+      - figure
+      - paragraph [ref=f2e2738]: "The three edges emerging from each node are labelled with the three non-identity Pauli operators: X, Y, and Z. This labelling is what gives the encoding its structure — the Pauli string for each orbital is read off by collecting edge labels on the path from root to leaf."
+      - paragraph [ref=f2e2739]: FockMap’s path-based API supports labelled tree shapes with at most three children per node, including its balanced binary and ternary helpers. Custom candidates still require CAR and matrix validation; a four-child tree is outside the implemented contract.
+      - separator [ref=f2e2740]
+      - heading "The Complete Picture Link to this Section" [level=2] [ref=f2e2741]:
+        - text: The Complete Picture
+        - link "Link to this Section":
+          - /url: "#the-complete-picture"
+          - text: ¶
+      - figure
+      - paragraph [ref=f2e2742]:
+        - text: All six FockMap interfaces produce
+        - code [ref=f2e2743]: PauliRegisterSequence
+        - text: . When an implementation passes CAR, direct-matrix, and state-order tests, its Hamiltonian must preserve the physical spectrum. The Pauli strings, state representation, weights, measurement bases, and compiled costs can still differ.
+      - separator [ref=f2e2744]
+      - 'heading "One More Thing: Number Operators Stay Cheap Link to this Section" [level=2] [ref=f2e2745]':
+        - text: "One More Thing: Number Operators Stay Cheap"
+        - link "Link to this Section":
+          - /url: "#one-more-thing-number-operators-stay-cheap"
+          - text: ¶
+      - paragraph [ref=f2e2746]:
+        - text: "A reassuring fact: the"
+        - strong [ref=f2e2747]: number operator
+        - generic [ref=f2e2749]:
+          - math [ref=f2e2751]:
+            - generic [ref=f2e2753]:
+              - generic [ref=f2e2754]:
+                - generic [ref=f2e2755]: "n"
+                - generic [ref=f2e2756]: j
+              - generic [ref=f2e2757]: =
+              - generic [ref=f2e2758]:
+                - generic [ref=f2e2759]: a
+                - generic [ref=f2e2760]: j
+                - generic [ref=f2e2761]: †
+              - generic [ref=f2e2762]:
+                - generic [ref=f2e2763]: a
+                - generic [ref=f2e2764]: j
+          - generic [aria-hidden] [ref=f2e2765]:
+            - generic [ref=f2e2766]:
+              - generic [ref=f2e2767]:
+                - text: "n"
+                - generic [ref=f2e2768]: j
+              - text: =
+            - generic [ref=f2e2776]:
+              - generic [ref=f2e2777]:
+                - text: a
+                - generic [ref=f2e2781]:
+                  - generic [ref=f2e2782]: j
+                  - generic [ref=f2e2783]: †
+              - generic [ref=f2e2787]:
+                - text: a
+                - generic [ref=f2e2788]: j
+        - text: (which tests whether orbital
+        - generic [ref=f2e2797]:
+          - math [ref=f2e2799]:
+            - generic [ref=f2e2800]: j
+          - generic [ref=f2e2804]: j
+        - text: is occupied) simplifies to just two terms under
+        - emphasis [ref=f2e2805]: every
+        - text: "encoding:"
+      - generic [ref=f2e2806]:
+        - generic [ref=f2e2809]:
+          - math [ref=f2e2811]:
+            - generic [ref=f2e2813]:
+              - generic [ref=f2e2814]:
+                - generic [ref=f2e2815]: "n"
+                - generic [ref=f2e2816]: j
+              - generic [ref=f2e2817]: ↦
+              - generic [ref=f2e2818]:
+                - generic [ref=f2e2819]: "1"
+                - generic [ref=f2e2820]: "2"
+              - generic [ref=f2e2821]: (
+              - generic [ref=f2e2822]: I
+              - generic [ref=f2e2823]: −
+              - generic [ref=f2e2824]:
+                - generic [ref=f2e2825]: Z
+                - generic [ref=f2e2826]: j
+              - generic [ref=f2e2827]: )
+              - generic [ref=f2e2828]: under JW
+          - generic [aria-hidden] [ref=f2e2829]:
+            - generic [ref=f2e2830]:
+              - generic [ref=f2e2831]:
+                - text: "n"
+                - generic [ref=f2e2832]: j
+              - text: ↦
+            - generic [ref=f2e2840]:
+              - generic [ref=f2e2845]:
+                - generic [ref=f2e2846]: "2"
+                - generic [ref=f2e2848]: "1"
+              - text: (I −
+            - generic [ref=f2e2852]:
+              - generic [ref=f2e2853]:
+                - text: Z
+                - generic [ref=f2e2854]: j
+              - text: )
+              - generic [ref=f2e2862]: under JW
+        - link "Link to this Equation" [ref=f2e2864] [cursor=pointer]:
+          - /url: "#ajkWOx7FtF"
+          - text: (8)
+      - paragraph [ref=f2e2865]:
+        - text: That’s Pauli weight 1 under JW — regardless of
+        - generic [ref=f2e2867]:
+          - math [ref=f2e2869]:
+            - generic [ref=f2e2870]: "n"
+          - generic [ref=f2e2874]: "n"
+        - text: . The Z-chains from the creation and annihilation operators cancel in the product. Under other encodings (BK, tree), the number operator weight may increase to
+        - generic [ref=f2e2876]:
+          - math [ref=f2e2878]:
+            - generic [ref=f2e2880]:
+              - generic [ref=f2e2881]: O
+              - generic [ref=f2e2882]: (
+              - generic [ref=f2e2883]: log
+              - generic: ⁡
+              - generic [ref=f2e2884]: "n"
+              - generic [ref=f2e2885]: )
+          - generic [ref=f2e2887]:
+            - text: O(
+            - generic [ref=f2e2888]: log
+            - text: n)
+        - text: because the occupation information is distributed across parity qubits, but this is still much cheaper than the creation/annihilation operators.
+      - paragraph [ref=f2e2889]:
+        - text: So while
+        - emphasis [ref=f2e2890]: creating
+        - text: or
+        - emphasis [ref=f2e2891]: moving
+        - text: electrons gets expensive under JW (the Z-chains grow), simply
+        - emphasis [ref=f2e2892]: counting
+        - text: them stays cheap in all encodings. The overhead only hits terms that change the electron configuration — and those are precisely the terms that represent quantum correlations.
+      - separator [ref=f2e2893]
+      - 'heading "Choosing an Encoding: A Decision Guide Link to this Section" [level=2] [ref=f2e2894]':
+        - text: "Choosing an Encoding: A Decision Guide"
+        - link "Link to this Section":
+          - /url: "#choosing-an-encoding-a-decision-guide"
+          - text: ¶
+      - generic "table content" [ref=f2e2895]:
+        - table [ref=f2e2896]:
+          - rowgroup [ref=f2e2897]:
+            - row [ref=f2e2898]:
+              - columnheader "If your situation is..." [ref=f2e2899]
+              - columnheader "Use..." [ref=f2e2900]
+              - columnheader "Why" [ref=f2e2901]
+            - row [ref=f2e2902]:
+              - cell [ref=f2e2903]:
+                - text: Small molecule (
+                - generic [ref=f2e2905]:
+                  - math [ref=f2e2907]:
+                    - generic [ref=f2e2909]:
+                      - generic [ref=f2e2910]: "n"
+                      - generic [ref=f2e2911]: ≤
+                      - generic [ref=f2e2912]: "20"
+                  - generic [aria-hidden] [ref=f2e2913]:
+                    - generic [ref=f2e2914]: n ≤
+                    - generic [ref=f2e2915]: "20"
+                - text: )
+              - cell "Jordan–Wigner" [ref=f2e2916]
+              - cell "Simplest, and the weight overhead is manageable" [ref=f2e2917]
+            - row [ref=f2e2918]:
+              - cell "1D chain / local Hamiltonian" [ref=f2e2919]
+              - cell "Jordan–Wigner" [ref=f2e2920]
+              - cell "Adjacent orbitals have short Z-chains" [ref=f2e2921]
+            - row [ref=f2e2922]:
+              - cell [ref=f2e2923]:
+                - text: Medium molecule (
+                - generic [ref=f2e2925]:
+                  - math [ref=f2e2927]:
+                    - generic [ref=f2e2929]:
+                      - generic [ref=f2e2930]: "20"
+                      - generic [ref=f2e2931]: <
+                      - generic [ref=f2e2932]: "n"
+                      - generic [ref=f2e2933]: ≤
+                      - generic [ref=f2e2934]: "100"
+                  - generic [aria-hidden] [ref=f2e2935]:
+                    - generic [ref=f2e2936]: 20 <
+                    - generic [ref=f2e2937]: n ≤
+                    - generic [ref=f2e2938]: "100"
+                - text: )
+              - cell "Bravyi–Kitaev" [ref=f2e2939]
+              - cell [ref=f2e2940]:
+                - text: Well-studied
+                - generic [ref=f2e2942]:
+                  - math [ref=f2e2944]:
+                    - generic [ref=f2e2946]:
+                      - generic [ref=f2e2947]: Θ
+                      - generic [ref=f2e2948]: (
+                      - generic [ref=f2e2949]: log
+                      - generic: ⁡
+                      - generic [ref=f2e2950]: "n"
+                      - generic [ref=f2e2951]: )
+                  - generic [ref=f2e2953]:
+                    - text: Θ(
+                    - generic [ref=f2e2954]: log
+                    - text: n)
+                - text: weight
+            - row [ref=f2e2955]:
+              - cell "Large molecule / all-to-all interactions" [ref=f2e2956]
+              - cell "Ternary Tree" [ref=f2e2957]
+              - cell [ref=f2e2958]:
+                - generic [ref=f2e2960]:
+                  - math [ref=f2e2962]:
+                    - generic [ref=f2e2964]:
+                      - generic [ref=f2e2965]: Θ
+                      - generic [ref=f2e2966]: (
+                      - generic [ref=f2e2967]: log
+                      - generic: ⁡
+                      - generic [ref=f2e2968]: "n"
+                      - generic [ref=f2e2969]: )
+                  - generic [ref=f2e2971]:
+                    - text: Θ(
+                    - generic [ref=f2e2972]: log
+                    - text: n)
+                - text: weight with a smaller tree-depth constant
+            - row [ref=f2e2973]:
+              - cell "Research / custom topologies" [ref=f2e2974]
+              - cell "Validated path-based tree" [ref=f2e2975]
+              - cell "Current API supports labelled trees with at most three children per node; verify CAR" [ref=f2e2976]
+      - paragraph [ref=f2e2977]: In the next chapter, we use all six interfaces and require each to reproduce the independent H₂ matrix and labelled-state oracle.
+      - separator [ref=f2e2978]
+      - heading "Key Takeaways Link to this Section" [level=2] [ref=f2e2979]:
+        - text: Key Takeaways
+        - link "Link to this Section":
+          - /url: "#key-takeaways"
+          - text: ¶
+      - list [ref=f2e2980]:
+        - listitem [ref=f2e2981]:
+          - paragraph [ref=f2e2982]: Electrons anti-commute; qubits don’t. An encoding bridges this gap by injecting fermion signs into the qubit representation.
+        - listitem [ref=f2e2983]:
+          - paragraph [ref=f2e2984]:
+            - strong [ref=f2e2985]: Jordan–Wigner
+            - text: "uses a linear Z-chain: simple but"
+            - generic [ref=f2e2987]:
+              - math [ref=f2e2989]:
+                - generic [ref=f2e2991]:
+                  - generic [ref=f2e2992]: O
+                  - generic [ref=f2e2993]: (
+                  - generic [ref=f2e2994]: "n"
+                  - generic [ref=f2e2995]: )
+              - generic [ref=f2e2997]: O(n)
+            - text: weight.
+        - listitem [ref=f2e2998]:
+          - paragraph [ref=f2e2999]:
+            - strong [ref=f2e3000]: Bravyi–Kitaev
+            - text: "uses a Fenwick tree to pre-compute partial parities:"
+            - generic [ref=f2e3002]:
+              - math [ref=f2e3004]:
+                - generic [ref=f2e3006]:
+                  - generic [ref=f2e3007]: Θ
+                  - generic [ref=f2e3008]: (
+                  - generic [ref=f2e3009]: log
+                  - generic: ⁡
+                  - generic [ref=f2e3010]: "n"
+                  - generic [ref=f2e3011]: )
+              - generic [ref=f2e3013]:
+                - text: Θ(
+                - generic [ref=f2e3014]: log
+                - text: n)
+            - text: weight.
+        - listitem [ref=f2e3015]:
+          - paragraph [ref=f2e3016]:
+            - strong [ref=f2e3017]: Ternary tree
+            - text: encodings remain
+            - generic [ref=f2e3019]:
+              - math [ref=f2e3021]:
+                - generic [ref=f2e3023]:
+                  - generic [ref=f2e3024]: Θ
+                  - generic [ref=f2e3025]: (
+                  - generic [ref=f2e3026]: log
+                  - generic: ⁡
+                  - generic [ref=f2e3027]: "n"
+                  - generic [ref=f2e3028]: )
+              - generic [ref=f2e3030]:
+                - text: Θ(
+                - generic [ref=f2e3031]: log
+                - text: n)
+            - text: but improve the tree-depth constant and exact weight bound.
+        - listitem [ref=f2e3032]:
+          - paragraph [ref=f2e3033]: A valid encoding preserves the operator after the basis map is accounted for; verify matrices and labelled states, not only eigenvalues.
+        - listitem [ref=f2e3034]:
+          - paragraph [ref=f2e3035]:
+            - text: Number operators are cheap (
+            - generic [ref=f2e3037]:
+              - math [ref=f2e3039]:
+                - generic [ref=f2e3041]:
+                  - generic [ref=f2e3042]: O
+                  - generic [ref=f2e3043]: (
+                  - generic [ref=f2e3044]: "1"
+                  - generic [ref=f2e3045]: )
+              - generic [ref=f2e3047]: O(1)
+            - text: under JW,
+            - generic [ref=f2e3049]:
+              - math [ref=f2e3051]:
+                - generic [ref=f2e3053]:
+                  - generic [ref=f2e3054]: O
+                  - generic [ref=f2e3055]: (
+                  - generic [ref=f2e3056]: log
+                  - generic: ⁡
+                  - generic [ref=f2e3057]: "n"
+                  - generic [ref=f2e3058]: )
+              - generic [ref=f2e3060]:
+                - text: O(
+                - generic [ref=f2e3061]: log
+                - text: n)
+            - text: under tree encodings) — always much lighter than creation/annihilation operators.
+      - heading "Common Mistakes Link to this Section" [level=2] [ref=f2e3062]:
+        - text: Common Mistakes
+        - link "Link to this Section":
+          - /url: "#common-mistakes"
+          - text: ¶
+      - list [ref=f2e3063]:
+        - listitem [ref=f2e3064]:
+          - paragraph [ref=f2e3065]:
+            - strong [ref=f2e3066]: Forgetting fermion signs entirely.
+            - text: Mapping occupation directly to qubits without an encoding gives classical (Hartree–Fock) results, not quantum results. The encoding is not optional — it
+            - emphasis [ref=f2e3067]: is
+            - text: the quantum part.
+        - listitem [ref=f2e3068]:
+          - paragraph [ref=f2e3069]:
+            - strong [ref=f2e3070]: Assuming JW is always the worst.
+            - text: For small systems and local interactions, JW often has the lowest
+            - emphasis [ref=f2e3071]: average
+            - text: weight. The
+            - generic [ref=f2e3073]:
+              - math [ref=f2e3075]:
+                - generic [ref=f2e3077]:
+                  - generic [ref=f2e3078]: O
+                  - generic [ref=f2e3079]: (
+                  - generic [ref=f2e3080]: "n"
+                  - generic [ref=f2e3081]: )
+              - generic [ref=f2e3083]: O(n)
+            - text: scaling only becomes problematic at larger
+            - generic [ref=f2e3085]:
+              - math [ref=f2e3087]:
+                - generic [ref=f2e3088]: "n"
+              - generic [ref=f2e3092]: "n"
+            - text: .
+        - listitem [ref=f2e3093]:
+          - paragraph [ref=f2e3094]:
+            - strong [ref=f2e3095]: Comparing raw term counts instead of Pauli weight.
+            - text: All encodings produce the same number of Hamiltonian terms. The difference is in the weight (number of non-identity Paulis) per term, which determines CNOT count.
+      - heading "Exercises Link to this Section" [level=2] [ref=f2e3096]:
+        - text: Exercises
+        - link "Link to this Section":
+          - /url: "#exercises"
+          - text: ¶
+      - list [ref=f2e3097]:
+        - listitem [ref=f2e3098]:
+          - paragraph [ref=f2e3099]:
+            - strong [ref=f2e3100]: Z-chain length.
+            - text: For a system with 10 spin-orbitals, what is the JW Pauli weight of
+            - generic [ref=f2e3102]:
+              - math [ref=f2e3104]:
+                - generic [ref=f2e3107]:
+                  - generic [ref=f2e3108]: a
+                  - generic [ref=f2e3109]: "7"
+                  - generic [ref=f2e3110]: †
+              - generic [ref=f2e3113]:
+                - text: a
+                - generic [ref=f2e3117]:
+                  - generic [ref=f2e3118]: "7"
+                  - generic [ref=f2e3119]: †
+            - text: "? What is the BK worst-case weight? (Use"
+            - generic [ref=f2e3124]:
+              - math [ref=f2e3126]:
+                - generic [ref=f2e3128]:
+                  - generic [ref=f2e3129]: ⌊
+                  - generic [ref=f2e3130]:
+                    - generic [ref=f2e3131]:
+                      - generic [ref=f2e3132]: log
+                      - generic: ⁡
+                    - generic [ref=f2e3133]: "2"
+                  - generic [ref=f2e3134]: "10"
+                  - generic [ref=f2e3135]: ⌋
+                  - generic [ref=f2e3136]: +
+                  - generic [ref=f2e3137]: "1"
+              - generic [aria-hidden] [ref=f2e3138]:
+                - generic [ref=f2e3139]:
+                  - text: ⌊
+                  - generic [ref=f2e3140]:
+                    - generic [ref=f2e3141]: log
+                    - generic [ref=f2e3142]: "2"
+                  - text: 10⌋ +
+                - generic [ref=f2e3150]: "1"
+            - text: .)
+        - listitem [ref=f2e3151]:
+          - paragraph [ref=f2e3152]:
+            - strong [ref=f2e3153]: Number operator.
+            - text: Verify that the JW number operator
+            - generic [ref=f2e3155]:
+              - math [ref=f2e3157]:
+                - generic [ref=f2e3159]:
+                  - generic [ref=f2e3160]:
+                    - generic [ref=f2e3161]: "n"
+                    - generic [ref=f2e3162]: j
+                  - generic [ref=f2e3163]: =
+                  - generic [ref=f2e3164]:
+                    - generic [ref=f2e3165]: "1"
+                    - generic [ref=f2e3166]: "2"
+                  - generic [ref=f2e3167]: (
+                  - generic [ref=f2e3168]: I
+                  - generic [ref=f2e3169]: −
+                  - generic [ref=f2e3170]:
+                    - generic [ref=f2e3171]: Z
+                    - generic [ref=f2e3172]: j
+                  - generic [ref=f2e3173]: )
+              - generic [aria-hidden] [ref=f2e3174]:
+                - generic [ref=f2e3175]:
+                  - generic [ref=f2e3176]:
+                    - text: "n"
+                    - generic [ref=f2e3177]: j
+                  - text: =
+                - generic [ref=f2e3185]:
+                  - generic [ref=f2e3190]:
+                    - generic [ref=f2e3191]: "2"
+                    - generic [ref=f2e3194]: "1"
+                  - text: (I −
+                - generic [ref=f2e3199]:
+                  - generic [ref=f2e3200]:
+                    - text: Z
+                    - generic [ref=f2e3201]: j
+                  - text: )
+            - text: has eigenvalues 0 and 1 by applying it to
+            - generic [ref=f2e3210]:
+              - math [ref=f2e3212]:
+                - generic [ref=f2e3214]:
+                  - generic [ref=f2e3215]: ∣
+                  - generic [ref=f2e3216]: "0"
+                  - generic [ref=f2e3217]: ⟩
+              - generic [ref=f2e3219]: ∣0⟩
+            - text: and
+            - generic [ref=f2e3221]:
+              - math [ref=f2e3223]:
+                - generic [ref=f2e3225]:
+                  - generic [ref=f2e3226]: ∣
+                  - generic [ref=f2e3227]: "1"
+                  - generic [ref=f2e3228]: ⟩
+              - generic [ref=f2e3230]: ∣1⟩
+            - text: .
+        - listitem [ref=f2e3231]:
+          - paragraph [ref=f2e3232]:
+            - strong [ref=f2e3233]: Tree branching.
+            - text: If you used a 4-ary (quaternary) tree instead of ternary, what would the worst-case weight scaling be? Would it be better or worse than ternary, and why might it not work as easily?
+      - heading "Further Reading Link to this Section" [level=2] [ref=f2e3234]:
+        - text: Further Reading
+        - link "Link to this Section":
+          - /url: "#further-reading"
+          - text: ¶
+      - list [ref=f2e3235]:
+        - listitem [ref=f2e3236]:
+          - paragraph [ref=f2e3237]:
+            - text: Jordan, P. and Wigner, E. “Über das Paulische Äquivalenzverbot.”
+            - emphasis [ref=f2e3238]: Z. Physik
+            - text: 47, 631 (1928). The original encoding — a mathematical trick for mapping spin chains that found its second life in quantum computing 77 years later.
+        - listitem [ref=f2e3239]:
+          - paragraph [ref=f2e3240]:
+            - text: Aspuru-Guzik, A., Dutoi, A. D., Love, P. J., and Head-Gordon, M. “Simulated Quantum Computation of Molecular Energies.”
+            - emphasis [ref=f2e3241]: Science
+            - text: "309, 1704 (2005). The paper that launched quantum computational chemistry: showed that the Jordan–Wigner encoding could be plugged into a quantum phase estimation algorithm to compute molecular ground-state energies. Before this work, JW was a mathematical curiosity; after it, an entire field was born."
+        - listitem [ref=f2e3242]:
+          - paragraph [ref=f2e3243]:
+            - text: Seeley, J. T., Richard, M. J., and Love, P. J. “The Bravyi–Kitaev transformation for quantum computation of electronic structure.”
+            - emphasis [ref=f2e3244]: J. Chem. Phys.
+            - text: 137, 224109 (2012). Formalized the
+            - strong [ref=f2e3245]: index-set framework
+            - text: — the three set-valued functions (Update, Parity, Occupation) that unify JW, BK, and Parity under a single abstraction. This is the framework that FockMap’s
+            - code [ref=f2e3246]: EncodingScheme
+            - text: type directly implements.
+        - listitem [ref=f2e3247]:
+          - paragraph [ref=f2e3248]:
+            - text: Bravyi, S. B. and Kitaev, A. Yu. “Fermionic Quantum Computation.”
+            - emphasis [ref=f2e3249]: Ann. Phys.
+            - text: 298, 210 (2002). The logarithmic-weight encoding using Fenwick trees.
+        - listitem [ref=f2e3250]:
+          - paragraph [ref=f2e3251]:
+            - text: Jiang, Z., Kalev, A., Mruczkiewicz, W., and Neven, H. “Optimal fermion-to-qubit mapping via ternary trees with applications to reduced quantum states learning.”
+            - emphasis [ref=f2e3252]: Quantum
+            - text: "4, 276 (2020). DOI: 10.22331/q-2020-06-04-276."
+      - separator [ref=f2e3253]
+      - paragraph [ref=f2e3254]:
+        - strong [ref=f2e3255]: "Previous:"
+        - link "Chapter 4 — The Quantum Computer’s Vocabulary" [ref=f2e3256] [cursor=pointer]:
+          - /url: /molecules-to-circuits04-qubits-gates-circuits.html
+      - paragraph [ref=f2e3257]:
+        - strong [ref=f2e3258]: "Next:"
+        - link "Chapter 6 — Building the Qubit Hamiltonian" [ref=f2e3259] [cursor=pointer]:
+          - /url: /molecules-to-circuits06-building-hamiltonian.html
+      - generic [ref=f2e3260]:
+        - 'link "Previous: Chapter 4: The Quantum Computer’s Vocabulary" [ref=f2e3261] [cursor=pointer]':
+          - /url: /molecules-to-circuits/qubits-gates-circuits
+          - generic [ref=f2e3265]:
+            - generic [ref=f2e3266]: "Part II: The Machine"
+            - text: "Chapter 4: The Quantum Computer’s Vocabulary"
+        - 'link "Next: Chapter 6: Building the Qubit Hamiltonian" [ref=f2e3267] [cursor=pointer]':
+          - /url: /molecules-to-circuits/building-hamiltonian
+          - generic [ref=f2e3269]:
+            - generic [ref=f2e3270]: "Part III: Encoding"
+            - text: "Chapter 6: Building the Qubit Hamiltonian"

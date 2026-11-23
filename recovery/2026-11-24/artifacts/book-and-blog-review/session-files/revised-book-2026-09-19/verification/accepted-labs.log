@@ -1,0 +1,419 @@
+Executing labs...
+  labs/01-first-encoding.fsx
+a†₀ encoded (4 modes):
+  <0.5; 0> × (XIII)
+  <0; -0.5> × (YIII)
+
+a†₂ encoded (4 modes):
+  <0.5; 0> × (ZZXI)
+  <0; -0.5> × (ZZYI)
+
+a₂ encoded (4 modes):
+  <0.5; 0> × (ZZXI)
+  <0; 0.5> × (ZZYI)
+  labs/02-h2-molecule.fsx
+Chapter 3: Spin-Orbital Integrals
+=================================
+Source: h2_dissociation_integrals.json
+PySCF: 2.13.0
+R = 0.74 Angstrom, Vnn = 0.7151043391 Ha, E_HF = -1.1167593074 Ha
+One-body integrals (spin-orbital):
+  h(0,0) = -1.2533097866 Ha
+  h(1,1) = -1.2533097866 Ha
+  h(2,2) = -0.4750688488 Ha
+  h(3,3) = -0.4750688488 Ha
+
+Total two-body integrals in raw map: 32
+  Same-spin (αα + ββ): 16
+  Cross-spin (αβ + βα): 16
+
+Canonical raw tensor loaded; FockMap's primary builders apply the index order and 1/2.
+Run make verify-data for coefficient and dense-matrix parity.
+Computing H₂ Hamiltonian with Jordan-Wigner encoding...
+
+════════════════════════════════════════════════════════════
+ H₂ Qubit Hamiltonian (Jordan-Wigner Encoding)
+════════════════════════════════════════════════════════════
+
+ Number of Pauli terms: 15
+
+ Pauli terms (coefficient × Pauli string):
+ ───────────────────────────────────────────
+   -0.812171  IIII
+   +0.171413  ZIII
+   +0.171413  IZII
+   -0.223432  IIZI
+   -0.223432  IIIZ
+   +0.168689  ZZII
+   +0.045303  YXXY
+   -0.045303  YYXX
+   -0.045303  XXYY
+   +0.045303  XYYX
+   +0.120625  ZIZI
+   +0.165928  ZIIZ
+   +0.165928  IZZI
+   +0.120625  IZIZ
+   +0.174413  IIZZ
+
+════════════════════════════════════════════════════════════
+ Tutorial complete! H₂ encoded into 15 Pauli terms.
+════════════════════════════════════════════════════════════
+  labs/03-compare-encodings.fsx
+Chapter 3: Spin-Orbital Integrals
+=================================
+Source: h2_dissociation_integrals.json
+PySCF: 2.13.0
+R = 0.74 Angstrom, Vnn = 0.7151043391 Ha, E_HF = -1.1167593074 Ha
+One-body integrals (spin-orbital):
+  h(0,0) = -1.2533097866 Ha
+  h(1,1) = -1.2533097866 Ha
+  h(2,2) = -0.4750688488 Ha
+  h(3,3) = -0.4750688488 Ha
+
+Total two-body integrals in raw map: 32
+  Same-spin (αα + ββ): 16
+  Cross-spin (αβ + βα): 16
+
+Canonical raw tensor loaded; FockMap's primary builders apply the index order and 1/2.
+Run make verify-data for coefficient and dense-matrix parity.
+
+═══════════════════════════════════════════════════════════════
+ Comparing Fermion-to-Qubit Encodings
+ Operator: a†₂ (creation on mode 2) with 8 total modes
+═══════════════════════════════════════════════════════════════
+
+▶ Jordan-Wigner (max weight = 3)
+  Pauli strings:
+    ZZXIIIII
+    ZZYIIIII
+
+▶ Bravyi-Kitaev (max weight = 4)
+  Pauli strings:
+    IZXXIIIX
+    IZYXIIIX
+
+▶ Parity (max weight = 7)
+  Pauli strings:
+    IZXXXXXX
+    IIYXXXXX
+
+▶ Binary Tree (max weight = 3)
+  Pauli strings:
+    IYXXIIII
+    IYYXIIII
+
+▶ Ternary Tree (max weight = 3)
+  Pauli strings:
+    IIXXYIII
+    IIYXYIII
+
+▶ Vlasov Tree (max weight = 3)
+  Pauli strings:
+    YIXIIIIZ
+    YIYIIIII
+
+═══════════════════════════════════════════════════════════════
+ Weight Scaling Comparison
+═══════════════════════════════════════════════════════════════
+
+  Encoding         Max Weight   Scaling
+  ────────────────────────────────────────
+  Jordan-Wigner         3        O(n)
+  Bravyi-Kitaev         4        Θ(log n)
+  Parity                7        O(n)
+  Binary Tree           3        Θ(log n)
+  Ternary Tree          3        Θ(log n)
+  Vlasov Tree           3        Θ(log n)
+
+═══════════════════════════════════════════════════════════════
+ Key Insight
+═══════════════════════════════════════════════════════════════
+
+ Tree-based mappings reduce worst-case ladder-operator weight
+ from linear to logarithmic growth.
+
+ The generated n=64 maxima are JW=64, BK=7, ternary=6.
+
+ Full H2 spectrum comparison:
+  Jordan-Wigner             dense matrix passes (max error 6.661e-016)
+  Jordan-Wigner             eigenvalues pass (computed error 4.441e-016 Ha; including solver allowance 2.500e-008 Ha)
+  Jordan-Wigner             moment diagnostic only (max relative error 3.281e-015)
+  Bravyi-Kitaev             eigenvalues pass (computed error 4.441e-016 Ha; including solver allowance 2.500e-008 Ha)
+  Bravyi-Kitaev             moment diagnostic only (max relative error 3.281e-015)
+  Parity                    eigenvalues pass (computed error 4.441e-016 Ha; including solver allowance 2.500e-008 Ha)
+  Parity                    moment diagnostic only (max relative error 3.281e-015)
+  Binary Tree               eigenvalues pass (computed error 4.441e-016 Ha; including solver allowance 2.500e-008 Ha)
+  Binary Tree               moment diagnostic only (max relative error 3.175e-015)
+  Ternary Tree              eigenvalues pass (computed error 4.441e-016 Ha; including solver allowance 2.500e-008 Ha)
+  Ternary Tree              moment diagnostic only (max relative error 3.175e-015)
+  Vlasov Tree               eigenvalues pass (computed error 4.441e-016 Ha; including solver allowance 2.500e-008 Ha)
+  Vlasov Tree               moment diagnostic only (max relative error 3.175e-015)
+  labs/04-custom-encoding.fsx
+=== Built-in Parity Scheme ===
+parityScheme.Update 2 4     = set [3]
+parityScheme.Parity 2       = set [1]
+parityScheme.Occupation 2   = set [1; 2]
+
+=== Custom Local Parity Scheme ===
+Update 2 4     = set []
+Parity 2       = set [1]
+Occupation 2   = set [2]
+
+=== Encoding a†₂ (raising operator at mode 2) ===
+Result: 2 Pauli terms
+  IZXI  (coeff: 0.50+0.00i)
+  IZYI  (coeff: 0.00-0.50i)
+
+=== Encoding a₂ (lowering operator at mode 2) ===
+  IZXI  (coeff: 0.50+0.00i)
+  IZYI  (coeff: 0.00+0.50i)
+
+=== Jordan-Wigner a†₂ for comparison ===
+  ZZXI  (coeff: 0.50+0.00i)
+  ZZYI  (coeff: 0.00-0.50i)
+
+=== Spread Scheme a†₂ ===
+  ZZXX
+  ZIYX
+
+WARNING: custom candidates in this lab are not CAR-validated.
+Do not use them for molecular Hamiltonians without independent tests.
+  labs/05-custom-tree.fsx
+Pauli weight comparison for a†_j (4 modes):
+Mode       Chain      Star   Left-Lean    Balanced
+--------------------------------------------------
+  0          2         2           2           2
+  1          3         2           3           2
+  2          4         2           3           2
+  3          4         2           2           2
+
+=== Key Observation ===
+Tree shape changes path lengths and candidate Pauli weights.
+Full circuit cost still depends on the Hamiltonian and compiler.
+This lab compares weights only; it does not certify CAR preservation.
+  labs/06-scaling.fsx
+
+╔══════════════════════════════════════════════════════════════╗
+║         Maximum Pauli Weight Scaling Analysis                ║
+╠══════════════════════════════════════════════════════════════╣
+║ Encoding        │   n=4     n=8    n=16    n=32   Scaling    ║
+╠═════════════════╪══════════════════════════════════════════╣
+║ Jordan-Wigner   │     4       8      16      32   O(n)       ║
+║ Parity          │     4       8      16      32   O(n)       ║
+║ Bravyi-Kitaev   │     3       4       5       6   Θ(log n)   ║
+║ Binary Tree     │     3       4       5       6   Θ(log n)   ║
+║ Ternary Tree    │     2       3       4       5   Θ(log n)   ║
+║ Vlasov Tree     │     2       3       4       4   Θ(log n)   ║
+╚══════════════════════════════════════════════════════════════╝
+
+=== Theoretical Analysis ===
+n =  4:  log₂(n) = 2,  log₃(n) ≈ 2
+n =  8:  log₂(n) = 3,  log₃(n) ≈ 2
+n = 16:  log₂(n) = 4,  log₃(n) ≈ 3
+n = 32:  log₂(n) = 5,  log₃(n) ≈ 4
+
+=== Projected Scaling for Large Systems ===
+n                  n  ceil(log2 n)  ceil(log3 n)
+----------------------------------------------
+100              100             7             5
+1000            1000            10             7
+10000          10000            14             9
+  labs/07-trotter-cost.fsx
+Chapter 3: Spin-Orbital Integrals
+=================================
+Source: h2_dissociation_integrals.json
+PySCF: 2.13.0
+R = 0.74 Angstrom, Vnn = 0.7151043391 Ha, E_HF = -1.1167593074 Ha
+One-body integrals (spin-orbital):
+  h(0,0) = -1.2533097866 Ha
+  h(1,1) = -1.2533097866 Ha
+  h(2,2) = -0.4750688488 Ha
+  h(3,3) = -0.4750688488 Ha
+
+Total two-body integrals in raw map: 32
+  Same-spin (αα + ββ): 16
+  Cross-spin (αβ + βα): 16
+
+Canonical raw tensor loaded; FockMap's primary builders apply the index order and 1/2.
+Run make verify-data for coefficient and dense-matrix parity.
+
+╔══════════════════════════════════════════════════════════════════════════╗
+║       CNOT Cost per First-Order Trotter Step — H₂ (STO-3G, 4 qubits)  ║
+╠══════════════════════════════════════════════════════════════════════════╣
+║ Encoding        │ Terms │ Max w │ Avg w │ CNOTs/step │ vs JW           ║
+╠═════════════════╪═══════╪═══════╪═══════╪════════════╪═════════════════╣
+  Jordan-Wigner             eigenvalues pass (computed error 4.441e-016 Ha; including solver allowance 2.500e-008 Ha)
+  Jordan-Wigner             moment diagnostic only (max relative error 3.281e-015)
+║ Jordan-Wigner   │   14  │    4  │  2.3  │      36    │ baseline        ║
+  Parity                    eigenvalues pass (computed error 4.441e-016 Ha; including solver allowance 2.500e-008 Ha)
+  Parity                    moment diagnostic only (max relative error 3.281e-015)
+║ Parity          │   14  │    4  │  2.4  │      40    │ 11% more        ║
+  Bravyi-Kitaev             eigenvalues pass (computed error 4.441e-016 Ha; including solver allowance 2.500e-008 Ha)
+  Bravyi-Kitaev             moment diagnostic only (max relative error 3.281e-015)
+║ Bravyi-Kitaev   │   14  │    4  │  2.6  │      44    │ 22% more        ║
+  Binary Tree               eigenvalues pass (computed error 4.441e-016 Ha; including solver allowance 2.500e-008 Ha)
+  Binary Tree               moment diagnostic only (max relative error 3.175e-015)
+║ Binary Tree     │   14  │    4  │  2.4  │      40    │ 11% more        ║
+  Ternary Tree              eigenvalues pass (computed error 4.441e-016 Ha; including solver allowance 2.500e-008 Ha)
+  Ternary Tree              moment diagnostic only (max relative error 3.175e-015)
+║ Ternary Tree    │   14  │    4  │  2.6  │      44    │ 22% more        ║
+  Vlasov Tree               eigenvalues pass (computed error 4.441e-016 Ha; including solver allowance 2.500e-008 Ha)
+  Vlasov Tree               moment diagnostic only (max relative error 3.175e-015)
+║ Vlasov Tree     │   14  │    4  │  2.6  │      44    │ 22% more        ║
+╚══════════════════════════════════════════════════════════════════════════╝
+
+╔════════════════════════════════════════════════════════════════════════════════╗
+║       Maximum Operator Weight → CNOTs per Rotation: 2(w − 1)                ║
+╠════════════════════════════════════════════════════════════════════════════════╣
+║ Encoding        │  n=4 (CNOTs) │  n=8 (CNOTs) │ n=16 (CNOTs) │ n=32 (CNOTs) ║
+╠═════════════════╪══════════════╪══════════════╪══════════════╪══════════════╣
+║ Jordan-Wigner   │   4 (  6)    │   8 ( 14)    │  16 ( 30)    │  32 ( 62)    ║
+║ Parity          │   4 (  6)    │   8 ( 14)    │  16 ( 30)    │  32 ( 62)    ║
+║ Bravyi-Kitaev   │   3 (  4)    │   4 (  6)    │   5 (  8)    │   6 ( 10)    ║
+║ Binary Tree     │   3 (  4)    │   4 (  6)    │   5 (  8)    │   6 ( 10)    ║
+║ Ternary Tree    │   2 (  2)    │   3 (  4)    │   4 (  6)    │   5 (  8)    ║
+║ Vlasov Tree     │   2 (  2)    │   3 (  4)    │   4 (  6)    │   4 (  6)    ║
+╚════════════════════════════════════════════════════════════════════════════════╝
+n=64 illustrative maximum-component staircase counts: JW=126, ternary=10 (ratio 12.60)
+  labs/08-h2o-workshop.fsx
+H2O angular scan at fixed r_OH = 0.9584 Angstrom
+================================================
+Recorded PySCF version: 2.13.0
+Coarse grid: 25 points (60-180 deg, 5 deg step)
+Fine grid:   21 points (95-115 deg, 1 deg step)
+
+HF sampled minimum:  101 deg  -74.9636683789 Ha
+FCI sampled minimum: 99 deg  -75.0140865447 Ha
+Experimental angle:  104.52 deg
+
+HF bending energy (180 deg -> HF minimum):   0.112928 Ha
+FCI bending energy (180 deg -> FCI minimum): 0.125873 Ha
+HF fraction of stated FCI bending energy:    89.7%
+
+Fine-scan neighborhood around the FCI minimum:
+     97 deg  HF -74.9629519525 Ha  FCI -75.0139243423 Ha
+     98 deg  HF -74.9632722320 Ha  FCI -75.0140506756 Ha
+     99 deg  HF -74.9634973572 Ha  FCI -75.0140865447 Ha
+    100 deg  HF -74.9636288868 Ha  FCI -75.0140335106 Ha
+    101 deg  HF -74.9636683789 Ha  FCI -75.0138931159 Ha
+
+Checks passed.
+This lab validates the PySCF reference data only.
+Encoding and circuit-cost parity require a separate generated artifact.
+  labs/09-qubit-tapering.fsx
+============================================================
+Lab 09 — Qubit Tapering (Diagonal Z2, symbolic)
+============================================================
+Original Hamiltonian:
+0.3 IIZZ + 0.2 IZIZ + 0.8 ZIZI - 0.4 ZZII
+
+Detected diagonal Z2 qubits: [|0; 1; 2; 3|]
+Generators:
+  ZIII
+  IZII
+  IIZI
+  IIIZ
+
+(+1,+1) sector: removed [|1; 3|], qubits 4 -> 2
+  0.2 II + 0.3 IZ - 0.4 ZI + 0.8 ZZ
+
+(-1,+1) sector: removed [|1; 3|], qubits 4 -> 2
+  -0.2 II + 0.3 IZ + 0.4 ZI + 0.8 ZZ
+
+Auto +1 sector result: 0.9 
+  labs/10-vlasov-tree.fsx
+Chapter 3: Spin-Orbital Integrals
+=================================
+Source: h2_dissociation_integrals.json
+PySCF: 2.13.0
+R = 0.74 Angstrom, Vnn = 0.7151043391 Ha, E_HF = -1.1167593074 Ha
+One-body integrals (spin-orbital):
+  h(0,0) = -1.2533097866 Ha
+  h(1,1) = -1.2533097866 Ha
+  h(2,2) = -0.4750688488 Ha
+  h(3,3) = -0.4750688488 Ha
+
+Total two-body integrals in raw map: 32
+  Same-spin (αα + ββ): 16
+  Cross-spin (αβ + βα): 16
+
+Canonical raw tensor loaded; FockMap's primary builders apply the index order and 1/2.
+Run make verify-data for coefficient and dense-matrix parity.
+═══════════════════════════════════════════════════
+ Lab 10: Vlasov Tree Encoding
+═══════════════════════════════════════════════════
+
+─── Tree Shapes (n = 8) ───
+
+  Vlasov (level-order) (root = 0):
+    node 0: parent=root  children=[1, 2, 3]
+    node 1: parent=0     children=[4, 5, 6]
+    node 2: parent=0     children=[7]
+    node 3: parent=0     children=[]
+    node 4: parent=1     children=[]
+    node 5: parent=1     children=[]
+    node 6: parent=1     children=[]
+    node 7: parent=2     children=[]
+
+  Balanced Ternary (midpoint-split) (root = 4):
+    node 0: parent=1     children=[]
+    node 1: parent=4     children=[0]
+    node 2: parent=3     children=[]
+    node 3: parent=4     children=[2]
+    node 4: parent=root  children=[1, 3, 6]
+    node 5: parent=6     children=[]
+    node 6: parent=4     children=[5, 7]
+    node 7: parent=6     children=[]
+
+─── Creation Operator a†₃ (n = 8) ───
+
+  Jordan-Wigner:
+    +0.5000+0.0000i  ZZZXIIII  (weight 4)
+    +0.0000-0.5000i  ZZZYIIII  (weight 4)
+
+  Bravyi-Kitaev:
+    +0.5000+0.0000i  IZZXIIIX  (weight 4)
+    +0.0000-0.5000i  IIIYIIIX  (weight 2)
+
+  Balanced Ternary:
+    +0.5000+0.0000i  IIZXYIII  (weight 3)
+    +0.0000-0.5000i  IIIYYIII  (weight 2)
+
+  Vlasov Tree:
+    +0.5000+0.0000i  ZIIXIIII  (weight 2)
+    +0.0000-0.5000i  ZIIYIIII  (weight 2)
+
+─── Max Pauli Weight per Mode ───
+
+  Mode   JW     BK     TerTree   Vlasov
+  ────   ──     ──     ───────   ──────
+  0      1      4      3         3     
+  1      2      4      3         3     
+  2      3      4      3         3     
+  3      4      4      3         2     
+  4      5      4      2         3     
+  5      6      4      3         3     
+  6      7      4      3         3     
+  7      8      4      3         3     
+
+─── H₂ Hamiltonian (4 spin-orbitals) ───
+
+  Encoding              Terms    MaxWt    AvgWt
+  ────────              ─────    ─────    ─────
+  Jordan-Wigner            15        4     2.13
+  Bravyi-Kitaev            15        4     2.40
+  Balanced Ternary         15        4     2.40
+  Vlasov Tree              15        4     2.40
+
+This table compares representation-level term weights only.
+
+─── Full H₂ Spectrum Comparison ───
+
+  Jordan-Wigner             eigenvalues pass (computed error 4.441e-016 Ha; including solver allowance 2.500e-008 Ha)
+  Jordan-Wigner             moment diagnostic only (max relative error 3.281e-015)
+  Bravyi-Kitaev             eigenvalues pass (computed error 4.441e-016 Ha; including solver allowance 2.500e-008 Ha)
+  Bravyi-Kitaev             moment diagnostic only (max relative error 3.281e-015)
+  Balanced Ternary          eigenvalues pass (computed error 4.441e-016 Ha; including solver allowance 2.500e-008 Ha)
+  Balanced Ternary          moment diagnostic only (max relative error 3.175e-015)
+  Vlasov Tree               eigenvalues pass (computed error 4.441e-016 Ha; including solver allowance 2.500e-008 Ha)
+  Vlasov Tree               moment diagnostic only (max relative error 3.175e-015)

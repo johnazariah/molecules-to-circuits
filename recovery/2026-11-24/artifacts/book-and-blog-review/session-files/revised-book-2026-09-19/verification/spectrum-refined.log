@@ -1,0 +1,89 @@
+Chapter 3: Spin-Orbital Integrals
+=================================
+Source: h2_dissociation_integrals.json
+PySCF: 2.13.0
+R = 0.74 Angstrom, Vnn = 0.7151043391 Ha, E_HF = -1.1167593074 Ha
+One-body integrals (spin-orbital):
+  h(0,0) = -1.2533097866 Ha
+  h(1,1) = -1.2533097866 Ha
+  h(2,2) = -0.4750688488 Ha
+  h(3,3) = -0.4750688488 Ha
+
+Total two-body integrals in raw map: 32
+  Same-spin (αα + ββ): 16
+  Cross-spin (αβ + βα): 16
+
+Canonical raw tensor loaded; FockMap's primary builders apply the index order and 1/2.
+Run make verify-data for coefficient and dense-matrix parity.
+
+═══════════════════════════════════════════════════════════════
+ Comparing Fermion-to-Qubit Encodings
+ Operator: a†₂ (creation on mode 2) with 8 total modes
+═══════════════════════════════════════════════════════════════
+
+▶ Jordan-Wigner (max weight = 3)
+  Pauli strings:
+    ZZXIIIII
+    ZZYIIIII
+
+▶ Bravyi-Kitaev (max weight = 4)
+  Pauli strings:
+    IZXXIIIX
+    IZYXIIIX
+
+▶ Parity (max weight = 7)
+  Pauli strings:
+    IZXXXXXX
+    IIYXXXXX
+
+▶ Binary Tree (max weight = 3)
+  Pauli strings:
+    IYXXIIII
+    IYYXIIII
+
+▶ Ternary Tree (max weight = 3)
+  Pauli strings:
+    IIXXYIII
+    IIYXYIII
+
+▶ Vlasov Tree (max weight = 3)
+  Pauli strings:
+    YIXIIIIZ
+    YIYIIIII
+
+═══════════════════════════════════════════════════════════════
+ Weight Scaling Comparison
+═══════════════════════════════════════════════════════════════
+
+  Encoding         Max Weight   Scaling
+  ────────────────────────────────────────
+  Jordan-Wigner         3        O(n)
+  Bravyi-Kitaev         4        Θ(log n)
+  Parity                7        O(n)
+  Binary Tree           3        Θ(log n)
+  Ternary Tree          3        Θ(log n)
+  Vlasov Tree           3        Θ(log n)
+
+═══════════════════════════════════════════════════════════════
+ Key Insight
+═══════════════════════════════════════════════════════════════
+
+ Tree-based mappings reduce worst-case ladder-operator weight
+ from linear to logarithmic growth.
+
+ The generated n=64 maxima are JW=64, BK=7, ternary=6.
+
+ Full H2 spectrum comparison:
+  Jordan-Wigner             dense matrix passes (max error 6.661e-016)
+  Jordan-Wigner             eigenvalues pass (computed error 4.441e-016 Ha; including solver allowance 2.500e-008 Ha)
+  Jordan-Wigner             moment diagnostic only (max relative error 3.281e-015)
+  Bravyi-Kitaev             eigenvalues pass (computed error 4.441e-016 Ha; including solver allowance 2.500e-008 Ha)
+  Bravyi-Kitaev             moment diagnostic only (max relative error 3.281e-015)
+  Parity                    eigenvalues pass (computed error 4.441e-016 Ha; including solver allowance 2.500e-008 Ha)
+  Parity                    moment diagnostic only (max relative error 3.281e-015)
+  Binary Tree               eigenvalues pass (computed error 4.441e-016 Ha; including solver allowance 2.500e-008 Ha)
+  Binary Tree               moment diagnostic only (max relative error 3.175e-015)
+  Ternary Tree              eigenvalues pass (computed error 4.441e-016 Ha; including solver allowance 2.500e-008 Ha)
+  Ternary Tree              moment diagnostic only (max relative error 3.175e-015)
+  Vlasov Tree               eigenvalues pass (computed error 4.441e-016 Ha; including solver allowance 2.500e-008 Ha)
+  Vlasov Tree               moment diagnostic only (max relative error 3.175e-015)

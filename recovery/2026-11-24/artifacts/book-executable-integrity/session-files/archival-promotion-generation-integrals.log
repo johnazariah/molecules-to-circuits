@@ -1,0 +1,29 @@
+Generating H₂/STO-3G integrals for the dissociation curve...
+
+     R (Å)      Vnn (Ha)     E_HF (Ha)  #integrals
+  ────────  ────────────  ────────────  ──────────
+      0.30      1.763924     -0.593828          44
+      0.40      1.322943     -0.904361          44
+      0.50      1.058354     -1.042996          36
+      0.60      0.881962     -1.101128          36
+      0.70      0.755967     -1.117349          36
+      0.74      0.715104     -1.116759          36
+      0.80      0.661472     -1.110850          36
+      0.90      0.587975     -1.091914          36
+      1.00      0.529177     -1.066109          36
+      1.20      0.440981     -1.005107          36
+      1.40      0.377984     -0.941481          36
+      1.60      0.330736     -0.881732          36
+      1.80      0.293987     -0.828848          36
+      2.00      0.264589     -0.783793          36
+      2.50      0.211671     -0.702944          36
+      3.00      0.176392     -0.656048          36
+      4.00      0.132294     -0.614870          68
+      5.00      0.105835     -0.599025          68
+
+Written to: /Users/johnaz/.copilot/session-state/7092245d-14fe-403b-a869-55cdec53c03e/files/archive-promotion-F8C9aR/.chemistry-stage-lwjmu1vd/code/h2_dissociation_integrals.json
+Fixture:    /Users/johnaz/.copilot/session-state/7092245d-14fe-403b-a869-55cdec53c03e/files/archive-promotion-F8C9aR/.chemistry-stage-lwjmu1vd/code/h2_0.74_fixture.json
+Canonical:  physicist_spin_integrals.json (6539afb30a1c03ec89202a2960a06c6580a91afaebf13a6cadbcfd32c2d71812)
+Bond lengths: 18
+Use with:     dotnet fsi code/ch18-pipeline.fsx
+Verify with:  python3 code/ch09-verify-h2.py
