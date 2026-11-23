@@ -17,3 +17,6 @@ __pycache__/
 bin/
 obj/
 _build/
+
+# Apress proposal private copy (PII — never commit)
+proposal/apress/private/
